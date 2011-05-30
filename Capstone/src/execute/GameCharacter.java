@@ -1,0 +1,183 @@
+package execute;
+
+import characterEditor.Abilities;
+import characterEditor.Actors;
+import eventEditor.EventTile;
+
+public abstract class GameCharacter {
+	
+	public static final int MOVESTATE = 0;
+	public static final int BATTLESTATE = 1;
+	public static final int DEATH = 2;
+	public static final int DAMAGED = 3;
+	public static final int SKILLCASTING = 4;
+	public static final int EVENTSTATE = 5;
+	
+
+	public static final int UP = 0;
+	public static final int DOWN = 1;
+	public static final int LEFT = 2;
+	public static final int RIGHT = 3;
+	
+	// x == col, y == row
+	//캐릭터의 현재 위치
+	protected int xPosition;
+	protected int yPosition;
+	//캐릭터의 이동속도
+	protected int speed;
+	//현재 바라보고 있는 방향
+	protected int nowDirection;
+	protected Abilities nowStatus;
+	protected Abilities maxStatus;
+	protected int attackRange;
+	//얘가 주인공과 싸울수 있는앤지 아닌지
+	protected boolean canFight;
+	//현재 액터의 상태가 어떤가? 정지, 이동중/데미지 입는중/스킬사용중/죽음..이 플래그에 따라 출력 애니메이션이 달라짐
+	protected int actorState = 0;
+	protected EventTile actorEvent;
+	
+	//액터의 액션 타입. 대기냐 액션이
+
+	protected int actionType;
+	
+	//액션 타입
+	public final static int RANDOM = 0;
+	public final static int TOPLAYER = 1;
+	public final static int STOP = 2;
+	public final static int RUNFROMPLAYER = 3;
+	public final static int STOPAFTERRANDOM = 4;
+	public final static int MOVESTRAIGHT = 5;
+	
+	public GameCharacter()
+	{
+		this.actorEvent = null;
+		this.xPosition = 0;
+		this.yPosition = 0;
+		this.nowDirection = GameCharacter.DOWN;
+		this.speed = 1;
+		this.attackRange = 1;
+		this.canFight = false;
+		this.actorState = GameCharacter.MOVESTATE;
+		this.actorEvent = null;
+		this.actionType = GameCharacter.RANDOM;
+	}
+	
+	//피해를 입었을 경우
+	public void dagamed(int damage, int direction)
+	{
+		
+	}
+
+	public void move(int direction)
+	{
+		
+	}
+	
+	public void attack(int direction)
+	{
+		
+	}
+	
+	public void skillOrMagic(int direction, int flag)
+	{
+		
+	}
+	public void effect(int flag)
+	{
+		
+	}
+	
+	public abstract void deployActor(int actorIndex, int xPosition, int yPosition, EventTile eventList);
+	
+	public int getxPosition() {
+		return xPosition;
+	}
+
+	public void setxPosition(int xPosition) {
+		this.xPosition = xPosition;
+	}
+
+	public int getyPosition() {
+		return yPosition;
+	}
+
+	public void setyPosition(int yPosition) {
+		this.yPosition = yPosition;
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
+	public int getNowDirection() {
+		return nowDirection;
+	}
+
+	public void setNowDirection(int nowDirection) {
+		this.nowDirection = nowDirection;
+	}
+
+	public Abilities getNowStatus() {
+		return nowStatus;
+	}
+
+	public void setNowStatus(Abilities nowStatus) {
+		this.nowStatus = nowStatus;
+	}
+
+	public Abilities getMaxStatus() {
+		return maxStatus;
+	}
+
+	public void setMaxStatus(Abilities maxStatus) {
+		this.maxStatus = maxStatus;
+	}
+
+	public int getAttackRange() {
+		return attackRange;
+	}
+
+	public void setAttackRange(int attackRange) {
+		this.attackRange = attackRange;
+	}
+
+	public boolean isCanFight() {
+		return canFight;
+	}
+
+	public void setCanFight(boolean canFight) {
+		this.canFight = canFight;
+	}
+
+	public int getActorState() {
+		return actorState;
+	}
+
+	public void setActorState(int actorState) {
+		this.actorState = actorState;
+	}
+
+	public EventTile getActorEvent() {
+		return actorEvent;
+	}
+
+	public void setActorEvent(EventTile actorEvent) {
+		this.actorEvent = actorEvent;
+	}
+
+	
+	public abstract Actors getChracter();
+
+	public int getActionType() {
+		return actionType;
+	}
+
+	public void setActionType(int actionType) {
+		this.actionType = actionType;
+	}
+
+}
