@@ -9,7 +9,7 @@ public abstract class GameCharacter {
 	public static final int MOVESTATE = 0;
 	public static final int BATTLESTATE = 1;
 	public static final int DEATH = 2;
-	public static final int DAMAGED = 3;
+	//public static final int DAMAGED = 3;
 	public static final int SKILLCASTING = 4;
 	public static final int EVENTSTATE = 5;
 	public static final int DELETECHARACTER = 6;
@@ -49,6 +49,7 @@ public abstract class GameCharacter {
 	public final static int STOPAFTERRANDOM = 4;
 	public final static int MOVESTRAIGHT = 5;
 	public final static int ATTACK = 6;
+	public final static int DAMAGED = 7;
 	
 	
 	//애니메이션 클럭

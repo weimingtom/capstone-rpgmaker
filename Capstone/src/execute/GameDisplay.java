@@ -10,6 +10,7 @@ import java.awt.image.Kernel;
 import java.util.Vector;
 
 import characterEditor.CharacterEditorSystem;
+import characterEditor.MonsterEditorSystem;
 
 import animationEditor.Animations;
 
@@ -476,19 +477,73 @@ public class GameDisplay implements Runnable{
 	/*****************************************************************/
 	public void displayMonster(Graphics2D g, GameCharacter monster)
 	{
-		//이 플래그들에 대해서 구현
-//		public static final int MOVESTATE = 0;
-//		public static final int BATTLESTATE = 1;
-//		public static final int DEATH = 2;
-//		public static final int DAMAGED = 3;
+		
+		MonsterEditorSystem monsterAnim = (MonsterEditorSystem) monster
+		.getCharacter();
 
-		//액션 타입 이용
-//		public final static int RANDOM = 0;
-//		public final static int TOPLAYER = 1;
-//		public final static int STOP = 2;
-//		public final static int RUNFROMPLAYER = 3;
-//		public final static int STOPAFTERRANDOM = 4;
-//		public final static int MOVESTRAIGHT = 5;
+		//몬스터가 움직임 상태이면
+		if(monster.getActorState() == GameCharacter.MOVESTATE)
+		{
+			//정지하면
+			if(monster.getActionType() == GameCharacter.STOP)
+			{
+				//정지 애니메이션 출력
+				if (monster.getNowDirection() == GameCharacter.UP)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveUpAnimation(), true, monster);
+				else if (monster.getNowDirection() == GameCharacter.DOWN)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveDownAnimation(), true, monster);
+				else if (monster.getNowDirection() == GameCharacter.LEFT)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveLeftAnimation(), true, monster);
+				else if (monster.getNowDirection() == GameCharacter.RIGHT)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveRightAnimation(), true,
+							monster);
+			}
+			else
+			{
+				//움직임 애니메이션 출력
+				if (monster.getNowDirection() == GameCharacter.UP)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveUpAnimation(), false, monster);
+				else if (monster.getNowDirection() == GameCharacter.DOWN)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveDownAnimation(), false, monster);
+				else if (monster.getNowDirection() == GameCharacter.LEFT)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveLeftAnimation(), false, monster);
+				else if (monster.getNowDirection() == GameCharacter.RIGHT)
+					displayActorMoveMotion(g,
+							monsterAnim.getMoveRightAnimation(), false,
+							monster);
+			}
+		}
+		else if(monster.getActorState() == GameCharacter.BATTLESTATE)
+		{
+
+			if(monster.getActionType() == GameCharacter.ATTACK)
+			{
+				if (monster.getNowDirection() == GameCharacter.UP) {
+					displayActorAttackMotion(g, monsterAnim.getAttackUpAnimation(), monster);
+				} else if (monster.getNowDirection() == GameCharacter.DOWN) {
+					displayActorAttackMotion(g, monsterAnim.getAttackDownAnimation(),monster);
+				} else if (monster.getNowDirection() == GameCharacter.LEFT) {
+					displayActorAttackMotion(g, monsterAnim.getAttackLeftAnimation(),monster);
+				} else if (monster.getNowDirection() == GameCharacter.RIGHT) {
+					displayActorAttackMotion(g, monsterAnim.getAttackRightAnimation(),monster);
+				}
+			}
+//			else if(monster.getActionType() == GameCharacter.DAMAGED)
+//			{
+//				
+//			}
+		}
+//		else if(monster.getActorState() == GameCharacter.DEATH)
+//		{
+//			
+//		}
 	}
 
 	
@@ -518,7 +573,7 @@ public class GameDisplay implements Runnable{
 				/*****************************************************************/
 				/*****************************************************************/
 				/*****************************************************************/
-
+				displayMonster(g, (GameCharacter)actors.elementAt(i));
 				/*****************************************************************/
 				/*****************************************************************/
 				/*****************************************************************/
