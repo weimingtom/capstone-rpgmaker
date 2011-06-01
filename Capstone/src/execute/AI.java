@@ -8,7 +8,7 @@ import MapEditor.Tile;
 public class AI {
 
 	//게임 이벤트 배열
-	private byte[][] gameTile;
+	private int[][] gameTile;
 	private GameData gameData;
 	
 	private int exActionType = 0;
@@ -19,9 +19,10 @@ public class AI {
 	}
 	
 	
+	
 	//액터가 움직일 수 있는지 없는지 확인
 	//x,y는 이동하고자 하는 좌표
-	public boolean actorCanMove(int x, int y, Map gameMap, byte[][] gameTile)
+	public boolean actorCanMove(int x, int y, Map gameMap, int[][] gameTile, GameCharacter actor)
 	{
 		int mapX = x/GameData.mapCharArrayRatio;
 		int mapY = y/GameData.mapCharArrayRatio;
@@ -29,6 +30,20 @@ public class AI {
 		Tile[][] back = gameMap.getM_BackgroundTile();
 		Tile[][] fore = gameMap.getM_ForegroundTile();
 		
+		
+		int charNum = 0;
+		Vector<GameCharacter> total = gameData.getSortedCharacters();
+		
+		//캐릭터의 번호 찾음
+		for(int i = 0 ; i < total.size(); i++)
+		{
+			GameCharacter tmp = total.elementAt(i);
+			if(actor.equals(tmp))
+			{
+				break;
+			}
+			charNum++;
+		}
 		
 		//맵이 움직이지 못하는 곳이면 이동 불가
 		try {
@@ -41,92 +56,92 @@ public class AI {
 			return false;
 		}
 
-		//게임타일이 1로 설정, 즉 누군가 있다면
-		if(gameTile[y][x] == 1)
+		//자기 인덱스가 아니면
+		try
+		{
+			int ratio = GameData.mapCharArrayRatio;
+			
+			for(int i = 0 ; i < ratio; i++)
+			{
+				for(int j = 0 ; j < ratio; j++)
+				{
+					if(gameTile[y-ratio/2+i][x-ratio/2+j]!= -1 && gameTile[y-ratio/2+i][x-ratio/2+j]!=charNum)
+					{
+						return false;
+					}
+				}
+				
+			}
+			if(gameTile[y][x] != -1 && gameTile[y][x] != charNum)
+				return  false;
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
 			return false;
+		}
 		
 		
 		//그외에는 이동 가능
 		return true;
 	}
 	
-	
-	//npc 랜덤무브
-	public void randomMove(GameCharacter actor, Map gameMap, byte[][] gameTile) 
+	//플레이어와 몬스터가 공격 가능한가?
+	public boolean canAttack(GameCharacter attack, GameCharacter defend)
 	{
-		// 4 방향 설정
-		int direction = (int) ((Math.random() * 10))%4;
-
-
-		if (direction == GameCharacter.UP) {
-			// 방향 설정
-			actor.setNowDirection(GameCharacter.UP);
-			// 방향이 위로 나오면
-			int nextY = actor.getyPosition() - actor.getSpeed();
-			// 그런데 맵보다 크면
-			if (nextY < GameData.mapCharArrayRatio) {
-				nextY = GameData.mapCharArrayRatio;
-			}
-			// 이동가능한가?
-			if (this.actorCanMove(actor.getxPosition(), nextY, gameMap,
-					gameTile)) {
-				// 이동가능하면
-				actor.setyPosition(nextY);
-			}
-		} else if (direction == GameCharacter.DOWN) {
-			// 방향 설정
-			actor.setNowDirection(GameCharacter.DOWN);
-			// 방향이 아래로 나오면
-			int nextY = actor.getyPosition() + actor.getSpeed();
-			// 그런데 맵보다 크면
-			if (nextY > (gameTile.length - GameData.mapCharArrayRatio)) {
-				nextY = gameTile.length 
-						- GameData.mapCharArrayRatio;
-			}
-			// 이동가능한가?
-			if (this.actorCanMove(actor.getxPosition(), nextY, gameMap,
-					gameTile)) {
-				// 이동가능하면
-				actor.setyPosition(nextY);
-			}
-		} else if (direction == GameCharacter.RIGHT) {
-			// 방향 설정
-			actor.setNowDirection(GameCharacter.RIGHT);
-			// 방향이 오른쪽으로 나오면
-			int nextX = actor.getxPosition() + actor.getSpeed();
-			// 그런데 맵보다 크면
-			if (nextX > (gameTile[0].length - GameData.mapCharArrayRatio)) {
-				nextX = gameTile.length 
-						- GameData.mapCharArrayRatio;
-			}
-			// 이동가능한가?
-			if (this.actorCanMove(nextX, actor.getyPosition(), gameMap,
-					gameTile)) {
-				// 이동가능하면
-				actor.setxPosition(nextX);
-			}
-		} else if (direction == GameCharacter.LEFT) {
-			// 방향 설정
-			actor.setNowDirection(GameCharacter.LEFT);
-			// 방향이 오른쪽으로 나오면
-			int nextX = actor.getxPosition() - actor.getSpeed();
-			// 그런데 맵보다 크면
-			if (nextX < GameData.mapCharArrayRatio) {
-				nextX = GameData.mapCharArrayRatio;
-			}
-			// 이동가능한가?
-			if (this.actorCanMove(nextX, actor.getyPosition(), gameMap,
-					gameTile)) {
-				// 이동가능하면
-				actor.setxPosition(nextX);
-			}
-		} 
+		
+		//거리가 사거리에 닫으면
+		int direction = attack.getNowDirection();
+		int ratio = GameData.mapCharArrayRatio;
+		ratio/=2;
+		int range = attack.getAttackRange()+ratio;
+		
+		//두 지점사이의 거리가 사거리보다 적어야함
+		if(direction == GameCharacter.UP)
+		{
+			if(attack.getyPosition() - defend.getyPosition() < range+ratio)
+				return true;
+		}
+		else if(direction == GameCharacter.DOWN)
+		{
+			if(defend.getyPosition() - attack.getyPosition() < range+ratio)
+				return true;		
+		}
+		else if(direction == GameCharacter.LEFT)
+		{
+			if(attack.getxPosition() - defend.getxPosition() < range+ratio)
+				return true;
+		}
+		else if(direction == GameCharacter.RIGHT)
+		{
+			if(defend.getxPosition() - attack.getxPosition() < range+ratio)
+				return true;		
+		}	
+		
+		return false;
 	}
 	
-	//npc 직진 이동
-	public void moveStraight(GameCharacter actor, Map gameMap, byte[][] gameTile)
+	//시야내에 케릭터 잇는지 확인
+	public boolean canWatch(GameCharacter monster, GameCharacter player)
 	{
-		if (actor.getNowDirection() == GameCharacter.UP) {
+		//기본적으로 시야는 5칸이라고 생각함
+		int ratio = GameData.mapCharArrayRatio * 5;
+		
+		int difX = Math.abs(monster.getxPosition() - player.getxPosition());
+		int difY = Math.abs(monster.getyPosition() - player.getyPosition());
+		
+		if(difX + difY < ratio)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	//이동
+	public void moveActor(GameCharacter actor, Map gameMap, int[][]gameTile, int direction)
+	{
+		actor.setNowDirection(direction);
+		if (direction == GameCharacter.UP) {
 			// 방향이 위로 나오면
 			int nextY = actor.getyPosition() - actor.getSpeed();
 			// 그런데 맵보다 크면
@@ -134,12 +149,11 @@ public class AI {
 				nextY = GameData.mapCharArrayRatio;
 			}
 			// 이동가능한가?
-			if (this.actorCanMove(actor.getxPosition(), nextY, gameMap,
-					gameTile)) {
+			if (this.actorCanMove(actor.getxPosition(), nextY, gameMap, gameTile,actor)) {
 				// 이동가능하면
 				actor.setyPosition(nextY);
 			}
-		} else if (actor.getNowDirection() == GameCharacter.DOWN) {
+		} else if (direction== GameCharacter.DOWN) {
 			// 방향이 아래로 나오면
 			int nextY = actor.getyPosition() + actor.getSpeed();
 			// 그런데 맵보다 크면
@@ -149,25 +163,25 @@ public class AI {
 			}
 			// 이동가능한가?
 			if (this.actorCanMove(actor.getxPosition(), nextY, gameMap,
-					gameTile)) {
+					gameTile,actor)) {
 				// 이동가능하면
 				actor.setyPosition(nextY);
 			}
-		} else if (actor.getNowDirection() == GameCharacter.RIGHT) {
+		} else if (direction == GameCharacter.RIGHT) {
 			// 방향이 오른쪽으로 나오면
 			int nextX = actor.getxPosition() + actor.getSpeed();
 			// 그런데 맵보다 크면
-			if (nextX > (gameTile.length - GameData.mapCharArrayRatio)) {
-				nextX = gameTile.length
+			if (nextX > (gameTile[0].length - GameData.mapCharArrayRatio)) {
+				nextX = gameTile[0].length
 						- GameData.mapCharArrayRatio;
 			}
 			// 이동가능한가?
 			if (this.actorCanMove(nextX, actor.getyPosition(), gameMap,
-					gameTile)) {
+					gameTile,actor)) {
 				// 이동가능하면
 				actor.setxPosition(nextX);
 			}
-		} else if (actor.getNowDirection() == GameCharacter.LEFT) {
+		} else if (direction == GameCharacter.LEFT) {
 			// 방향이 오른쪽으로 나오면
 			int nextX = actor.getxPosition() - actor.getSpeed();
 			// 그런데 맵보다 크면
@@ -176,16 +190,52 @@ public class AI {
 			}
 			// 이동가능한가?
 			if (this.actorCanMove(nextX, actor.getyPosition(), gameMap,
-					gameTile)) {
+					gameTile,actor)) {
 				// 이동가능하면
 				actor.setxPosition(nextX);
 			}
+		}	
+	}
+	
+	//npc 랜덤무브
+	public void randomMove(GameCharacter actor, Map gameMap, int[][] gameTile) 
+	{
+		// 4 방향 설정
+		int direction = (int) ((Math.random() * 10))%4;
+		moveActor(actor, gameMap, gameTile, direction);
+	}
+	
+	//npc 직진 이동
+	public void moveStraight(GameCharacter actor, Map gameMap, int[][] gameTile)
+	{
+		moveActor(actor, gameMap, gameTile, actor.getNowDirection());
+	}
+	
+	
+	//플레이어한테 무브
+	public void moveToPlayer(GameCharacter actor, GameCharacter player, Map gameMap, int[][] gameTile)
+	{
+		if(actor.getxPosition() >= player.getxPosition())
+		{
+			moveActor(actor, gameMap, gameTile, GameCharacter.LEFT);
+		}
+		else if(actor.getxPosition() <= player.getxPosition())
+		{
+			moveActor(actor, gameMap, gameTile, GameCharacter.RIGHT);
+		}
+		else if(actor.getyPosition() >= player.getyPosition())
+		{
+			moveActor(actor, gameMap, gameTile, GameCharacter.UP);
+		}
+		else if(actor.getyPosition() <= player.getyPosition())
+		{
+			moveActor(actor, gameMap, gameTile, GameCharacter.DOWN);
 		}
 	}
 	
 	
-	//npc의 이동액션
-	public void NPCAction(Vector<GameCharacter> alliances, GameCharacter player, Map gameMap, byte[][] gameTile)
+	//npc의 액션 - 이동밖에 없음
+	public void NPCAction(Vector<GameCharacter> alliances, GameCharacter player, Map gameMap, int[][] gameTile)
 	{
 		//캐릭터들이 없으면 그냥 리턴, 혹은 플레이어가 지금 이벤트 진행중이면 다른 애니메이션 안함
 		if(alliances == null || player.getActorState() == GameCharacter.EVENTSTATE)
@@ -223,6 +273,7 @@ public class AI {
 			else if(alliance.getActionType() == GameCharacter.STOP)
 			{
 				//정지상태
+				alliance.setActionType(GameCharacter.STOP);
 			}
 			else if(alliance.getActionType() == GameCharacter.RUNFROMPLAYER)
 			{
@@ -263,25 +314,78 @@ public class AI {
 		
 	}
 
-	public void monsterAction(Vector<GameCharacter> monsters, GameCharacter player, Map gameMap, byte[][] gameTile)
+	//몬스터 액션 - 주인공한테 가까이 오고 너무 멀리 있음 움직이지 않음..
+	public void monsterAction(Vector<GameCharacter> monsters, GameCharacter player, Map gameMap, int[][] gameTile)
 	{
 		if(monsters == null || player.getActorState() == GameCharacter.EVENTSTATE)
 			return;
 		
 		
-		/**************************************************************************/
-		/**************************************************************************/
-		/****************************플레이어 액션시************************************/
-		/**************************************************************************/
-		/**************************************************************************/
+		for(int i = 0 ; i < monsters.size(); i++)
+		{
+			GameCharacter monster = monsters.elementAt(i);
+			
+			
+			/****************************플레이어 액션시************************************/
+			
+			
+			//몬스터가 플레이어 공격 가능하면
+			if (canAttack(monster, gameData.getPlayer()) == true) 
+			{
+				//40%확률로 공격, 난이도때문
+				int p = (int)(Math.random()*100);
+				if(p > 60)
+				{
+					//어택
+					monster.setActionType(GameCharacter.ATTACK);
+					monster.setActorState(GameCharacter.BATTLESTATE);
+					monster.attack(monster, player);
+				}
+				else
+				{
+					monster.setActorState(GameCharacter.MOVESTATE);
+					monster.setActionType(GameCharacter.STOP);
+				}
+			}
+			else
+			{
+				//플레이어가 시야에 들어오면
+				if(canWatch(monster, gameData.getPlayer()))
+				{
+					//플레이어한테로 무브
+					monster.setActionType(GameCharacter.MOVESTRAIGHT);
+					monster.setActorState(GameCharacter.MOVESTATE);
+					moveToPlayer(monster, player, gameMap, gameTile);
+				}
+				else
+				{
+					//대기 혹은 랜덤 무브
+					int p = (int)(Math.random()*100);
+					//정지속성이 강함
+					if(p > 65)
+					{
+						//정지
+						monster.setActorState(GameCharacter.STOP);
+					}
+					else
+					{
+						p = (int)(Math.random()*10)%4;
+						//p가 방향임
+						moveStraight(monster, gameMap, gameTile);
+						monster.setActionType(GameCharacter.MOVESTRAIGHT);
+						monster.setActorState(GameCharacter.MOVESTATE);
+					}
+				}
+			}
+		}
 		
 	}
 	
-	public void setGameTile(byte[][] gameTile) {
+	public void setGameTile(int[][] gameTile) {
 		this.gameTile = gameTile;
 	}
 
-	public byte[][] getGameTile() {
+	public int[][] getGameTile() {
 		return gameTile;
 	}
 	

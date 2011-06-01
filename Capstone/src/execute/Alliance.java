@@ -14,6 +14,8 @@ public class Alliance extends GameCharacter {
 	public Alliance(String gamePath)
 	{
 		actor = new CharacterEditorSystem(gamePath);
+		maxStatus = actor.getInitAbility();
+		nowStatus = actor.getInitAbility();
 	}
 	
 	//액터 배치
@@ -33,7 +35,7 @@ public class Alliance extends GameCharacter {
 	}
 
 	@Override
-	public Actors getChracter() {
+	public Actors getCharacter() {
 		// TODO Auto-generated method stub
 		return actor;
 	}

@@ -35,9 +35,10 @@ public class GameData implements Runnable{
 	public static final int PLAYERDEATH = 14;
 	public static final int LOADING = 15;
 	public static final int NEWSTART = 16;
+	public static final int GAMEOVER = 17;
 	/**************************************************/
 	//이 쓰레드의 클럭 타이머
-	public static int TIMER = 60;
+	public static int TIMER = 100;
 	
 	/***유틸인포/ 로드화면, 타이틀화면/로고화면***********************/
 	private GameUtilityInformation titleScreen;
@@ -51,18 +52,17 @@ public class GameData implements Runnable{
 	/****맵이 바뀔때마다 새로 세팅한다*********************************/
 	//이 클래으에서 배열은 항상 타일 위치로만 한다. 실제 픽셀값이 아님
 	//각 애니메이션의 타이머
-	private int playerAnimTimer = 0;
-
 	
-	private GameCharacter player;
-	private Vector<GameCharacter> monsters;
-	private Vector<GameCharacter> alliances;
+	private GameCharacter player = null;
+	private Vector<GameCharacter> monsters = null;
+	private Vector<GameCharacter> alliances = null;
+	private Vector<GameCharacter> sortedCharacters = null;
 	private Map gameMap;
 	
 	/****************************************************/
 	//게임의 타일
 
-	private byte[][] gameTile;
+	private int[][] gameTile;
 	/****************************************************/
 	
 	//게임 패스
@@ -84,11 +84,11 @@ public class GameData implements Runnable{
 	private String musicFile = null;
 
 	//애니메이션 딜레이
-	private int animDelay = 5;
+	private int animDelay = 100;
 	//액션 애니메이션의 부드러움을 위해. 클릭한번만..적용시킴
 	private boolean actionAnimFlag = false;
 
-	private int playerActionTimer;
+	private int animTimer;
 
 	
 	//생성자
@@ -103,7 +103,7 @@ public class GameData implements Runnable{
 		cursorImage = new GameUtilityInformation();
 		cursorImage.setPosition(0);
 		
-		dialogScreen = new GameUtilityInformation();
+		setDialogScreen(new GameUtilityInformation());
 		gameWindow = null;
 		gameDisplay = null;
 		gameRobot = new AI(this);
@@ -184,14 +184,13 @@ public class GameData implements Runnable{
 				//우선 맵 로드
 				loadMap();
 				loadPlayer();
-				loadCharacterNPC();
+				//loadAlliances();
 				loadMonsters();
-				startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
-
+				//startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
 				/****************************************************/
+				this.computeGameTile();
+				
 				gameState = GameData.PLAY;
-				this.initGameTile();
-
 			}
 			else if(gameState == GameData.LOAD)
 			{
@@ -203,6 +202,12 @@ public class GameData implements Runnable{
 			}
 			else if(gameState == GameData.PLAY)
 			{
+				//캐릭터 뒤짐
+				if(player.getNowStatus().getHP() <=0)
+				{
+					player.setActorState(GameCharacter.DEATH);
+					gameState = GameData.GAMEOVER;
+				}
 				//게임 타일 초기화
 				if(keyFlag.isEnter())
 				{
@@ -213,7 +218,7 @@ public class GameData implements Runnable{
 						|| player.getActorState() == player.BATTLESTATE) 
 				{
 					//애니메이션을 부드럽게
-					this.playerAnimTimer++;
+					this.animTimer++;
 					
 					//플레이어의 키입력에 따른 움직임 설정
 					actionPlayer(player.getActorState());
@@ -225,6 +230,10 @@ public class GameData implements Runnable{
 					//한꺼번에 배열에 움직임 작성
 					this.computeGameTile();
 
+				}
+				else if(gameState == GameData.GAMEOVER)
+				{
+					gameState = GameData.EXIT;
 				}
 			}
 			try {
@@ -239,31 +248,87 @@ public class GameData implements Runnable{
 	}
 	
 	
+	//캐릭터들 정렬
+	private void sortCharacters() {
+		// TODO Auto-generated method stub
+		
+		sortedCharacters = new Vector<GameCharacter>();
+		
+		//삽입 정렬 시작, y값의 오름차순
+		if(player!=null)
+		{
+			sortedCharacters.add(player);
+		}
+		//npc임력
+		if(alliances!=null)
+		{
+			for(int indexOfAlliances = 0 ; indexOfAlliances < alliances.size(); indexOfAlliances++)
+			{
+				GameCharacter alliance = alliances.elementAt(indexOfAlliances);
+				//중간에 삽입
+				for(int sortedIndex = 0 ; sortedIndex < sortedCharacters.size(); sortedIndex++)
+				{
+					if(alliance.getyPosition() < sortedCharacters.elementAt(sortedIndex).getyPosition())
+					{
+						sortedCharacters.add(sortedIndex, alliance);
+						alliance = null;
+						break;
+					}
+				}
+				//만약 제일 큰거였다면
+				if(alliance != null)
+				{
+					sortedCharacters.add(alliance);
+				}
+			}
+		}
+		if(monsters!=null)
+		{
+			for(int indexOfMonsters = 0 ; indexOfMonsters < monsters.size(); indexOfMonsters++)
+			{
+				GameCharacter monster = monsters.elementAt(indexOfMonsters);
+				//중간에 삽입
+				for(int sortedIndex = 0 ; sortedIndex < sortedCharacters.size(); sortedIndex++)
+				{
+					if(monster.getyPosition() < sortedCharacters.elementAt(sortedIndex).getyPosition())
+					{
+						sortedCharacters.add(sortedIndex, monster);
+						monster = null;
+						break;
+					}
+				}
+				//만약 제일 큰거였다면
+				if(monster != null)
+				{
+					sortedCharacters.add(monster);
+				}
+			}
+		}
+		
+	}
+
 	private void computeGameTile() {
 		// TODO Auto-generated method stub
 		this.initGameTile();
+		sortCharacters();
 		//캐릭터가 있는 타일 전부를 1로 전환
+		int ratio = mapCharArrayRatio;
+		//정렬된 벡터에 대해
 		
-		
-		
-		gameTile[player.getyPosition()][player.getxPosition()] = 1;
-		
-		if(alliances != null)
+		int count = 0;
+		//액터 설정
+		for(int k = 0 ; k < sortedCharacters.size(); k++)
 		{
-			for (int i = 0; i < alliances.size(); i++) 
+			GameCharacter actor = (GameCharacter)sortedCharacters.elementAt(k);
+			for(int i = 0 ; i < ratio; i++)
 			{
-				Alliance alliance = (Alliance) alliances.elementAt(i);
-				gameTile[alliance.getyPosition()][alliance.getxPosition()] = 1;
+				for(int j = 0 ; j < ratio; j++)
+				{
+					gameTile[actor.getyPosition()-ratio/2+i][actor.getxPosition()-ratio/2+i] = count;
+				}
 			}
+			count++;
 		}
-		if(monsters != null)
-		{
-			for (int i = 0; i < monsters.size(); i++) 
-			{
-				Monster monster = (Monster) monsters.elementAt(i);
-				gameTile[monster.getyPosition()][monster.getxPosition()] = 1;
-			}
-		}	
 	}
 
 
@@ -281,7 +346,7 @@ public class GameData implements Runnable{
 			}
 			// 이동가능한가?
 			if (gameRobot.actorCanMove(nextX, player.getyPosition(), gameMap,
-					gameTile)) {
+					gameTile, player)) {
 				// 이동가능하면
 				player.setxPosition(nextX);
 			}
@@ -297,7 +362,7 @@ public class GameData implements Runnable{
 			}
 			// 이동가능한가?
 			if (gameRobot.actorCanMove(nextX, player.getyPosition(), gameMap,
-					gameTile)) {
+					gameTile,player)) {
 				// 이동가능하면
 				player.setxPosition(nextX);
 			}
@@ -313,7 +378,7 @@ public class GameData implements Runnable{
 			}
 			// 이동가능한가?
 			if (gameRobot.actorCanMove(player.getxPosition(), nextY, gameMap,
-					gameTile)) {
+					gameTile,player)) {
 				// 이동가능하면
 				player.setyPosition(nextY);
 			}
@@ -330,14 +395,14 @@ public class GameData implements Runnable{
 			}
 			// 이동가능한가?
 			if (gameRobot.actorCanMove(player.getxPosition(), nextY, gameMap,
-					gameTile)) {
+					gameTile,player)) {
 				// 이동가능하면
 				player.setyPosition(nextY);
 			}
 		}
 		else if(keyFlag.isAction() && this.actionAnimFlag == false)
 		{
-			playerActionTimer = 0;
+			player.setAnimActionClock(0);
 			if(this.actionAnimFlag == false)
 				this.actionAnimFlag = true;
 			//적을 공격
@@ -345,31 +410,31 @@ public class GameData implements Runnable{
 		//항상
 		if(this.actionAnimFlag == true)
 		{
-			playerActionTimer ++;
+			player.setAnimActionClock(player.getAnimActionClock()+1);
 			int error = 0;
 			if(player.getNowDirection() == GameCharacter.DOWN)
-				error = player.getChracter().getAttackDownAnimation().getCountImage();
+				error = player.getCharacter().getAttackDownAnimation().getCountImage();
 			else if(player.getNowDirection() == GameCharacter.UP)
-				error = player.getChracter().getAttackUpAnimation().getCountImage();
+				error = player.getCharacter().getAttackUpAnimation().getCountImage();
 			else if(player.getNowDirection() == GameCharacter.RIGHT)
-				error = player.getChracter().getAttackRightAnimation().getCountImage();
+				error = player.getCharacter().getAttackRightAnimation().getCountImage();
 			else if(player.getNowDirection() == GameCharacter.LEFT)
-				error = player.getChracter().getAttackLeftAnimation().getCountImage();
+				error = player.getCharacter().getAttackLeftAnimation().getCountImage();
 			if(error == 0)
 			{
 				JOptionPane.showMessageDialog(gameWindow, "전투 애니메이션이 없어요!");
 				System.exit(-1);
 			}
-			if(playerActionTimer % error == 0)
+
+			if(player.getAnimActionClock() > error)
 			{
 				actionAnimFlag = false;
-				playerActionTimer = 0;
+				player.setAnimActionClock(0);
 			}
 		}	
 	}
 
-	
-	
+
 	//괴물들 로드
 	private void loadMonsters() {
 		// TODO Auto-generated method stub
@@ -395,8 +460,8 @@ public class GameData implements Runnable{
 		}
 	}
 	
-
-	private void loadCharacterNPC() {
+	//npc들 로드
+	private void loadAlliances() {
 		// TODO Auto-generated method stub
 		//맵이 바뀌엇기 때문에 이 루틴이 호출되면 이전에 있던 캐릭터들은 지운다.
 		if(this.alliances!=null)
@@ -434,10 +499,10 @@ public class GameData implements Runnable{
 		//맵의 크기에 따라 게임 배열 설정
 		try 
 		{
-			this.gameTile = new byte[this.gameMap.getM_Height() * GameData.mapCharArrayRatio][];
+			this.gameTile = new int[this.gameMap.getM_Height() * GameData.mapCharArrayRatio][];
 			for (int i = 0; i < this.gameMap.getM_Height() * GameData.mapCharArrayRatio; i++) 
 			{
-				gameTile[i] = new byte[gameMap.getM_Width() * GameData.mapCharArrayRatio];
+				gameTile[i] = new int[gameMap.getM_Width() * GameData.mapCharArrayRatio];
 			}
 		} 
 		catch (Exception e) 
@@ -446,10 +511,13 @@ public class GameData implements Runnable{
 			System.exit(0);
 		}
 	}
+
 	public void loadPlayer()
 	{
 		try{
 			this.player = new Alliance(gamePath);
+			
+			//player.setNowStatus(nowStatus);
 			player.deployActor(0, 70, 70, null);
 		}
 		catch(Exception e)
@@ -469,7 +537,7 @@ public class GameData implements Runnable{
 		for(int i = 0; i < h; i ++)
 		{
 			for(int j = 0 ; j < w; j++)
-				gameTile[i][j] = 0;
+				gameTile[i][j] = -1;
 		}
 	}
 	//setter getter
@@ -635,12 +703,12 @@ public class GameData implements Runnable{
 	}
 
 
-	public byte[][] getGameTile() {
+	public int[][] getGameTile() {
 		return gameTile;
 	}
 
 
-	public void setGameTile(byte[][] gameTile) {
+	public void setGameTile(int[][] gameTile) {
 		this.gameTile = gameTile;
 	}
 	
@@ -653,22 +721,15 @@ public class GameData implements Runnable{
 	{
 		return this.player.getyPosition();
 	}
+
 	
-	public void setPlayerAnimTimer(int count)
-	{
-		this.playerAnimTimer = count;
-	}
-	public int getPlayerAnimTimer()
-	{
-		return this.playerAnimTimer;
-	}
-	
-	public boolean isChangeCharacterAnim(int timer)
+	public boolean isChangeCharacterAnim(int timer, int numb)
 	{
 		//4번당 한번씩
 		if(timer < 0)
 			timer = 0;
-		if(timer%animDelay == 0)
+		numb*=10;
+		if(timer%(animDelay/numb) == 0)
 			return true;
 		else
 			return false;
@@ -684,17 +745,6 @@ public class GameData implements Runnable{
 		return actionAnimFlag;
 	}
 
-
-	public int getPlayerActionTimer() {
-		return playerActionTimer;
-	}
-
-
-	public void setPlayerActionTimer(int playerActionTimer) {
-		this.playerActionTimer = playerActionTimer;
-	}
-
-
 	public void setMusicFile(String musicFile) {
 		this.musicFile = musicFile;
 	}
@@ -703,5 +753,30 @@ public class GameData implements Runnable{
 	public String getMusicFile() {
 		return musicFile;
 	}
-	
+
+
+	public void setDialogScreen(GameUtilityInformation dialogScreen) {
+		this.dialogScreen = dialogScreen;
+	}
+
+
+	public GameUtilityInformation getDialogScreen() {
+		return dialogScreen;
+	}
+
+
+	public Vector<GameCharacter> getSortedCharacters() {
+		return sortedCharacters;
+	}
+
+
+	public int getAnimTimer() {
+		return animTimer;
+	}
+
+
+	public void setAnimTimer(int animTimer) {
+		this.animTimer = animTimer;
+	}
+
 }
