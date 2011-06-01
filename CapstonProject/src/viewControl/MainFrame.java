@@ -358,6 +358,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		btnPaletteGrid.addActionListener(this);
 		btnMovable.addActionListener(this);
 		btnUpperAble.addActionListener(this);
+		btnBackPalette.setPressed(true);
 
 		eastToolbar.setFloatable(false);
 		eastToolbar.add(btnPaletteGrid);

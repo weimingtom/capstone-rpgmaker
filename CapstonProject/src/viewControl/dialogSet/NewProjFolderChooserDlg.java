@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -45,6 +47,7 @@ public class NewProjFolderChooserDlg extends JDialog implements ActionListener {
 
 		btn_ok.addActionListener(this);
 		btn_Cancel.addActionListener(this);
+		addWindowListener(new WindowEventHandler());
 	}
 
 
@@ -67,4 +70,12 @@ public class NewProjFolderChooserDlg extends JDialog implements ActionListener {
 	private JButton btn_ok;
 	private JButton btn_Cancel;
 	private NewProjectDlg owner;
+	
+	class WindowEventHandler extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			super.windowClosing(e);
+			owner.btn_browser.setEnabled(true);
+		}
+	}
 }

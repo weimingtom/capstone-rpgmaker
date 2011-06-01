@@ -452,12 +452,12 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			attributeForeground.createNewFile();
 
 			File originalResouce = new File("src\\resouce\\tileSet\\background");
-			for(int i=0; i<originalResouce.list().length; i++){
+			for(int i=0; i<originalResouce.list().length-1; i++){
 				fileCopy(originalResouce.getPath().concat("\\TileBack").concat(i+"").concat(".png"), 
 						fullPath.concat("\\TileSet\\Background\\TileBack").concat(i+"").concat(".png"));
 			}
 			originalResouce = new File("src\\resouce\\tileSet\\foreground");
-			for(int i=0; i<originalResouce.list().length; i++){
+			for(int i=0; i<originalResouce.list().length-1; i++){
 				fileCopy(originalResouce.getPath().concat("\\TileFore").concat(i+"").concat(".png"), 
 						fullPath.concat("\\TileSet\\Foreground\\TileFore").concat(i+"").concat(".png"));
 			}

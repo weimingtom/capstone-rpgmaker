@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,13 +22,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.filechooser.FileSystemView;
-
-import explorer.tree.FileTree;
 
 import palette.PalettePanel;
 import viewControl.MainFrame;
 import viewControl.esComponent.EstyleButton;
+import explorer.tree.FileTree;
 
 /**
  * 
