@@ -449,6 +449,16 @@ public class GameData implements Runnable{
 			monsters = new Vector<GameCharacter>();
 			monsters.add(new Monster(gamePath));
 			monsters.elementAt(0).deployActor(2, 30, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(1).deployActor(2, 40, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(2).deployActor(2, 50, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(3).deployActor(2, 60, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(4).deployActor(2, 70, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(5).deployActor(2, 30, 50, null);
 		}
 		catch(Exception e)
 		{
@@ -518,7 +528,7 @@ public class GameData implements Runnable{
 			this.player = new Alliance(gamePath);
 			
 			//player.setNowStatus(nowStatus);
-			player.deployActor(0, 70, 70, null);
+			player.deployActor(0,100, 100, null);
 		}
 		catch(Exception e)
 		{

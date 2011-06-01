@@ -96,27 +96,30 @@ public class AI {
 		int range = attack.getAttackRange()+ratio;
 		
 		//두 지점사이의 거리가 사거리보다 적어야함
+		
+		int difX = Math.abs(attack.getxPosition() - defend.getxPosition());
+		int difY = Math.abs(attack.getyPosition() - defend.getyPosition());
+		
 		if(direction == GameCharacter.UP)
 		{
-			if(attack.getyPosition() - defend.getyPosition() < range+ratio)
+			if(difY <= ratio+range && difX <= ratio && defend.getyPosition()<attack.getyPosition())
 				return true;
 		}
 		else if(direction == GameCharacter.DOWN)
 		{
-			if(defend.getyPosition() - attack.getyPosition() < range+ratio)
+			if(difY <= ratio+range && difX <= ratio && defend.getyPosition()>attack.getyPosition())
 				return true;		
 		}
 		else if(direction == GameCharacter.LEFT)
 		{
-			if(attack.getxPosition() - defend.getxPosition() < range+ratio)
+			if(difX <= ratio+range && difY <= ratio && defend.getxPosition()<attack.getxPosition())
 				return true;
 		}
 		else if(direction == GameCharacter.RIGHT)
 		{
-			if(defend.getxPosition() - attack.getxPosition() < range+ratio)
+			if(difX <= ratio+range && difY <= ratio && defend.getxPosition()>attack.getxPosition())
 				return true;		
 		}	
-		
 		return false;
 	}
 	
@@ -124,7 +127,7 @@ public class AI {
 	public boolean canWatch(GameCharacter monster, GameCharacter player)
 	{
 		//기본적으로 시야는 5칸이라고 생각함
-		int ratio = GameData.mapCharArrayRatio * 5;
+		int ratio = GameData.mapCharArrayRatio * 6;
 		
 		int difX = Math.abs(monster.getxPosition() - player.getxPosition());
 		int difY = Math.abs(monster.getyPosition() - player.getyPosition());
@@ -215,19 +218,22 @@ public class AI {
 	//플레이어한테 무브
 	public void moveToPlayer(GameCharacter actor, GameCharacter player, Map gameMap, int[][] gameTile)
 	{
-		if(actor.getxPosition() >= player.getxPosition())
+		int difX = Math.abs(player.getxPosition() - actor.getxPosition());
+		int difY = Math.abs(player.getyPosition() - actor.getyPosition());
+		
+		if(actor.getxPosition() >= player.getxPosition() && difX >= difY)
 		{
 			moveActor(actor, gameMap, gameTile, GameCharacter.LEFT);
 		}
-		else if(actor.getxPosition() <= player.getxPosition())
+		else if(actor.getxPosition() <= player.getxPosition() && difX >= difY)
 		{
 			moveActor(actor, gameMap, gameTile, GameCharacter.RIGHT);
 		}
-		else if(actor.getyPosition() >= player.getyPosition())
+		else if(actor.getyPosition() >= player.getyPosition() && difY >= difX)
 		{
 			moveActor(actor, gameMap, gameTile, GameCharacter.UP);
 		}
-		else if(actor.getyPosition() <= player.getyPosition())
+		else if(actor.getyPosition() <= player.getyPosition()&& difY >= difX)
 		{
 			moveActor(actor, gameMap, gameTile, GameCharacter.DOWN);
 		}
@@ -324,10 +330,18 @@ public class AI {
 		for(int i = 0 ; i < monsters.size(); i++)
 		{
 			GameCharacter monster = monsters.elementAt(i);
-			
+			int now = i;
 			
 			/****************************플레이어 액션시************************************/
-			
+			if(gameData.isActionAnimFlag() == true)
+			{
+				if(canAttack(player, monster) == true)
+				{
+					monsters.remove(i);
+					i = now;
+					continue;
+				}
+			}
 			
 			//몬스터가 플레이어 공격 가능하면
 			if (canAttack(monster, gameData.getPlayer()) == true) 
@@ -340,40 +354,47 @@ public class AI {
 					monster.setActionType(GameCharacter.ATTACK);
 					monster.setActorState(GameCharacter.BATTLESTATE);
 					monster.attack(monster, player);
+					//System.out.println("몬스터 공격");
 				}
 				else
 				{
 					monster.setActorState(GameCharacter.MOVESTATE);
 					monster.setActionType(GameCharacter.STOP);
+					//System.out.println("몬스터 정지");
 				}
 			}
 			else
 			{
 				//플레이어가 시야에 들어오면
-				if(canWatch(monster, gameData.getPlayer()))
+				if(canWatch(monster, gameData.getPlayer()) == true)
 				{
 					//플레이어한테로 무브
-					monster.setActionType(GameCharacter.MOVESTRAIGHT);
 					monster.setActorState(GameCharacter.MOVESTATE);
 					moveToPlayer(monster, player, gameMap, gameTile);
+					//System.out.println("플레이어한테 움직임");
 				}
 				else
 				{
+					//System.out.println("대기 혹은 움직임");
+					monster.setActorState(GameCharacter.MOVESTATE);
+					
 					//대기 혹은 랜덤 무브
 					int p = (int)(Math.random()*100);
+					//System.out.println(p);
 					//정지속성이 강함
-					if(p > 65)
+					if(p < 85)
 					{
 						//정지
-						monster.setActorState(GameCharacter.STOP);
+						monster.setActionType(GameCharacter.STOP);
+						//System.out.println("몬스터 정지");
 					}
 					else
 					{
 						p = (int)(Math.random()*10)%4;
 						//p가 방향임
+						//System.out.println("몬스터 랜덤이동");
+						monster.setNowDirection(p);
 						moveStraight(monster, gameMap, gameTile);
-						monster.setActionType(GameCharacter.MOVESTRAIGHT);
-						monster.setActorState(GameCharacter.MOVESTATE);
 					}
 				}
 			}

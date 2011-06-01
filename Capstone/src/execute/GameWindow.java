@@ -27,6 +27,41 @@ public class GameWindow extends JFrame implements KeyListener{
 	/*키가 눌려졌다는 것을 인식하는 플래그*/
 	private KeyFlags keyFlag;
 	
+	public GameWindow(GameData gameData, boolean isNotFullWindow)
+	{
+		// 그래픽 디바이스 설정
+		// 로컬 그래픽 디바이스 환경 가져옴
+		this.graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		// 디폴트 스크린 디바이스로 설정
+		graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+//		GraphicsDevice tmp[] = new GraphicsDevice[2];
+//		tmp = graphicsEnvironment.getScreenDevices();
+//		graphicsDevice = tmp[1];
+		// 종료시 화면 복구를 위해
+		origDisplayMode = graphicsDevice.getDisplayMode();
+		
+		//전체화면모드 
+//		if (graphicsDevice.isFullScreenSupported()) {
+//			// Enter full-screen mode witn an undecorated,
+//			// non-resizable JFrame object.
+//			setUndecorated(true);
+//			setResizable(false);
+//			// Make it happen!
+//			graphicsDevice.setFullScreenWindow(this);
+//			setIgnoreRepaint(true);
+//
+//			validate();
+//		} else {
+//			System.out.println("Full-screen mode not supported");
+//		}// end else
+		
+		this.setSize(800, 600);
+		this.setVisible(true);
+		
+		//키보드 입력 이벤트 리스너
+		addKeyListener(this);
+		this.gameData = gameData;	
+	}
 	
 
 	public GameWindow(GameData gameData) {
