@@ -34,7 +34,6 @@ public class EventDlg extends EditorDlg implements ActionListener {
 	private static final long serialVersionUID = 6090426854673494361L;
 	
 	private EventEditorSystem eventEditsSys;	// EventEditorSystem 이 Map에 저장된다면 이 변수를 이용해 메인프레임과 연결된다. 
-//	private EventEditorSystem tmpEventEditsSys;
 	private List<EventEditPanel> eventTabPanelList;
 	private String mapName;
 	private Point startPoint;
@@ -62,22 +61,8 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		this.eventEditsSys = eventEditsSys;
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
-		
-		EventEditorSystem tmpEventEditsSys = null;
-		try {
-			tmpEventEditsSys = (EventEditorSystem)(DeepCopier.deepCopy(eventEditsSys));
-			if(isNew(tmpEventEditsSys, startPoint, endPoint)) {
-//				addNewEventTile();
-			}
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-		
-		// map 이름을 저장한다. 단, 확장자는 제거한다.
 		this.mapName = eventEditsSys.getName();
-		
-		// 패널을 생성한다.
-		createEventEditPanelList(tmpEventEditsSys.getEventTile(startPoint.y, startPoint.x));
+		this.eventTabPanelList = new LinkedList<EventEditPanel>();
 		
 		setSize(new Dimension(600, 700));
 		setResizable(false);
@@ -115,6 +100,8 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		tp_eventTab.setPreferredSize(new java.awt.Dimension(682, 460));
+		
+		// 각 데이터
 		
 		// 레이아웃 구성
 		GroupLayout layout = new GroupLayout(getContentPane());
@@ -186,19 +173,8 @@ public class EventDlg extends EditorDlg implements ActionListener {
 			return true;
 		}
 	}
-	
-//	private void addNewEventTile() {
-//		// EventTile 하나를 생성하고 새로 만든 Event를 추가한다.
-//		EventTile addEventTile = new EventTile(startPoint.y, startPoint.x);
-//		
-//		// eventEditsSys를 정의하고 EventTile 하나를 삽입한다.
-//		tmpEventEditsSys.addEventTile(addEventTile);
-//	}
-	
-	private void createEventEditPanelList(EventTile events) {
-		// 새로운 리스트를 생성한다. 데이터가 있었다면 모두 버린다.
-		eventTabPanelList = new LinkedList<EventEditPanel>();
-		
+ 	
+	private void initEventPanel(EventTile events) {
 		// EventEditPanel을 하나씩 생성하여 eventTabPanelList에 넣는다.
 		List<Event> tmpEvents = events.getEventList();
 		for (int i = 0; i < tmpEvents.size(); i++) {
@@ -226,10 +202,6 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		renewTabPanels(index);
 	}
 	
-	private void clearEvents() {
-		
-	}
-
 	private void addTabPanel(Event event) {
 		// 전달받은 event를 패널에 넣고 eventTabPanelList에 삽입한다.
 		EventEditPanel addPanel = new EventEditPanel(event);
@@ -260,10 +232,10 @@ public class EventDlg extends EditorDlg implements ActionListener {
 	
 	private void renewConditionComboBoxImTapPanel() {
 		// 생성한 Event를 패널에 전달
-//		for (int i = 0; i < getEventList().size(); i++) {
-//			eventTabPanelList.get(i).renewConditionComboBox();
-//			eventTabPanelList.get(i).revalidate();
-//		}
+		for (int i = 0; i < eventTabPanelList.size(); i++) {
+			eventTabPanelList.get(i).renewConditionComboBox();
+			eventTabPanelList.get(i).revalidate();
+		}
 		tp_eventTab.revalidate();
 		this.repaint();
 	}
@@ -282,20 +254,18 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		} else if (e.getSource() == btn_addEvent) {
 			addNewEvent();
 		} else if (e.getSource() == btn_clearEvent) {
-			
+			// 0번째 패널부터 삭제하고 새 이벤트를 하나 삽입한다.
+			deleteEvent(0);
+			addNewEvent();
 		} else if (e.getSource() == btn_deleteEvent) {
-			// 이미 이벤트 리스트에 이벤트가 1개밖에 없다면 새로 뒤에 새로운 이벤트를 삽입하고 삭제한다.
-//			if(eventTabPanelList.size() == 1) {
-//				getEventList().add(new Event());
-//				addTabPanel(getEventList().get(getEventList().size()-1));
-//			}
-			
 			// 삭제할 패널의 인덱스
 			int indexComp = tp_eventTab.getSelectedIndex();
 			// Event를 삭제한다.
 			deleteEvent(indexComp);
-			// 탭을 갱신한다.
-			renewTabPanels(indexComp);
+			// 이벤트가 1개도 없다면 새 이벤트를 삽입한다.
+			addNewEvent();
+//			// 탭을 갱신한다.
+//			renewTabPanels(indexComp);
 			
 		} else if (e.getSource() == btn_editFlagList) {
 			new EditFlagListDlg(this.owner);
