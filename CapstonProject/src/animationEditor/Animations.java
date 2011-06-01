@@ -164,8 +164,12 @@ public class Animations extends ObjectEditorSystem implements Serializable {
 	public BufferedImage getBaseImage()			{	return baseImg;				}
 	public List<BufferedImage> getBufImgList() 	{	return bufImgList;			}
 	public int getCountImg()				{	return bufImgList.size();		}
-	public void setBaseImage(BufferedImage img)	{	baseImg = img;				}
-	public void setBaseImage(String fileName)	{
+	public void setBaseImage(BufferedImage img) {
+		baseImg = img;
+		baseImgIcon = toImageIcon(baseImg);
+		pointBaseImg.setLocation(baseImg.getWidth()/2, baseImg.getHeight()/2);
+	}
+	public void setBaseImage(String fileName) {
 		try {
 			baseImg = (BufferedImage) ImageIO.read(new File(fileName));
 			baseImgIcon = toImageIcon(baseImg);

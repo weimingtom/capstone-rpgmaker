@@ -1,19 +1,18 @@
 package viewControl.editorDlg;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 
 import userData.DeepCopier;
@@ -29,7 +28,7 @@ import eventEditor.EventTile;
 // 3. 이벤트 목록 받아오기
 // 4. 패널 이미지 받아오기
 // 5. 탭 자동 생성
-public class EventDlg extends EditorDlg implements ActionListener {
+public class EventDlg extends EditorDlg implements ActionListener, MouseListener {
 
 	private static final long serialVersionUID = 6090426854673494361L;
 	
@@ -64,7 +63,6 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		this.mapName = eventEditsSys.getName();
 		this.eventTabPanelList = new LinkedList<EventEditPanel>();
 		
-		setSize(new Dimension(600, 700));
 		setResizable(false);
 		initComponents();
 		setVisible(true);
@@ -94,6 +92,21 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		btn_deleteEvent.addActionListener(this);
 		btn_clearEvent.addActionListener(this);
 		btn_editFlagList.addActionListener(this);
+		cb_objectType.addActionListener(this);
+		
+		// 마우스 이벤트 정의
+		cb_objectType.addMouseListener(this);
+		
+		// 이벤트 데이터 설정. 새로운 데이터면 새로 생성하고 아니면 기존의 데이터에서 불러온다.
+		if(isNew(eventEditsSys, startPoint, endPoint)) {
+			addNewEvent();
+		} else {
+			try {
+				initEventPanel((EventTile)DeepCopier.deepCopy(eventEditsSys.getEventTile(startPoint.y, startPoint.y)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		// tp_eventTap을 정의한다.
 		renewTabPanels(0);
@@ -101,58 +114,57 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		tp_eventTab.setPreferredSize(new java.awt.Dimension(682, 460));
 		
-		// 각 데이터
 		
 		// 레이아웃 구성
-		GroupLayout layout = new GroupLayout(getContentPane());
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(
-			layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+			layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 			.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-					.addComponent(tp_eventTab, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+					.addComponent(tp_eventTab, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
 					.addGroup(layout.createSequentialGroup()
 						.addComponent(btn_editFlagList)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 307, Short.MAX_VALUE)
-						.addComponent(btn_OK, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 307, Short.MAX_VALUE)
+						.addComponent(btn_OK, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 						.addComponent(btn_cancel)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(btn_apply, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(btn_apply, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
 						.addGap(37, 37, 37))
-					.addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+					.addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
 						.addComponent(jLabel1)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(l_mapName, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(l_mapName, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 						.addComponent(jLabel2)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(cb_objectType, 0, 92, Short.MAX_VALUE)
-						.addGap(20, 20, 20)
-						.addComponent(btn_addEvent)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(btn_deleteEvent, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(btn_clearEvent, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(cb_objectType, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addGap(18, 18, 18)
+						.addComponent(btn_addEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(btn_deleteEvent, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(btn_clearEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
 				.addContainerGap())
 		);
 		layout.setVerticalGroup(
-			layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+			layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 			.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 					.addComponent(jLabel1)
 					.addComponent(l_mapName)
 					.addComponent(btn_clearEvent)
-					.addComponent(btn_deleteEvent)
-					.addComponent(btn_addEvent)
 					.addComponent(jLabel2)
-					.addComponent(cb_objectType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(tp_eventTab, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					.addComponent(cb_objectType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+					.addComponent(btn_deleteEvent)
+					.addComponent(btn_addEvent))
+				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(tp_eventTab, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 					.addComponent(btn_apply)
 					.addComponent(btn_cancel)
 					.addComponent(btn_OK)
@@ -178,7 +190,7 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		// EventEditPanel을 하나씩 생성하여 eventTabPanelList에 넣는다.
 		List<Event> tmpEvents = events.getEventList();
 		for (int i = 0; i < tmpEvents.size(); i++) {
-			EventEditPanel addPanel = new EventEditPanel(tmpEvents.get(i));
+			EventEditPanel addPanel = new EventEditPanel(tmpEvents.get(i), cb_objectType.getSelectedIndex());
 			eventTabPanelList.add(addPanel);
 		}
 	}
@@ -187,7 +199,7 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		// 이벤트 하나를 생성하여 EventEditorSystem에 삽입
 		Event addEvent = new Event();
 		// 새 이벤트를 패널에 넣어준다.
-		addTabPanel(addEvent);
+		eventTabPanelList.add(new EventEditPanel(addEvent, cb_objectType.getSelectedIndex()));
 	}
 	
 	private void addEvent(Event addEvent) {
@@ -202,9 +214,17 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		renewTabPanels(index);
 	}
 	
+	private void clearEvents() {
+		while(!eventTabPanelList.isEmpty()) {
+			eventTabPanelList.remove(0);
+		}
+		
+		addNewEvent();
+	}
+	
 	private void addTabPanel(Event event) {
 		// 전달받은 event를 패널에 넣고 eventTabPanelList에 삽입한다.
-		EventEditPanel addPanel = new EventEditPanel(event);
+		EventEditPanel addPanel = new EventEditPanel(event, cb_objectType.getSelectedIndex());
 		eventTabPanelList.add(addPanel);
 		
 		// 새로 생성한 패널을 tp_eventTap에 넣는다.
@@ -253,24 +273,47 @@ public class EventDlg extends EditorDlg implements ActionListener {
 			
 		} else if (e.getSource() == btn_addEvent) {
 			addNewEvent();
+			renewTabPanels(eventTabPanelList.size()-1);
 		} else if (e.getSource() == btn_clearEvent) {
 			// 0번째 패널부터 삭제하고 새 이벤트를 하나 삽입한다.
-			deleteEvent(0);
-			addNewEvent();
+			clearEvents();
+			// 탭을 갱신한다.
+			renewTabPanels(0);
 		} else if (e.getSource() == btn_deleteEvent) {
 			// 삭제할 패널의 인덱스
 			int indexComp = tp_eventTab.getSelectedIndex();
 			// Event를 삭제한다.
 			deleteEvent(indexComp);
 			// 이벤트가 1개도 없다면 새 이벤트를 삽입한다.
-			addNewEvent();
-//			// 탭을 갱신한다.
-//			renewTabPanels(indexComp);
+			if(eventTabPanelList.size() == 0) addNewEvent();
+			// 탭을 갱신한다.
+			renewTabPanels(indexComp);
 			
 		} else if (e.getSource() == btn_editFlagList) {
 			new EditFlagListDlg(this.owner);
 			// 수정된 flag name으로 각 Tap Panel 안의 ComboBox를 갱신한다.
 			renewConditionComboBoxImTapPanel();
+		} else if(e.getSource() == cb_objectType) {
+			for (int i = 0; i < eventTabPanelList.size(); i++) {
+				eventTabPanelList.get(i).renewActorMenu(cb_objectType.getSelectedIndex());
+			}
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	@Override
+	public void mousePressed(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if(e.getSource() == cb_objectType) {
+			for (int i = 0; i < eventTabPanelList.size(); i++) {
+				eventTabPanelList.get(i).renewActorMenu(cb_objectType.getSelectedIndex());
+			}
 		}
 	}
 }

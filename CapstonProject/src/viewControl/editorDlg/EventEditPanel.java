@@ -2,7 +2,11 @@ package viewControl.editorDlg;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -20,18 +24,24 @@ import javax.swing.LayoutStyle;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import viewControl.MainFrame;
+import characterEditor.Actors;
+import characterEditor.MonsterEditorSystem;
+import characterEditor.NPCEditorSystem;
 import eventEditor.Event;
+import eventEditor.EventEditorSystem;
 import eventEditor.FlagList;
 import eventEditor.eventContents.ChangeBGMEvent;
 import eventEditor.eventContents.ChangeMapEvent;
 import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
 
-public class EventEditPanel extends JPanel implements ListSelectionListener {
+public class EventEditPanel extends JPanel implements ListSelectionListener, ActionListener, MouseListener {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private Event event;
+	private int objectType;
 	
 	// Variables declaration - do not modify
 	private JButton btn_insertEventContest;
@@ -39,7 +49,6 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 	private ButtonGroup btng_startType;
 	private JComboBox cb_actorIndex;
 	private JComboBox cb_actorMotionType;
-//	private JComboBox cb_actorType;
 	private JComboBox cb_condition1;
 	private JComboBox cb_condition2;
 	private JComboBox cb_condition3;
@@ -47,7 +56,6 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 	private JCheckBox ckb_condition2;
 	private JCheckBox ckb_condition3;
 	private JComboBox cb_selectedEventContent;
-	private JLabel jLabel1;
 	private JLabel jLabel2;
 	private JLabel jLabel3;
 	private JLabel jLabel4;
@@ -64,8 +72,9 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 	private JRadioButton rbtn_pressButton;
 	// End of variables declaration
 	
-	public EventEditPanel(Event event) {
+	public EventEditPanel(Event event, int objectType) {
 		this.event = event;
+		this.objectType = objectType;
 		
 		initComponents();
 	}
@@ -87,24 +96,19 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 		ckb_condition1 = new JCheckBox("Condition1");
 		ckb_condition2 = new JCheckBox("Condition2");
 		ckb_condition3 = new JCheckBox("Condition3");
-		renewConditionComboBox();	// cb_condition#에 최신 Flag Name으로 갱신
-		renewSelectedListComboBox();// cb_selectedEventContent에 최신 리스트 목록으로 갱신
-//		cb_actorType = new JComboBox(new DefaultComboBoxModel(new String[] { "None", "NPC", "Monster" }));
-		cb_actorIndex = new JComboBox(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+		cb_actorIndex = new JComboBox(new DefaultComboBoxModel(new String[] { "None" }));
 		cb_actorMotionType = new JComboBox(new DefaultComboBoxModel(new String[] { "Not Motion", "Random Motion", "Come to Player", "Attack Player", "Attack Enemy" }));
 		sp_eventListPanel = new JScrollPane();
 		lst_eventList = new JList();
 		sp_eventListPanel.setViewportView(lst_eventList);
-		jLabel1 = new JLabel("Actor Type");
 		jLabel2 = new JLabel("Actor Index");
 		jLabel3 = new JLabel("Actor Motion Type");
 		jLabel4 = new JLabel("Event Contents");
+		renewConditionComboBox();	// cb_condition#에 최신 Flag Name으로 갱신
+		renewSelectedListComboBox();// cb_selectedEventContent에 최신 리스트 목록으로 갱신
 		
 		// lst_eventList 이벤트 선언
 		lst_eventList.addListSelectionListener(this);
-
-		// 초기 Event 저장 내용을 패널의 Component에 설정
-		setSelectedIndexCondition();
 		
 		p_activeCondition.setBorder(BorderFactory.createTitledBorder("Active Conditions"));
 		p_actor.setBorder(BorderFactory.createTitledBorder("Actor"));
@@ -125,6 +129,24 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 		btng_startType.add(rbtn_aboveTile);
 		btng_startType.add(rbtn_autoStart);
 		btng_startType.add(rbtn_parallelStart);
+		
+		// 액션 이벤트
+		ckb_condition1.addActionListener(this);
+		ckb_condition2.addActionListener(this);
+		ckb_condition3.addActionListener(this);
+		cb_actorIndex.addActionListener(this);
+		
+		// 마우스 이벤트
+		ckb_condition1.addMouseListener(this);
+		ckb_condition2.addMouseListener(this);
+		ckb_condition3.addMouseListener(this);
+		cb_actorIndex.addMouseListener(this);
+		
+		// 패널 안의 각 데이터 설정
+		setSelectedIndexCondition();
+		int tmpObjectType = objectType;
+		objectType = -1;
+		renewActorMenu(tmpObjectType);
 		
 		// 레이아웃 구성
 		GroupLayout p_activeConditionLayout = new GroupLayout(p_activeCondition);
@@ -291,11 +313,6 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 	private void rbtn_contactPlayerActionPerformed(ActionEvent e) {
 		// TODO add your handling code here:
 	}
-	
-	// 액터의 인덱스와 이름을 String 배열로 반환한다.
-	private String[] getActorIndex(int type) {
-		return null;
-	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
@@ -310,22 +327,59 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 	}
 	
 	public void renewConditionComboBox() {
-		int selectedIndex1=0;
-		int selectedIndex2=0;
-		int selectedIndex3=0;
-		if(cb_condition1 != null) {
-			selectedIndex1 = cb_condition1.getSelectedIndex();
-			selectedIndex2 = cb_condition2.getSelectedIndex();
-			selectedIndex3 = cb_condition3.getSelectedIndex();
+		if(cb_condition1 == null) {
+			cb_condition1 = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+			cb_condition2 = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+			cb_condition3 = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
 		}
 		
-		cb_condition1 = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
-		cb_condition2 = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
-		cb_condition3 = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+		// ckb_condition1
+		if(ckb_condition1.isSelected()) {
+			// cb_condition1를 활성화한다.
+			cb_condition1.setEnabled(true);
+			
+			// 미리 선택되었던 index를 임시 저장한다.
+			int selectedIndex=0;
+			if(cb_condition1 != null)
+				selectedIndex = cb_condition1.getSelectedIndex();
+			
+			// 선택된 index를 복원한다.
+			cb_condition1.setSelectedIndex(selectedIndex);
+		} else {
+			cb_condition1.setEnabled(false);
+		}
 		
-		cb_condition1.setSelectedIndex(selectedIndex1);
-		cb_condition2.setSelectedIndex(selectedIndex2);
-		cb_condition3.setSelectedIndex(selectedIndex3);
+		// ckb_condition2
+		if(ckb_condition2.isSelected()) {
+			// cb_condition1를 활성화한다.
+			cb_condition2.setEnabled(true);
+			
+			// 미리 선택되었던 index를 임시 저장한다.
+			int selectedIndex=0;
+			if(cb_condition2 != null)
+				selectedIndex = cb_condition2.getSelectedIndex();
+			
+			// 선택된 index를 복원한다.
+			cb_condition2.setSelectedIndex(selectedIndex);
+		} else {
+			cb_condition2.setEnabled(false);
+		}
+		
+		// ckb_condition3
+		if(ckb_condition3.isSelected()) {
+			// cb_condition1를 활성화한다.
+			cb_condition3.setEnabled(true);
+			
+			// 미리 선택되었던 index를 임시 저장한다.
+			int selectedIndex=0;
+			if(cb_condition3 != null)
+				selectedIndex = cb_condition3.getSelectedIndex();
+			
+			// 선택된 index를 복원한다.
+			cb_condition3.setSelectedIndex(selectedIndex);
+		} else {
+			cb_condition3.setEnabled(false);
+		}
 	}
 	
 	private void renewEventJList() {
@@ -373,6 +427,125 @@ public class EventEditPanel extends JPanel implements ListSelectionListener {
 		if(event.getPreconditionFlag(2) != -1) {
 			ckb_condition3.setSelected(true);
 			cb_condition3.setSelectedIndex(event.getPreconditionFlag(2));
+		}
+	}
+	
+	// Actor 관련 메뉴의 활성화를 조작한다.
+	public void renewActorMenu(int objectType) {
+		if(this.objectType != objectType) {
+			this.objectType = objectType;
+			if(objectType == EventEditorSystem.MAP_EVENT) {
+				p_actorImg.setEnabled(false);
+				cb_actorIndex.setEnabled(false);
+				cb_actorMotionType.setEnabled(false);
+			} else {
+				cb_actorIndex.setModel(new DefaultComboBoxModel(getComboBoxList(objectType)));
+				if(cb_actorIndex.getItemCount()>0) {
+					cb_actorIndex.setSelectedIndex(0);
+					// 해당 actor를 불러와서 패널에 출력해준다.
+					setAniImgPanel();
+				}
+	
+				p_actorImg.setEnabled(true);
+				cb_actorIndex.setEnabled(true);
+				cb_actorMotionType.setEnabled(true);
+			}
+			
+			p_actorImg.revalidate();
+			cb_actorIndex.revalidate();
+			cb_actorMotionType.revalidate();
+		}
+	}
+	
+	// Actor 의 인덱스를 ComboBox에 넣어준다.
+	private String[] getComboBoxList(int objectType) {
+		String[] returnStr = {"None"};
+		File[] objectFiles = null;
+		String extension = null;
+		
+		// 모든 object 파일을 배열에 저장한다.
+		if(objectType == EventEditorSystem.NPC_EVENT) {
+			objectFiles = (new File(MainFrame.OWNER.ProjectFullPath+File.separator+"NPC")).listFiles();
+			extension = "npc";
+		} else if(objectType == EventEditorSystem.MONSTER_EVENT) {
+			objectFiles = (new File(MainFrame.OWNER.ProjectFullPath+File.separator+"monster")).listFiles();
+			extension = "monster";
+		} else {
+			System.err.println("error: EventEditPanel.getComboBoxList() (objectType: " + objectType + ")");
+			return null;
+		}
+		
+		returnStr = new String[objectFiles.length-1];
+		
+		int index = 0;
+		for (int i = 0; i < objectFiles.length; i++) {
+			String fileName = objectFiles[i].getName();
+			if(fileName.charAt(0) == '.') continue;
+			if(fileName.substring(fileName.lastIndexOf(".")+1, fileName.length()).equals(extension)) {
+				returnStr[index++] = fileName.substring(0, fileName.lastIndexOf("."));
+			}
+		}
+		
+		return returnStr;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
+			// Combo박스의 활성화 여부를 체크하여 설정한다.
+			renewConditionComboBox();
+		} else if(e.getSource() == cb_actorIndex) {
+			// 해당 actor를 불러와서 패널에 출력해준다.
+			setAniImgPanel();
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	@Override
+	public void mousePressed(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
+			// Combo박스의 활성화 여부를 체크하여 설정한다.
+			renewConditionComboBox();
+		} else if(e.getSource() == cb_actorIndex) {
+			// 해당 actor를 불러와서 패널에 출력해준다.
+			setAniImgPanel();
+		}
+	}
+	
+	private int getActorIndex() {
+		if(objectType != EventEditorSystem.MAP_EVENT) {
+			return (new Integer(((String)(cb_actorIndex.getSelectedItem())).substring(0, 3))).intValue();
+		}
+		return -1;
+	}
+	
+	// AniImgPanel을 설정한 actor의 이미지로 출력해준다.
+	private void setAniImgPanel() {
+		if(cb_actorIndex.getItemCount()>0 && cb_actorIndex.getSelectedIndex()!=-1) {
+			Actors actor = null;
+			
+			if(objectType == EventEditorSystem.NPC_EVENT)
+				actor = new NPCEditorSystem(MainFrame.OWNER.projectPath);
+			else if(objectType == EventEditorSystem.MONSTER_EVENT)
+				actor = new MonsterEditorSystem(MainFrame.OWNER.projectPath);
+	
+			try {
+				actor.load(getActorIndex());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			
+			p_actorImg.setPrintImg(actor.getMoveDownAnimation().getBaseImage());
+			p_actorImg.revalidate();
+			p_actor.revalidate();
+			this.repaint();
 		}
 	}
 }
