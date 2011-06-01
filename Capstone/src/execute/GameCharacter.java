@@ -12,6 +12,7 @@ public abstract class GameCharacter {
 	public static final int DAMAGED = 3;
 	public static final int SKILLCASTING = 4;
 	public static final int EVENTSTATE = 5;
+	public static final int DELETECHARACTER = 6;
 	
 
 	public static final int UP = 0;
@@ -47,6 +48,11 @@ public abstract class GameCharacter {
 	public final static int RUNFROMPLAYER = 3;
 	public final static int STOPAFTERRANDOM = 4;
 	public final static int MOVESTRAIGHT = 5;
+	public final static int ATTACK = 6;
+	
+	
+	//애니메이션 클럭
+	private int animActionClock = 0;
 	
 	public GameCharacter()
 	{
@@ -60,6 +66,7 @@ public abstract class GameCharacter {
 		this.actorState = GameCharacter.MOVESTATE;
 		this.actorEvent = null;
 		this.actionType = GameCharacter.RANDOM;
+		
 	}
 	
 	//피해를 입었을 경우
@@ -73,9 +80,14 @@ public abstract class GameCharacter {
 		
 	}
 	
-	public void attack(int direction)
+	public void attack(GameCharacter actor, GameCharacter player)
 	{
-		
+		Abilities now = player.getNowStatus();
+		Abilities nowActor = actor.getNowStatus();
+		now.setHP(now.getHP() - nowActor.getStrength());
+		if(now.getHP() < 0)
+			now.setHP(0);
+		player.setNowStatus(now);
 	}
 	
 	public void skillOrMagic(int direction, int flag)
@@ -170,7 +182,7 @@ public abstract class GameCharacter {
 	}
 
 	
-	public abstract Actors getChracter();
+	public abstract Actors getCharacter();
 
 	public int getActionType() {
 		return actionType;
@@ -178,6 +190,14 @@ public abstract class GameCharacter {
 
 	public void setActionType(int actionType) {
 		this.actionType = actionType;
+	}
+
+	public void setAnimActionClock(int animActionClock) {
+		this.animActionClock = animActionClock;
+	}
+
+	public int getAnimActionClock() {
+		return animActionClock;
 	}
 
 }

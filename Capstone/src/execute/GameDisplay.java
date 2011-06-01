@@ -278,13 +278,19 @@ public class GameDisplay implements Runnable{
 		int positionX = actor.getxPosition();
 		int positionY = actor.getyPosition();
 
-		int playerTimer = gameData.getPlayerAnimTimer();
+		int playerTimer = gameData.getAnimTimer();
 		//맵의 위치
 		if(isStop == false)
 		{
-			BufferedImage actorImage = actorAnim.getNextImage();
+			BufferedImage actorImage = null;
+			try{
+				actorImage = actorAnim.getCurrentImage();
+			}catch(ArrayIndexOutOfBoundsException e)
+			{
+				actorImage = actorAnim.getNextImage();
+			}
 
-			if(gameData.isChangeCharacterAnim(playerTimer))
+			if(gameData.isChangeCharacterAnim(playerTimer, actorAnim.getCountImg()))
 			{
 				actorImage = actorAnim.getNextImage();
 			}
@@ -315,21 +321,27 @@ public class GameDisplay implements Runnable{
 		}
 	}
 	
-	
+	//액터의 어택모션
 	public void displayActorAttackMotion(Graphics2D g, Animations actorAnim, GameCharacter actor)
 	{
 		int positionX = actor.getxPosition();
 		int positionY = actor.getyPosition();
 
-		//맵의 위치
-//		if(gameData.getPlayerActionTimer() == 0)
-//			actorAnim.resetCallIndex();
-		BufferedImage //actorImage = //actorAnim.getCurrentImage();
-//		
-//		if(gameData.getPlayerActionTimer() % (40/actorAnim.getCountImage()) == 0)//&& gameData.getPlayerAnimTimer() % 10 == 0 )
-//		{
-				actorImage = actorAnim.getNextImage();
+		BufferedImage actorImage = null;
+
+//		try{
+//			actorImage = actorAnim.getCurrentImage();
 //		}
+//		catch(Exception e)
+//		{
+//			actorImage = actorAnim.getNextImage();
+//		}
+		
+//		if(actor.getAnimActionClock()== 0)
+//		{
+			actorImage = actorAnim.getNextImage();
+//		}
+
 
 		// 출력 기준점 확인
 		int charX = actorAnim.getPointX(actorAnim.getCallIndex());
@@ -345,54 +357,53 @@ public class GameDisplay implements Runnable{
 	}
 	
 	
-	public void displayNpcs(Graphics2D g)
+	public void displayAlliance(Graphics2D g,GameCharacter alliance)
 	{
-		//캐릭 정보 얻기
-		Vector<GameCharacter> alliances = gameData.getAlliances();
-		if(alliances == null)
-			return;
-		Alliance alliance = null;
-		
-		for(int i = 0 ; i < alliances.size(); i++)
-		{
-			//캐릭 정보 받기
-			alliance = (Alliance) alliances.elementAt(i);
-			//애니메이션 정보 얻기
-			CharacterEditorSystem allianceAnim = (CharacterEditorSystem) alliance.getChracter();
-			//경우에 따른 애니메이션 출력, 움직임이냐 전투냐
-			if(alliance.getActorState() == GameCharacter.MOVESTATE)
-			{
-				//정지 애니메이션 출력
-				if(alliance.getActionType()==GameCharacter.STOP ||alliance.getActionType()==GameCharacter.STOPAFTERRANDOM )
-				{
-					if(alliance.getNowDirection() == GameCharacter.UP)
-						displayActorMoveMotion(g, allianceAnim.getMoveUpAnimation(), true,alliance);
-					else if(alliance.getNowDirection() == GameCharacter.DOWN)
-						displayActorMoveMotion(g, allianceAnim.getMoveDownAnimation(), true,alliance);
-					else if(alliance.getNowDirection() == GameCharacter.LEFT)
-						displayActorMoveMotion(g, allianceAnim.getMoveLeftAnimation(), true,alliance);
-					else if(alliance.getNowDirection() == GameCharacter.RIGHT)
-						displayActorMoveMotion(g, allianceAnim.getMoveRightAnimation(), true,alliance);
-				}
-				//움직임 애니메이션 출력
-				else
-				{
-					//이동 상태일때
-					if(alliance.getNowDirection() == GameCharacter.UP)
-						displayActorMoveMotion(g, allianceAnim.getMoveUpAnimation(), false,alliance);
-					else if(alliance.getNowDirection() == GameCharacter.DOWN)
-						displayActorMoveMotion(g, allianceAnim.getMoveDownAnimation(), false,alliance);
-					else if(alliance.getNowDirection() == GameCharacter.LEFT)
-						displayActorMoveMotion(g, allianceAnim.getMoveLeftAnimation(), false,alliance);
-					else if(alliance.getNowDirection() == GameCharacter.RIGHT)
-						displayActorMoveMotion(g, allianceAnim.getMoveRightAnimation(), false,alliance);
-				}
+		// 애니메이션 정보 얻기
+		CharacterEditorSystem allianceAnim = (CharacterEditorSystem) alliance
+				.getCharacter();
+		// 경우에 따른 애니메이션 출력, 움직임이냐 전투냐
+		if (alliance.getActorState() == GameCharacter.MOVESTATE) {
+			// 정지 애니메이션 출력
+			if (alliance.getActionType() == GameCharacter.STOP
+					|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
+				if (alliance.getNowDirection() == GameCharacter.UP)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveUpAnimation(), true, alliance);
+				else if (alliance.getNowDirection() == GameCharacter.DOWN)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveDownAnimation(), true, alliance);
+				else if (alliance.getNowDirection() == GameCharacter.LEFT)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveLeftAnimation(), true, alliance);
+				else if (alliance.getNowDirection() == GameCharacter.RIGHT)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveRightAnimation(), true,
+							alliance);
 			}
-			else if(alliance.getActorState() == GameCharacter.BATTLESTATE)
-			{
-				
+			// 움직임 애니메이션 출력
+			else {
+				// 이동 상태일때
+				if (alliance.getNowDirection() == GameCharacter.UP)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveUpAnimation(), false, alliance);
+				else if (alliance.getNowDirection() == GameCharacter.DOWN)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveDownAnimation(), false,
+							alliance);
+				else if (alliance.getNowDirection() == GameCharacter.LEFT)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveLeftAnimation(), false,
+							alliance);
+				else if (alliance.getNowDirection() == GameCharacter.RIGHT)
+					displayActorMoveMotion(g,
+							allianceAnim.getMoveRightAnimation(), false,
+							alliance);
 			}
+		} else if (alliance.getActorState() == GameCharacter.BATTLESTATE) {
+
 		}
+		
 	}
 	
 	
@@ -401,7 +412,7 @@ public class GameDisplay implements Runnable{
 		//캐릭정보
 		Alliance player = (Alliance) gameData.getPlayer();
 		//캐릭터 애니메이션 정보
-		CharacterEditorSystem playerAnim = (CharacterEditorSystem) gameData.getPlayer().getChracter();
+		CharacterEditorSystem playerAnim = (CharacterEditorSystem) gameData.getPlayer().getCharacter();
 		/********플레이어 출력****************************************************************/
 		//세팅정보 필요
 		if(player.getActorState() == GameCharacter.MOVESTATE)
@@ -461,6 +472,64 @@ public class GameDisplay implements Runnable{
 		}//무브애니와 어택 애니 나눠야함, 무브쪽 앤드
 	}
 
+	/*****************************************************************/
+	/*****************************************************************/
+	public void displayMonster(Graphics2D g, GameCharacter monster)
+	{
+		//이 플래그들에 대해서 구현
+//		public static final int MOVESTATE = 0;
+//		public static final int BATTLESTATE = 1;
+//		public static final int DEATH = 2;
+//		public static final int DAMAGED = 3;
+
+		//액션 타입 이용
+//		public final static int RANDOM = 0;
+//		public final static int TOPLAYER = 1;
+//		public final static int STOP = 2;
+//		public final static int RUNFROMPLAYER = 3;
+//		public final static int STOPAFTERRANDOM = 4;
+//		public final static int MOVESTRAIGHT = 5;
+	}
+
+	
+	
+	
+	
+	//액터들의 출력
+	public void displayActors(Graphics2D g)
+	{
+		//우선 정렬이 필요함
+		Vector<GameCharacter> actors = gameData.getSortedCharacters();
+		
+		for(int i = 0 ; i < actors.size(); i++)
+		{
+			//주인공 받아옴
+			if(actors.elementAt(i).equals(gameData.getPlayer()))
+			{
+				displayPlayer(g);
+			}
+			else if( actors.elementAt(i) instanceof Alliance )
+			{
+				displayAlliance(g, (GameCharacter)actors.elementAt(i));
+			}
+			else if( actors.elementAt(i) instanceof Monster)
+			{
+				//몬스터 출력
+				/*****************************************************************/
+				/*****************************************************************/
+				/*****************************************************************/
+
+				/*****************************************************************/
+				/*****************************************************************/
+				/*****************************************************************/
+			}
+		}
+	}
+	
+
+	
+	
+	
 	
 	//GameRunning!!!!!!!
 	@Override
@@ -474,18 +543,19 @@ public class GameDisplay implements Runnable{
 			// 상태가 로고면
 			if (gameState == GameData.LOGOSCREEN) 
 			{
+				TIMER = 60;
 				displayLogoImage(gameGraphics);
 			}
 			// 상태가 메뉴면
 			else if (gameState == GameData.TITLEMENU)
 			{
-				TIMER = 60;
 				displayTitleMenu(gameGraphics);
 			}
 			// 로딩중
 			else if (gameState == GameData.LOADING) 
 			{
 				displayLoadingScreen(gameGraphics);
+				TIMER = 30;
 			}
 			// 로드화면
 			else if (gameState == GameData.LOAD) {
@@ -494,18 +564,16 @@ public class GameDisplay implements Runnable{
 			// 상태가 플레이이면
 			else if (gameState == GameData.PLAY)
 			{
-				TIMER = 30;
 				// 백그라운드 출력
 				this.displayBackground(gameGraphics);
 				// 케릭터 뒤로 깔릴 전경 출력
 				displayForeground(gameGraphics, false);
 			
 				//캐릭터 출력순서를 잡아줘야함
-				
-				
-				this.displayPlayer(gameGraphics);
-				this.displayNpcs(gameGraphics);
+			
+				displayActors(gameGraphics);
 
+				
 				// 케릭터 앞에 깔릴 전경 출력
 				displayForeground(gameGraphics, true);
 			}

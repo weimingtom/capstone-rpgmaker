@@ -10,9 +10,12 @@ public class Monster extends GameCharacter {
 
 	private MonsterEditorSystem monster;
 	
+	
 	public Monster(String gamePath)
 	{
 		monster = new MonsterEditorSystem(gamePath);
+		maxStatus = monster.getInitAbility();
+		nowStatus = monster.getInitAbility();
 	}
 	
 	public void deployActor(int actorIndex, int xPosition, int yPosition, EventTile eventList)
@@ -29,7 +32,7 @@ public class Monster extends GameCharacter {
 	}
 
 	@Override
-	public Actors getChracter() {
+	public Actors getCharacter() {
 		// TODO Auto-generated method stub
 		return monster;
 	}
