@@ -1,6 +1,5 @@
 package viewControl.editorDlg;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -32,11 +31,10 @@ public class EditFlagListDlg extends JDialog implements ActionListener, MouseLis
 	public EditFlagListDlg(MainFrame parent) {
 		super(parent, "Edit Flag List");
 		
-		setSize(new Dimension(600, 700));
 		setResizable(false);
+		setModal(true);
 		initComponents();
 		setVisible(true);
-		setModal(true);
 	}
 	
 	private void initComponents() {

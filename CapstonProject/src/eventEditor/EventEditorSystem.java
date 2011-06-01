@@ -28,16 +28,15 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	public final static int AUTO_START = 3;				// 자동 시작
 	public final static int PARALLEL_START = 4;			// 병렬적으로 시작
 	// actionType
-	public final static int NOT_MOTION = 10;			// 이벤트가 이동하지 않는다.
-	public final static int RANDOM_MOTION = 11;			// 이벤트가 랜덤으로 이동한다.
-	public final static int COME_CLOSER_TO_PLAYER = 12;	// 이벤트가 플레이어에게 접근한다.
-	public final static int ATTACK_PLAYER = 13;			// 이벤트가 플레이어를 공격한다.
-	public final static int ATTACK_ENEMY = 14;			// 이벤트가 적을 공격한다.
+	public final static int NOT_MOTION = 0;				// 이벤트가 이동하지 않는다.
+	public final static int RANDOM_MOTION = 1;			// 이벤트가 랜덤으로 이동한다.
+	public final static int COME_CLOSER_TO_PLAYER = 2;	// 이벤트가 플레이어에게 접근한다.
+	public final static int ATTACK_PLAYER = 3;			// 이벤트가 플레이어를 공격한다.
+	public final static int ATTACK_ENEMY = 4;			// 이벤트가 적을 공격한다.
 	// objectType
-	public final static int MAP_EVENT = 20;
-//	public final static int CHARACTER_EVENT = 21;
-	public final static int NPC_EVENT = 21;					// 이벤트가 NPC로 설정된다.
-	public final static int MONSTER_EVENT = 22;				// 이벤트가 Monster로 설정된다.
+	public final static int MAP_EVENT = 0;
+	public final static int NPC_EVENT = 1;				// 이벤트가 NPC로 설정된다.
+	public final static int MONSTER_EVENT = 2;			// 이벤트가 Monster로 설정된다.
 	
 	private String projectPath;
 	private List<EventTile> eventTileList;

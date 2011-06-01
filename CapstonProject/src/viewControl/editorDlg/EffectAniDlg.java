@@ -50,7 +50,8 @@ public class EffectAniDlg extends EditorDlg implements ActionListener {
 		} else {
 			String defaultPath = projectPath + File.separator + ".DefaultData" + File.separator + "Animation";
 			int defaultCountEffectAnimation = (new File(defaultPath)).listFiles().length;
-			System.out.println(defaultCountEffectAnimation);
+			
+			effectAnimation.setBaseImage(defaultPath + File.separator + "EffectAnimationBase.png");
 			for (int i = 0; i < defaultCountEffectAnimation; i++) {
 				String number = null;
 				if (i < 10)			number = "0" + i;
