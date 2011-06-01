@@ -9,6 +9,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.swing.Icon;
@@ -30,6 +33,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -274,7 +278,32 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 
 	private DefaultMutableTreeNode addObject(DefaultMutableTreeNode parentNode,
 			DefaultMutableTreeNode childNode, boolean shouldBeVisible) {
+		treeModel.insertNodeInto(childNode, parentNode, parentNode
+				.getChildCount());
+		if (parentNode != null) {
+			ArrayList<DefaultMutableTreeNode> forPathNode = new ArrayList<DefaultMutableTreeNode>();
+			File c, p;
+			
+			while (true) {
+				forPathNode.add(childNode);
+				c = (File) childNode.getUserObject();
+				p = c.getParentFile();
+				if (MainFrame.OWNER.ProjectFullPath.equals(p.getPath())) {
+					childNode = searchTreeNode(root, p);
+					forPathNode.add(childNode);
+					break;
+				}
+				childNode = searchTreeNode(root, p);
+			}
 
+			Collections.reverse(forPathNode);
+			for (DefaultMutableTreeNode tn : forPathNode) {
+				scrollPathToVisible(new TreePath(((DefaultMutableTreeNode) tn)
+						.getPath()));
+			}
+		}
+
+		/*// 개방될 패스가 없으면
 		if (parentNode == null) {
 			// 삽입될 노드보다 가장 가까운 현재 트리에 등록된 노드를 찾는다.
 			parentNode = getNearestParantNode(childNode);
@@ -293,17 +322,16 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 				parentNode = getNearestParantNode(childNode);
 			}
 		}
-
 		if (parentNode == null) {
 			parentNode = root;
-		}
+		}*/
 
-		treeModel.insertNodeInto(childNode, parentNode, parentNode
+	/*	treeModel.insertNodeInto(childNode, parentNode, parentNode
 				.getChildCount());
 
-		if (shouldBeVisible) {
-			scrollPathToVisible(new TreePath(childNode.getPath()));
-		}
+		scrollPathToVisible(new TreePath(((DefaultMutableTreeNode) childNode)
+				.getPath()));*/
+
 		return childNode;
 	}
 
@@ -369,7 +397,7 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			int selRow = getRowForLocation(e.getX(), e.getY());
-			TreePath selPath = getPathForLocation(e.getX(), e.getY());
+			// TreePath selPath = getPathForLocation(e.getX(), e.getY());
 			if (selRow != -1) {
 				if (e.getClickCount() == 1) { // 한번 클릭
 					// 어떤 속성의 파일을 선택 했는가?
@@ -394,7 +422,9 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 					if (folderType == null) {
 						return; // 폴더가 선택됨
 					}
-					if (folderType.compareTo(".tileSet") == 0) {
+					if (folderType.compareTo(".tileSet") == 0
+							|| folderType.compareTo(".background") == 0
+							|| folderType.compareTo(".foreground") == 0) {
 						loadTileSet();
 					} else if (folderType.compareTo(".character") == 0) {
 						new NewCharacterDlg(owner, false, getSelectedFile()
@@ -607,7 +637,9 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 	@SuppressWarnings("unchecked")
 	public DefaultMutableTreeNode searchTreeNode(
 			DefaultMutableTreeNode rootNode, File f) {
-		if(rootNode.getChildCount()==1 && ((DefaultMutableTreeNode)(rootNode.getFirstChild())).getUserObject()==null)
+		if (rootNode.getChildCount() == 1
+				&& ((DefaultMutableTreeNode) (rootNode.getFirstChild()))
+						.getUserObject() == null)
 			expand(rootNode);
 		Enumeration e = rootNode.children();
 		DefaultMutableTreeNode tempNode = null;

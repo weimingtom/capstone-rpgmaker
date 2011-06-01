@@ -84,18 +84,27 @@ public class TreeNodeDeleteDlg extends JDialog {
 			if (!fa.isEmpty()) {
 				sb.append(" File list: ");
 				for (int i = 0; i < fa.size(); i++) {
-					if (MainFrame.OWNER.alreadyIsTileSetTabExist(fa.get(i)
-							.getName(), true)) {
-						sb.append("\t" + fa.get(i).getName());
-						sb
-								.append(" (This file is used, It's on background tab)\n");
-						fa.remove(i--);
-					} else if (MainFrame.OWNER.alreadyIsTileSetTabExist(fa.get(
-							i).getName(), false)) {
-						sb.append("\t" + fa.get(i).getName());
-						sb
-								.append(" (This file is used, It's on foreground tab)\n");
-						fa.remove(i--);
+					if (fa.get(i).getParentFile().getName()
+							.equals("Background")) {
+						if (MainFrame.OWNER.alreadyIsTileSetTabExist(fa.get(i)
+								.getName(), true)) {
+							sb.append("\t" + fa.get(i).getName());
+							sb
+									.append(" (This file is used, It's on background tab)\n");
+							fa.remove(i--);
+						} else
+							sb.append("\t" + fa.get(i).getName() + "\n");
+					} else if (fa.get(i).getParentFile().getName().equals(
+							"Foreground")) {
+						if (MainFrame.OWNER.alreadyIsTileSetTabExist(fa.get(
+
+						i).getName(), false)) {
+							sb.append("\t" + fa.get(i).getName());
+							sb
+									.append(" (This file is used, It's on foreground tab)\n");
+							fa.remove(i--);
+						} else
+							sb.append("\t" + fa.get(i).getName() + "\n");
 					} else if (MainFrame.OWNER.alreadyIsCanvasTabExist(fa
 							.get(i).getName())) {
 						sb.append("\t" + fa.get(i).getName());
@@ -115,11 +124,12 @@ public class TreeNodeDeleteDlg extends JDialog {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		
+
 		btn_ok.setPreferredSize(new Dimension(100, 25));
 		btn_ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				MainFrame.OWNER.getProjTree().removeSelectedNodesWithFiles(inFiles);
+				MainFrame.OWNER.getProjTree().removeSelectedNodesWithFiles(
+						inFiles);
 				dispose();
 			}
 		});

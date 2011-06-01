@@ -21,7 +21,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.LayoutStyle;
@@ -232,19 +231,20 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btn_ok) {
-			boolean reopen = false;
-			if (MainFrame.OWNER.ProjectFullPath != null) {
-				new JOptionPane();
-				if (JOptionPane.showConfirmDialog(this,
-						"Really open another project?", "OPEN PROJECT",
-						JOptionPane.OK_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE) == 0) {
-					reopen = true;
-				}
-			}
-			File fproj = new File((String)(cb_workspace.getSelectedItem()));
+
+			File fproj = new File((String) (cb_workspace.getSelectedItem()));
 			MainFrame.OWNER.ProjectName = fproj.getName();
 			MainFrame.OWNER.projectPath = fproj.getParent();
+			File [] c = fproj.listFiles();
+			boolean pathVail = false;
+			for(File f : c){
+				if(f.getName().equals(".isProj"))
+					pathVail = true;
+			}
+			if(!pathVail){
+				l_state.setText("Please, choose right path!");
+				return;
+			}
 			try {
 				FileWriter fw = new FileWriter(saveData);
 				for (int i = pathStr.length - 1; i != -1; i--) {
@@ -255,23 +255,14 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 				e1.printStackTrace();
 			}
 
-			if (reopen) {
-				MainFrame mf = new MainFrame();
-				mf.ProjectName = fproj.getName();
-				mf.projectPath = fproj.getParent();
-				mf.setSubState(mf.ProjectName + " is made");
-				mf.setMainState(mf.projectPath);
-				mf.setTitle(mf.ProjectName);
-				MainFrame.OWNER.closeProject(mf);
-			} else {
-				MainFrame.OWNER.setSubState(MainFrame.OWNER.ProjectName
-						+ " is made");
-				MainFrame.OWNER.setMainState(MainFrame.OWNER.projectPath);
-				MainFrame.OWNER.setTitle(MainFrame.OWNER.ProjectName);
-				MainFrame.OWNER.setNewProject();
-				MainFrame.OWNER.setAllUserTileSet();
-			}
+			MainFrame.OWNER.setSubState(MainFrame.OWNER.ProjectName
+					+ " is made");
+			MainFrame.OWNER.setMainState(MainFrame.OWNER.projectPath);
+			MainFrame.OWNER.setTitle(MainFrame.OWNER.ProjectName);
+			MainFrame.OWNER.setNewProject();
+			MainFrame.OWNER.setAllUserTileSet();
 			dispose();
+
 		} else if (e.getSource() == btn_browser) {
 			btn_browser.setEnabled(false);
 			new OpenProjChooerDlg(this);
