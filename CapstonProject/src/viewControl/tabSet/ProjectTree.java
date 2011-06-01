@@ -278,32 +278,8 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 
 	private DefaultMutableTreeNode addObject(DefaultMutableTreeNode parentNode,
 			DefaultMutableTreeNode childNode, boolean shouldBeVisible) {
-		treeModel.insertNodeInto(childNode, parentNode, parentNode
-				.getChildCount());
-		if (parentNode != null) {
-			ArrayList<DefaultMutableTreeNode> forPathNode = new ArrayList<DefaultMutableTreeNode>();
-			File c, p;
-			
-			while (true) {
-				forPathNode.add(childNode);
-				c = (File) childNode.getUserObject();
-				p = c.getParentFile();
-				if (MainFrame.OWNER.ProjectFullPath.equals(p.getPath())) {
-					childNode = searchTreeNode(root, p);
-					forPathNode.add(childNode);
-					break;
-				}
-				childNode = searchTreeNode(root, p);
-			}
 
-			Collections.reverse(forPathNode);
-			for (DefaultMutableTreeNode tn : forPathNode) {
-				scrollPathToVisible(new TreePath(((DefaultMutableTreeNode) tn)
-						.getPath()));
-			}
-		}
-
-		/*// 개방될 패스가 없으면
+		// 개방될 패스가 없으면
 		if (parentNode == null) {
 			// 삽입될 노드보다 가장 가까운 현재 트리에 등록된 노드를 찾는다.
 			parentNode = getNearestParantNode(childNode);
@@ -324,13 +300,13 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		}
 		if (parentNode == null) {
 			parentNode = root;
-		}*/
+		}
 
-	/*	treeModel.insertNodeInto(childNode, parentNode, parentNode
+		treeModel.insertNodeInto(childNode, parentNode, parentNode
 				.getChildCount());
 
 		scrollPathToVisible(new TreePath(((DefaultMutableTreeNode) childNode)
-				.getPath()));*/
+				.getPath()));
 
 		return childNode;
 	}
