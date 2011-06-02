@@ -1289,10 +1289,53 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	public void setNewMapCanvasTab(MapIntegrateGUI m) {
-		String mapName = m.getMapSys().getMapInfo().getM_MapName();
-		Dimension d = new Dimension(m.getMapSys().getMapInfo().getM_Width(), m
-				.getMapSys().getMapInfo().getM_Height());
-		setNewMapCanvasTab(mapName, d);
+		JScrollPane scrp = new JScrollPane(m);
+		canvasTab.add(scrp);
+		final JPanel jp = new JPanel();
+		EstyleButton xbtn = new EstyleButton(new ImageIcon(
+				"src\\resouce\\btnImg\\x.png"), 10, 10);
+		xbtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				closeCanvasTab(jp);
+			}
+		});
+		jp.add(xbtn);
+		JLabel title = new JLabel(m.getMapSys().getMapInfo().getM_MapName());
+		;
+		jp.add(title);
+		jp.setOpaque(false);
+		if (canvasTabCounter == 0) {
+			enableNewMapMenu(true);
+			enableMapRelatedBtn(true);
+		}
+		canvasTab.setTabComponentAt(canvasTabCounter, jp);
+		canvasTab.setSelectedIndex(canvasTabCounter++);
+		// 새로 등록된 탭과 타일셋을 연동
+		syncPaletteCanvas();
+		// 새 캔버스와 기존 모드의 연동
+		setCanvasGridMode(btnCanvasGrid.isSelected());
+
+		int mode = MapIntegrateGUI.SYNTHESYS_MODE;
+		if (btnSemitransparent.isSelected()) {
+			mode = MapIntegrateGUI.SEMITRANSPARENT;
+		} else if (btnBgOnly.isSelected()) {
+			mode = MapIntegrateGUI.BACKGROUND_ONLY;
+		} else if (btnFgOnly.isSelected()) {
+			mode = MapIntegrateGUI.FOREGROUND_ONLY;
+		}
+		syncBetweenCanvasTabsMode(mode);
+
+		if (btnEvent.isSelected())
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.EVENTMODE_MODE);
+		else
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.CANVAS_MODE);
+
+		// 캔버스가 처음 생긴 경우면 버튼 활성화
+		if (canvasTabCounter == 1) {
+			enableMapRelatedBtn(true);
+		}
 	}
 
 	public boolean alreadyIsTileSetTabExist(String title, boolean isBack) {
@@ -1392,29 +1435,43 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		JPanel jp = (JPanel) canvasTab.getTabComponentAt(canvasTab
 				.getSelectedIndex());
 		JLabel jl = (JLabel) jp.getComponent(1);
-		m.save(projectPath + "\\" + ProjectName + "\\Map\\" + jl.getText()
-				+ ".map");
+		String fpath = ProjectFullPath + "\\Map\\" + jl.getText() + ".map";
+		m.save(fpath);
+		File f = new File(fpath);
+		if ((getProjTree().searchTreeNode(getProjTree().getRoot(), f) == null))
+			getProjTree().addObject(f);
+		else {
+			getProjTree().removeObject(f);
+			getProjTree().addObject(f);
+		}
 	}
 
 	public void saveCurrentCanvas(String canvasTitle) {
 		MapIntegrateGUI m = getSelectedCanvasFromCanvasTab();
 		try {
-			m.saveAs(projectPath + "\\" + ProjectName + "\\Map\\" + canvasTitle
-					+ ".map", canvasTitle);
+			String fpath = ProjectFullPath + "\\Map\\" + canvasTitle + ".map";
+			m.saveAs(fpath, canvasTitle);
+			File f = new File(fpath);
+			if ((getProjTree().searchTreeNode(getProjTree().getRoot(), f) == null))
+				getProjTree().addObject(new File(fpath));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void saveAllCanvas() {
+		String fpath = null;
 		for (int i = 0; i < canvasTab.getTabCount(); i++) {
 			JScrollPane scpcanvas = (JScrollPane) canvasTab.getComponentAt(i);
 			JViewport vpcanvas = (JViewport) scpcanvas.getComponent(0);
 			MapIntegrateGUI m = (MapIntegrateGUI) vpcanvas.getComponent(0);
 			JPanel jp = (JPanel) canvasTab.getTabComponentAt(i);
 			JLabel jl = (JLabel) jp.getComponent(1);
-			m.save(projectPath + "\\" + ProjectName + "\\Map\\" + jl.getText()
-					+ ".map");
+			fpath = ProjectFullPath + "\\Map\\" + jl.getText() + ".map";
+			m.save(fpath);
+			File f = new File(fpath);
+			if ((getProjTree().searchTreeNode(getProjTree().getRoot(), f) == null))
+				getProjTree().addObject(new File(fpath));
 		}
 	}
 

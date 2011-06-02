@@ -9,9 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.swing.Icon;
@@ -33,7 +30,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -250,6 +246,7 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		}
 	}
 
+
 	class KeyEventHandler extends KeyAdapter {
 		@Override
 		public void keyReleased(KeyEvent e) {
@@ -307,7 +304,8 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 
 		scrollPathToVisible(new TreePath(((DefaultMutableTreeNode) childNode)
 				.getPath()));
-
+		
+		setSelectionRow(getRowForPath(new TreePath(childNode.getPath())));
 		return childNode;
 	}
 
@@ -381,11 +379,13 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 					if (fnode == null)
 						return;
 					if (fnode.isFile()) {
-						while (folderType == null) {
+						for (int d = 0; d < root.getDepth(); d++) {
 							String fileList[] = fnode.getParentFile().list();
 							for (int i = 0; i < fileList.length; i++) {
-								if (fileList[i].charAt(0) == '.')
+								if (fileList[i].charAt(0) == '.') {
 									folderType = fileList[i];
+									break;
+								}
 							}
 							if (folderType == null) {
 								fnode = fnode.getParentFile();
@@ -394,7 +394,8 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 					} else {
 						folderType = null;
 					}
-				} else if (e.getClickCount() == 2) { // 더블 클릭
+				} else if (e.getClickCount() >= 2) { // 더블 클릭
+
 					if (folderType == null) {
 						return; // 폴더가 선택됨
 					}
@@ -508,17 +509,20 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 	// 다이얼로그에서 사용됨
 	public void removeSelectedNodesWithFiles(File[] f) {
 		MutableTreeNode mn = null;
+		
 		try {
 			for (int i = 0; i < f.length; i++) {
 				if (f[i].isDirectory()) {
 					if (f[i].listFiles().length == 0) {
 						f[i].delete();
 						mn = searchTreeNode(root, f[i]);
+						setSelectionRow(getRowForPath(new TreePath(((DefaultMutableTreeNode)mn.getParent()).getPath())));
 						treeModel.removeNodeFromParent(mn);
 					}
 				} else {
 					f[i].delete();
 					mn = searchTreeNode(root, f[i]);
+					setSelectionRow(getRowForPath(new TreePath(((DefaultMutableTreeNode)mn.getParent()).getPath())));
 					treeModel.removeNodeFromParent(mn);
 				}
 			}
@@ -533,6 +537,8 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 	public void removeObject(File f) {
 		DefaultMutableTreeNode delNode = null;
 		delNode = searchTreeNode(root, f);
+		DefaultMutableTreeNode pn = (DefaultMutableTreeNode)delNode.getParent();
+		setSelectionRow(getRowForPath(new TreePath(pn.getPath())));
 		treeModel.removeNodeFromParent(delNode);
 	}
 
@@ -636,5 +642,9 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 				break;
 		}
 		return resultNode;
+	}
+
+	public DefaultMutableTreeNode getRoot() {
+		return root;
 	}
 }
