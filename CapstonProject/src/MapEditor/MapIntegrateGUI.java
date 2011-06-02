@@ -733,10 +733,14 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			copyEvent();
 		} else if (e.getSource() == popupPasteEvent) {
 			pasteEvent();
-		} else if (e.getSource() == popupCanvasMode) {
+		} else if (e.getSource() == popupSetStartingPointEvent) {
+			setCharactorStartingPoint();
+		}else if (e.getSource() == popupCanvasMode) {
 			MainFrame.OWNER.setCanvasEventMode(false);
 		}
 	}
+
+
 
 	public Point getStartEventPoint() {
 		return startEventPoint;
@@ -760,7 +764,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 					endEventPoint);
 		}
 	}
-
+	
+	public void setCharactorStartingPoint() {
+	}
+	
 	public void copyEvent() {
 		mapSys.getEventEditSys().copyEvents(startEventPoint, endEventPoint);
 		MainFrame.OWNER.getEventItem_paste().setEnabled(syncEventPasteBtn());
@@ -770,6 +777,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		mapSys.getEventEditSys().pasteEvents(startEventPoint, endEventPoint);
 	}
 
+	// 이벤트 붙여 넣기 버튼에 불을 넣거나 빼고
+	// 넣었으면 트루 아니면 펄스를 리턴
 	public boolean syncEventPasteBtn() {
 		boolean b = mapSys.getEventEditSys().canPaste();
 		popupPasteEvent.setEnabled(b);

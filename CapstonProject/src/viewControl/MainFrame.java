@@ -801,6 +801,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			getSelectedCanvasFromCanvasTab().deleteEvent();
 		} else if (e.getSource() == eventItem_copy) {
 			getSelectedCanvasFromCanvasTab().copyEvent();
+		} else if (e.getSource() == eventItem_paste) {
+			getSelectedCanvasFromCanvasTab().pasteEvent();
+		} else if (e.getSource() == eventItem_setStartingPoint) {
+			getSelectedCanvasFromCanvasTab().setCharactorStartingPoint();
 		} 
 
 		// pallete
@@ -1422,7 +1426,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			fileItem_saveAsMap.setEnabled(false);
 			fileItem_saveMap.setEnabled(false);
 			enableMapRelatedBtn(false);
+			eventItem_paste.setEnabled(false);
 		}
+		eventItem_paste.setEnabled(getSelectedCanvasFromCanvasTab().syncEventPasteBtn());
 	}
 
 	private MapIntegrateGUI getSelectedCanvasFromCanvasTab() {
@@ -1606,11 +1612,21 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			m.setEvent(true);
 			eventItem_viewOnEvent.setSelected(true);
 			btnEvent.setPressed(true);
+			eventItem_copy.setEnabled(true);
+			eventItem_delete.setEnabled(true);
+			eventItem_paste.setEnabled(true);
+			eventItem_setEvent.setEnabled(true);
+			eventItem_setStartingPoint.setEnabled(true);
 			break;
 		case MapIntegrateGUI.CANVAS_MODE:
 			m.setEvent(false);
 			eventItem_viewOnEvent.setSelected(false);
 			btnEvent.setPressed(false);
+			eventItem_copy.setEnabled(false);
+			eventItem_delete.setEnabled(false);
+			eventItem_paste.setEnabled(false);
+			eventItem_setEvent.setEnabled(false);
+			eventItem_setStartingPoint.setEnabled(false);
 			break;
 		case MapIntegrateGUI.SYNTHESYS_MODE:
 			m.setOutputFlag(MapIntegrateGUI.SYNTHESYS_MODE);
