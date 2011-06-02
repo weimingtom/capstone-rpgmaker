@@ -59,6 +59,13 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	public EventDlg(MainFrame parent, Point startPoint, Point endPoint, EventEditorSystem eventEditsSys) {
 		super(parent, "Event Editor");
 		
+//		this.owner = parent;
+//		this.eventEditsSys = eventEditsSys;
+//		this.startPoint = startPoint;
+//		this.endPoint = endPoint;
+//		this.mapName = eventEditsSys.getName();
+//		this.eventTabPanelList = new LinkedList<EventEditPanel>();
+		
 		this.owner = parent;
 		this.eventEditsSys = eventEditsSys;
 		this.startPoint = startPoint;
@@ -105,8 +112,9 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 			addNewEvent();
 		} else {
 			try {
-				initEventPanel((EventTile)DeepCopier.deepCopy(eventEditsSys.getEventTile(startPoint.y, startPoint.x)));
-			} catch (Exception e) {
+				cb_objectType.setSelectedIndex(getFirstEventTile().getObjectType());
+				initEventPanel((EventTile)DeepCopier.deepCopy(getFirstEventTile()));
+				} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -116,7 +124,6 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		tp_eventTab.setPreferredSize(new java.awt.Dimension(682, 460));
-		
 		
 		// 레이아웃 구성
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -190,10 +197,13 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	}
  	
 	private void initEventPanel(EventTile events) {
+		// 이벤트를 모두 삭제한다.
+		
 		// EventEditPanel을 하나씩 생성하여 eventTabPanelList에 넣는다.
 		List<Event> tmpEvents = events.getEventList();
 		for (int i = 0; i < tmpEvents.size(); i++) {
 			EventEditPanel addPanel = new EventEditPanel(owner, tmpEvents.get(i), cb_objectType.getSelectedIndex());
+			addPanel.setInitDataInPanel();
 			eventTabPanelList.add(addPanel);
 		}
 	}
@@ -266,6 +276,9 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	private Event getEventInTapPanel(int index) {
 		return eventTabPanelList.get(index).getEvent();
 	}
+	private EventEditPanel getTapPanel(int index) {
+		return eventTabPanelList.get(index);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -277,9 +290,12 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 					addEventTile.setObjectType(cb_objectType.getSelectedIndex());
 					for (int k = 0; k < eventTabPanelList.size(); k++) {
 						try {
-							getEventInTapPanel(k).setActionType(eventTabPanelList.get(k).getActionType());
-							getEventInTapPanel(k).setActorIndex(eventTabPanelList.get(k).getActorIndex());
-							getEventInTapPanel(k).setStartType(eventTabPanelList.get(k).getStartType());
+							getEventInTapPanel(k).setActionType(getTapPanel(k).getActionType());
+							getEventInTapPanel(k).setActorIndex(getTapPanel(k).getActorIndex());
+							getEventInTapPanel(k).setStartType(getTapPanel(k).getStartType());
+							getEventInTapPanel(k).setPreconditionFlag(0, getTapPanel(k).getCondition1());
+							getEventInTapPanel(k).setPreconditionFlag(1, getTapPanel(k).getCondition2());
+							getEventInTapPanel(k).setPreconditionFlag(2, getTapPanel(k).getCondition3());
 						} catch (NotExistType e1) {
 							e1.printStackTrace();
 						}
@@ -288,7 +304,6 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 					eventEditsSys.addEventTile(addEventTile);
 				}
 			}
-			
 			// btn_OK 라면 창을 닫는다.
 			if(e.getSource() == btn_OK)	this.dispose();
 			
@@ -298,11 +313,13 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		} else if (e.getSource() == btn_addEvent) {
 			addNewEvent();
 			renewTabPanels(eventTabPanelList.size()-1);
+			
 		} else if (e.getSource() == btn_clearEvent) {
 			// 0번째 패널부터 삭제하고 새 이벤트를 하나 삽입한다.
 			clearEvents();
 			// 탭을 갱신한다.
 			renewTabPanels(0);
+			
 		} else if (e.getSource() == btn_deleteEvent) {
 			// 삭제할 패널의 인덱스
 			int indexComp = tp_eventTab.getSelectedIndex();
@@ -318,13 +335,17 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 			// 수정된 flag name으로 각 Tap Panel 안의 ComboBox를 갱신한다.
 			for (int i = 0; i < eventTabPanelList.size(); i++)
 				eventTabPanelList.get(i).renewConditionComboBox();
-				
 			renewConditionComboBoxImTapPanel();
+			
 		} else if(e.getSource() == cb_objectType) {
 			for (int i = 0; i < eventTabPanelList.size(); i++) {
 				eventTabPanelList.get(i).renewActorMenu(cb_objectType.getSelectedIndex());
 			}
 		}
+	}
+	
+	private EventTile getFirstEventTile() {
+		return eventEditsSys.getEventTile(startPoint.y, startPoint.x);
 	}
 
 	@Override

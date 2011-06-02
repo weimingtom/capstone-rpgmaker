@@ -53,8 +53,8 @@ public class EventTile implements Serializable {
 	 * - MONSTER_EVENT
 	 * */
 	public void setObjectType(int objecType) {
-		if(objecType < EventEditorSystem.MAP_EVENT || objecType > EventEditorSystem.MONSTER_EVENT)
-		this.objectType = objecType;
+		if(objecType >= EventEditorSystem.MAP_EVENT && objecType <= EventEditorSystem.MONSTER_EVENT)
+			this.objectType = objecType;
 	}
 	
 	public void addEvent(Event addEvent) {

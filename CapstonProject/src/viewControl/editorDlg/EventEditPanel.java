@@ -19,13 +19,19 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 
 import viewControl.MainFrame;
+import viewControl.editorDlg.eventContentDlg.ChangeBGMDlg;
+import viewControl.editorDlg.eventContentDlg.ChangeFlagDlg;
+import viewControl.editorDlg.eventContentDlg.ChangeMapDlg;
 import viewControl.editorDlg.eventContentDlg.EventContentDlg;
+import viewControl.editorDlg.eventContentDlg.MotionEventDlg;
+import viewControl.editorDlg.eventContentDlg.SwitchDialogDlg;
 import characterEditor.Actors;
 import characterEditor.MonsterEditorSystem;
 import characterEditor.NPCEditorSystem;
@@ -142,6 +148,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		ckb_condition2.addActionListener(this);
 		ckb_condition3.addActionListener(this);
 		cb_actorIndex.addActionListener(this);
+		btn_insertEventContest.addActionListener(this);
+		btn_deleteEventContent.addActionListener(this);
 		
 		// 마우스 이벤트
 		ckb_condition1.addMouseListener(this);
@@ -159,8 +167,16 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 						// 없으면 마지막에 추가
 						index = listModel.getSize();
 						new EventContentDlg(owner, event, index);
+						// JList 재출력
+						setJListEventContents();
+						renewSelectedListComboBox();
+						
 					} else {
-						// 선택된 내용이 있으면 편집.
+						// EventContentDlg를 생성하여 이벤트 내용을 생성하도록 한다.
+						createEditEventContentDlg(event, index);
+						// JList 재출력
+						setJListEventContents();
+						renewSelectedListComboBox();
 						
 					}
 				}
@@ -413,6 +429,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	}
 	
 	private void setJListEventContents() {
+		listModel.removeAllElements();
 		for (int i = 0; i < event.getEventContentList().size(); i++) {
 			String strArray = "E" + (i+1) + ": ";
 			if(getEventContent(i).getContentType() == EventContent.CHANGE_BGM_EVNET)
@@ -454,14 +471,17 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	private void setSelectedIndexCondition() {
 		if(event.getPreconditionFlag(0) != -1) {
 			ckb_condition1.setSelected(true);
+			cb_condition1.setEnabled(true);
 			cb_condition1.setSelectedIndex(event.getPreconditionFlag(0));
 		}
 		if(event.getPreconditionFlag(1) != -1) {
 			ckb_condition2.setSelected(true);
+			cb_condition2.setEnabled(true);
 			cb_condition2.setSelectedIndex(event.getPreconditionFlag(1));
 		}
 		if(event.getPreconditionFlag(2) != -1) {
 			ckb_condition3.setSelected(true);
+			cb_condition3.setEnabled(true);
 			cb_condition3.setSelectedIndex(event.getPreconditionFlag(2));
 		}
 	}
@@ -559,7 +579,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	
 	// AniImgPanel을 설정한 actor의 이미지로 출력해준다.
 	private void setAniImgPanel() {
-		if(cb_actorIndex.getItemCount()>0 && cb_actorIndex.getSelectedIndex()!=-1) {
+		if(objectType != EventEditorSystem.MAP_EVENT && cb_actorIndex.getItemCount()>0 && cb_actorIndex.getSelectedIndex()!=-1) {
 			Actors actor = null;
 			
 			if(objectType == EventEditorSystem.NPC_EVENT)
@@ -584,29 +604,23 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return event.getEventContent(index);
 	}
 	
-	public Event getEvent()						{	return event;				}
-
-	public JComboBox getCb_condition1()			{	return cb_condition1;		}
-
-	public JComboBox getCb_condition2()			{	return cb_condition2;		}
-
-	public JComboBox getCb_condition3()			{	return cb_condition3;		}
-
-	public JCheckBox getCkb_condition1()		{	return ckb_condition1;		}
-
-	public JCheckBox getCkb_condition2()		{	return ckb_condition2;		}
-
-	public JCheckBox getCkb_condition3()		{	return ckb_condition3;		}
-
-	public JRadioButton getRbtn_aboveTile()		{	return rbtn_aboveTile;		}
-
-	public JRadioButton getRbtn_autoStart()		{	return rbtn_autoStart;		}
-
-	public JRadioButton getRbtn_contactPlayer()	{	return rbtn_contactPlayer;	}
-
-	public JRadioButton getRbtn_parallelStart()	{	return rbtn_parallelStart;	}
-
-	public JRadioButton getRbtn_pressButton()	{	return rbtn_pressButton;	}
+	public Event getEvent()	{	return event;	}
+	
+	public int getCondition1() {
+		if(ckb_condition1.isSelected())
+			return cb_condition1.getSelectedIndex();
+		return -1;
+	}
+	public int getCondition2() {
+		if(ckb_condition2.isSelected())
+			return cb_condition2.getSelectedIndex();
+		return -1;
+	}
+	public int getCondition3() {
+		if(ckb_condition3.isSelected())
+			return cb_condition3.getSelectedIndex();
+		return -1;
+	}
 	
 	public int getActionType() {
 		return cb_actorMotionType.getSelectedIndex();
@@ -637,7 +651,29 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return 0;
 	}
 	
-
+	public void setInitDataInPanel() {
+		
+	}
+	
+	private void createEditEventContentDlg(Event event, int insetIndex) {
+		// 선택된 내용이 있으면 편집.
+		if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_MAP_EVNET) {
+			new ChangeMapDlg(owner, event, insetIndex);
+		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_FLAG_EVENT) {
+			new ChangeFlagDlg(owner, event, insetIndex);
+		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_BGM_EVNET) {
+			new ChangeBGMDlg(owner, event, insetIndex);
+		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.DIALOG_EVNET) {
+//			new DialogEventDlg(owner, event, insetIndex);
+		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.GAMEOVER_EVNET) {
+			JOptionPane.showMessageDialog(null, "You can't modify Gameover Event!");
+		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.MOTION_EVNET) {
+			new MotionEventDlg(owner, event, insetIndex);
+		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.SWITCH_DIALOG_EVNET) {
+			new SwitchDialogDlg(owner, event, insetIndex);
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
@@ -648,6 +684,22 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 				// 해당 actor를 불러와서 패널에 출력해준다.
 				setAniImgPanel();
 			}
+		} else if(e.getSource() == btn_insertEventContest) {
+			// 새 이벤트를 삽입한다.
+			int index = cb_selectedEventContent.getSelectedIndex();
+			new EventContentDlg(owner, event, index);
+			// JList 재출력
+			setJListEventContents();
+			renewSelectedListComboBox();
+			
+		} else if(e.getSource() == btn_deleteEventContent) {
+			// 선택된 이벤트를 삭제한다.
+			int index = cb_selectedEventContent.getSelectedIndex();
+			if(index < lst_eventList.getComponentCount())
+				event.getEventContentList().remove(index);
+			// JList 재출력
+			setJListEventContents();
+			renewSelectedListComboBox();
 		}
 	}
 	
