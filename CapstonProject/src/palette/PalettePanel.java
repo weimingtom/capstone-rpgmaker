@@ -128,7 +128,10 @@ public class PalettePanel extends JPanel implements MouseListener,
 		popup.add(popupForeground);
 		popup.addSeparator();
 		popup.add(popupMovable);
-		popup.add(popupUpperTile);
+
+		if (!isBackground())
+			popup.add(popupUpperTile);
+		
 		popup.addSeparator();
 		popup.add(popupGrid);
 
@@ -205,7 +208,10 @@ public class PalettePanel extends JPanel implements MouseListener,
 		else if (mode == PalettePanel.MOVEEMODE)
 			moveMode = true;
 		else if (mode == PalettePanel.UPPERMODE)
-			upperMode = true;
+			if (!isBackground())
+				upperMode = true;
+			else 
+				paletteMode = true;
 
 		repaint();
 	}
@@ -815,13 +821,15 @@ public class PalettePanel extends JPanel implements MouseListener,
 		} else if (e.getSource() == popupMovable) {
 			if (popupMovable.isSelect()) {
 				popupMovable.unselect();
-				MainFrame.OWNER.syncBetweenPalettesMode(PalettePanel.PALETTEMODE);
+				MainFrame.OWNER
+						.syncBetweenPalettesMode(PalettePanel.PALETTEMODE);
 			} else
 				MainFrame.OWNER.syncBetweenPalettesMode(PalettePanel.MOVEEMODE);
-		}else if (e.getSource() == popupUpperTile) {
+		} else if (e.getSource() == popupUpperTile) {
 			if (popupUpperTile.isSelect()) {
 				popupUpperTile.unselect();
-				MainFrame.OWNER.syncBetweenPalettesMode(PalettePanel.PALETTEMODE);
+				MainFrame.OWNER
+						.syncBetweenPalettesMode(PalettePanel.PALETTEMODE);
 			} else
 				MainFrame.OWNER.syncBetweenPalettesMode(PalettePanel.UPPERMODE);
 		}
