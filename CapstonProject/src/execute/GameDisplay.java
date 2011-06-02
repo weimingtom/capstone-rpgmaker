@@ -223,7 +223,7 @@ public class GameDisplay implements Runnable{
 
 		g.drawImage(title.getUtilImage(), 0,0,screenWidth,screenHeight,null);
 		g.setColor(new Color(70,70,240,200));
-		g.fill3DRect(screenWidth/10, screenHeight/10, screenWidth/6, screenHeight/2, true);
+		g.fill3DRect(screenWidth/10, screenHeight/10, screenWidth/5, screenHeight/2, true);
 		g.fill3DRect((int)(screenWidth*(4.0/10.0)), screenHeight/10,
 				(int)(screenWidth*(5.0/10.0)), (int)(screenHeight*(8.0/10.0)), true);
 		g.setColor(Color.black);
