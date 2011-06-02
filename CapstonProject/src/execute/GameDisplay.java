@@ -286,6 +286,10 @@ public class GameDisplay implements Runnable{
 		//맵의 시작위치 설정
 		this.mapStartingPointX = (screenWidth - sizeW)/2;
 		this.mapStartingPointY = (screenHeight - sizeH)/2;
+		
+		Graphics2D imageG = (Graphics2D) gameMap.getGraphics();
+		displayForeground(imageG, false);
+		
 		//두가지 경우 
 		g.drawImage(gameMap, mapStartingPointX, mapStartingPointY, sizeW, sizeH, null);
 
@@ -305,8 +309,8 @@ public class GameDisplay implements Runnable{
 				{
 					if(mapTile[i][j].getIsUpper() == false)
 					{
-						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
+						g.drawImage(mapTile[i][j].getM_TileIcon(), (int)((j*DrawingTemplate.pixel)),
+								(int)((i*DrawingTemplate.pixel)),
 								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
 								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
 								null);
@@ -366,42 +370,6 @@ public class GameDisplay implements Runnable{
 				}
 			}
 		}
-		
-//		if(isUpper == false)
-//		{
-//			//캐릭 아래에 깔리는 것 부터 출력
-//			for(int i = 0 ; i < mapTile.length; i++)
-//			{
-//				for(int j = 0 ; j < mapTile[0].length; j++)
-//				{
-//					if(mapTile[i][j].getIsUpper() == false)
-//					{
-//						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-//								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
-//								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
-//								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
-//								null);
-//					}
-//				}
-//			}
-//		}
-//		else
-//		{
-//			for(int i = 0 ; i < mapTile.length; i++)
-//			{
-//				for(int j = 0 ; j < mapTile[0].length; j++)
-//				{
-//					if(mapTile[i][j].getIsUpper() == true)
-//					{
-//						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-//								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
-//								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
-//								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
-//								null);
-//					}
-//				}
-//			}
-//		}
 	}
 	
 	
@@ -759,17 +727,17 @@ public class GameDisplay implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 
-		//gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
-		
+		gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+		displayLogoImage(gameGraphics);
 		while (gameData.getGameState() != GameData.EXIT) 
 		{
 			try {
-				gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+				//gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
 				int gameState = gameData.getGameState();
 				// 상태가 로고면
 				if (gameState == GameData.LOGOSCREEN) 
 				{
-					gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+					//gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
 					TIMER = SLOWTIMER;
 					displayLogoImage(gameGraphics);
 				}
@@ -793,7 +761,7 @@ public class GameDisplay implements Runnable{
 				{
 					//맵이 불렸다면 한번 풀로 출력
 					displayBackground(gameGraphics);
-					displayForeground(gameGraphics, false);
+					//displayForeground(gameGraphics, false);
 					displayForeground(gameGraphics, true);
 				}
 				// 상태가 플레이이면
@@ -807,8 +775,8 @@ public class GameDisplay implements Runnable{
 					//캐릭터 전경 출력
 					///displayForeground(gameGraphics, false);
 					//displayForeground(gameGraphics, true);
-					//displayChangedForeground(gameGraphics, true);
-					displayForeground(gameGraphics, false);
+					displayChangedForeground(gameGraphics, true);
+//					displayForeground(gameGraphics, false);
 					displayForeground(gameGraphics, true);
 					if(gameData.getPlayer().isLevelUp)
 					{
@@ -826,7 +794,7 @@ public class GameDisplay implements Runnable{
 					displayStatusScreen(gameGraphics);
 				}
 				
-				//gameGraphics.dispose();
+				gameGraphics.dispose();
 				hwResource.show();
 				Thread.sleep(GameDisplay.TIMER);
 			} catch (NullPointerException e) {
@@ -837,7 +805,7 @@ public class GameDisplay implements Runnable{
 				e.printStackTrace();
 			}
 //			hwResource.show();
-//			gameGraphics.dispose();
+			gameGraphics.dispose();
 
 		}// end while
 		
