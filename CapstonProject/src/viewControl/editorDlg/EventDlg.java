@@ -265,7 +265,17 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btn_OK || e.getSource() == btn_apply) {
-			// 데이터를 파일로 저장한다. 만약 EventEditorSystem이 Map에 저장된다면 파일에 저장하지 않고 단지 메인프레임에 넘겨준다.
+			// 데이터를 파일로 저장한다. 만약 eventEditsSys를 이용하여 map 안의 변수를 조작한다.
+			for (int i = startPoint.y; i < endPoint.y; i++) {
+				for (int j = startPoint.x; j < startPoint.y; j++) {
+					EventTile addEventTile = new EventTile(i, j);
+					addEventTile.setObjectType(cb_objectType.getSelectedIndex());
+					for (int k = 0; k < eventTabPanelList.size(); k++) {
+						addEventTile.addEvent(eventTabPanelList.get(k).getEvent());
+					}
+					eventEditsSys.addEventTile(addEventTile);
+				}
+			}
 			
 			// btn_OK 라면 창을 닫는다.
 			if(e.getSource() == btn_OK)	this.dispose();

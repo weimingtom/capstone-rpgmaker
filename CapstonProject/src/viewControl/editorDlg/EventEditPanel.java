@@ -594,6 +594,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return event.getEventContent(index);
 	}
 	
+	public Event getEvent()	{	return event;	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
