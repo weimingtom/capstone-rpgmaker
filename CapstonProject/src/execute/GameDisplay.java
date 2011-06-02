@@ -20,8 +20,10 @@ import MapEditor.Tile;
 
 public class GameDisplay implements Runnable{
 
-	public static int TIMER = 30;
-	public static int animTimer = 0;
+	private static int TIMER = 30;
+	private static int animTimer = 0;
+	private static int SLOWTIMER = 60;
+	private static int FASTTIMER = 30;
 	//페이드 아웃 페이드 인을 위해
 	
 	//맵과 케릭터 이벤트 배열의 비율.
@@ -121,14 +123,6 @@ public class GameDisplay implements Runnable{
 			//여기까지 메뉴출력
 			if(cursorImage.getPosition() == 0)
 			{
-				if(keyFlag.isUp() == true)
-				{
-					cursorImage.setPosition(2);
-				}
-				else if(keyFlag.isDown()==true)
-				{
-					cursorImage.setPosition(1);
-				}
 				g.drawImage(cursorImage.getUtilImage(), 
 						rectPositionX + cursorImage.getUtilImage().getWidth(null), 
 						rectPositionY + titleScreen.getFontSize() - cursorImage.getUtilImage().getHeight(null) , null);
@@ -148,14 +142,6 @@ public class GameDisplay implements Runnable{
 			}
 			else if(cursorImage.getPosition() == 1)
 			{
-				if(keyFlag.isUp() == true)
-				{
-					cursorImage.setPosition(0);
-				}
-				else if(keyFlag.isDown()==true)
-				{
-					cursorImage.setPosition(2);
-				}	
 				g.drawImage(cursorImage.getUtilImage(), 
 						rectPositionX + cursorImage.getUtilImage().getWidth(null), 
 						rectPositionY + titleScreen.getFontSize()*2 - cursorImage.getUtilImage().getHeight(null) , null);
@@ -175,14 +161,6 @@ public class GameDisplay implements Runnable{
 			}
 			else
 			{
-				if(keyFlag.isUp() == true)
-				{
-					cursorImage.setPosition(1);
-				}
-				else if(keyFlag.isDown()==true)
-				{
-					cursorImage.setPosition(0);
-				}	
 				g.drawImage(cursorImage.getUtilImage(), 
 						rectPositionX + cursorImage.getUtilImage().getWidth(null), 
 						rectPositionY + titleScreen.getFontSize()*3 - cursorImage.getUtilImage().getHeight(null) , null);
@@ -262,22 +240,24 @@ public class GameDisplay implements Runnable{
 		{
 			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*1+screenHeight/10 - status.getFontSize()/2, null);
 			g.drawString("주인공의 상태", (int)(screenWidth*(4.0/10.0)), status.getFontSize()*1+screenHeight/10);
-			g.drawString("HP : "+player.getNowStatus().getHP() + " / " + player.getMaxStatus().getHP(), 
+			g.drawString("LEVEL : "+player.getLevel(), 
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*2+screenHeight/10);
-			g.drawString("MP : "+player.getNowStatus().getMP() + " / " + player.getMaxStatus().getMP(),
+			g.drawString("HP : "+player.getNowStatus().getHP() + " / " + player.getMaxStatus().getHP(), 
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*3+screenHeight/10);
-			g.drawString("Str : "+player.getNowStatus().getStrength() + " / " + player.getMaxStatus().getStrength(),
+			g.drawString("MP : "+player.getNowStatus().getMP() + " / " + player.getMaxStatus().getMP(),
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*4+screenHeight/10);
-			g.drawString("Vit : "+player.getNowStatus().getVitality() + " / " + player.getMaxStatus().getVitality(),
+			g.drawString("Str : "+player.getNowStatus().getStrength() + " / " + player.getMaxStatus().getStrength(),
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*5+screenHeight/10);
-			g.drawString("Agt : "+player.getNowStatus().getAgility()+ " / " + player.getMaxStatus().getAgility(),
+			g.drawString("Vit : "+player.getNowStatus().getVitality() + " / " + player.getMaxStatus().getVitality(),
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*6+screenHeight/10);
-			g.drawString("Int : "+player.getNowStatus().getIntelligence()+ " / " + player.getMaxStatus().getIntelligence(),
+			g.drawString("Agt : "+player.getNowStatus().getAgility()+ " / " + player.getMaxStatus().getAgility(),
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*7+screenHeight/10);
-			g.drawString("Knw : "+player.getNowStatus().getKnowledge()+ " / " + player.getMaxStatus().getKnowledge(),
+			g.drawString("Int : "+player.getNowStatus().getIntelligence()+ " / " + player.getMaxStatus().getIntelligence(),
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*8+screenHeight/10);
-			g.drawString("EXP : "+player.getNowEXP()+ " / " + player.getMaxStatus().getEXP(),
+			g.drawString("Knw : "+player.getNowStatus().getKnowledge()+ " / " + player.getMaxStatus().getKnowledge(),
 					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*9+screenHeight/10);
+			g.drawString("EXP : "+player.getNowEXP()+ " / " + player.getMaxStatus().getEXP(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*10+screenHeight/10);
 			
 		}
 		else if(cursor.getPosition() == 1)
@@ -294,6 +274,7 @@ public class GameDisplay implements Runnable{
 		}
 	}
 
+	//배경 출력
 	public void displayBackground(Graphics2D g)
 	{
 		g.setColor(Color.black);
@@ -307,58 +288,6 @@ public class GameDisplay implements Runnable{
 		this.mapStartingPointY = (screenHeight - sizeH)/2;
 		//두가지 경우 
 		g.drawImage(gameMap, mapStartingPointX, mapStartingPointY, sizeW, sizeH, null);
-
-	}
-	
-	public void displayBackground(Graphics2D g, boolean isUpper)
-	{
-		g.setColor(Color.black);
-		g.fillRect(0, 0, screenWidth, screenHeight);
-		//맵의 백그라운드 출력
-		BufferedImage gameMap = gameData.getGameMap().getM_Background();
-		int sizeW = (int) ((double)gameMap.getWidth()*ratioX);
-		int sizeH = (int) ((double)gameMap.getHeight()*ratioY);
-		//맵의 시작위치 설정
-		this.mapStartingPointX = (screenWidth - sizeW)/2;
-		this.mapStartingPointY = (screenHeight - sizeH)/2;
-		//두가지 경우 
-		Tile[][] mapTile = gameData.getGameMap().getM_BackgroundTile();
-
-		if(isUpper == false)
-		{
-			//캐릭 아래에 깔리는 것 부터 출력
-			for(int i = 0 ; i < mapTile.length; i++)
-			{
-				for(int j = 0 ; j < mapTile[0].length; j++)
-				{
-					if(mapTile[i][j].getIsUpper() == false)
-					{
-						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
-								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
-								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
-								null);
-					}
-				}
-			}
-		}
-		else
-		{
-			for(int i = 0 ; i < mapTile.length; i++)
-			{
-				for(int j = 0 ; j < mapTile[0].length; j++)
-				{
-					if(mapTile[i][j].getIsUpper() == true)
-					{
-						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
-								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
-								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
-								null);
-					}
-				}
-			}
-		}
 
 	}
 
@@ -404,6 +333,80 @@ public class GameDisplay implements Runnable{
 		}
 	}
 
+	//변화된 전경만 출력해줌
+	public void displayChangedForeground(Graphics2D g, boolean isUpper)
+	{
+		//정렬된 캐릭정보를 활용
+		Tile[][] mapTile = gameData.getGameMap().getM_ForegroundTile();
+		
+		
+		Vector<GameCharacter>actors = gameData.getSortedCharacters();
+		
+		for(int charIndex = 0 ; charIndex < actors.size(); charIndex++)
+		{
+			GameCharacter actor = actors.elementAt(charIndex);
+			
+			int charX = actor.getxPosition() / GameData.mapCharArrayRatio;
+			int charY = actor.getyPosition() / GameData.mapCharArrayRatio;
+			
+//			if(actor instanceof Alliance)
+//				System.out.println(""+charX + " : " + charY);
+			for(int i = -1 ; i < 3; i++)
+			{				
+				for(int j = -1 ; j < 3; j++)
+				{
+					Image tile = mapTile[charY+j][charX+i].getM_TileIcon();
+					if(mapTile[charY+j][charX+i].getIsUpper() == isUpper)
+					{
+						g.drawImage(tile, mapStartingPointX + (int)((charX+i)*DrawingTemplate.pixel*ratioX),
+								mapStartingPointY+ (int)((charY+j)*DrawingTemplate.pixel*ratioY),
+								(int)(tile.getWidth(null) * ratioX)+1,
+								(int)(tile.getHeight(null) * ratioX)+1, null);
+					}
+				}
+			}
+		}
+		
+//		if(isUpper == false)
+//		{
+//			//캐릭 아래에 깔리는 것 부터 출력
+//			for(int i = 0 ; i < mapTile.length; i++)
+//			{
+//				for(int j = 0 ; j < mapTile[0].length; j++)
+//				{
+//					if(mapTile[i][j].getIsUpper() == false)
+//					{
+//						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
+//								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
+//								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
+//								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
+//								null);
+//					}
+//				}
+//			}
+//		}
+//		else
+//		{
+//			for(int i = 0 ; i < mapTile.length; i++)
+//			{
+//				for(int j = 0 ; j < mapTile[0].length; j++)
+//				{
+//					if(mapTile[i][j].getIsUpper() == true)
+//					{
+//						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
+//								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
+//								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
+//								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
+//								null);
+//					}
+//				}
+//			}
+//		}
+	}
+	
+	
+	
+	
 	//액터 출력 플레이어 무브모션 출력
 	public void displayActorMoveMotion(Graphics2D g, Animations actorAnim, boolean isStop , GameCharacter actor)
 	{
@@ -721,7 +724,7 @@ public class GameDisplay implements Runnable{
 		ratio*=fullHP;
 		
 		g.setColor(Color.green);
-		g.fill3DRect(startX, startY, fullHP,8, false);
+		g.fill3DRect(startX, startY, fullHP, 8, false);
 
 		if(ratio != 0)
 		{
@@ -746,6 +749,7 @@ public class GameDisplay implements Runnable{
 		}
 		else
 		{
+			animTimer = 0;
 			player.setLevelUp(false);
 		}
 	}
@@ -755,6 +759,8 @@ public class GameDisplay implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 
+		//gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+		
 		while (gameData.getGameState() != GameData.EXIT) 
 		{
 			try {
@@ -763,7 +769,8 @@ public class GameDisplay implements Runnable{
 				// 상태가 로고면
 				if (gameState == GameData.LOGOSCREEN) 
 				{
-					TIMER = 60;
+					gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+					TIMER = SLOWTIMER;
 					displayLogoImage(gameGraphics);
 				}
 				// 상태가 메뉴면
@@ -775,28 +782,34 @@ public class GameDisplay implements Runnable{
 				else if (gameState == GameData.LOADING) 
 				{
 					displayLoadingScreen(gameGraphics);
-					TIMER = 30;
+					TIMER = FASTTIMER;
 				}
 				// 로드화면
 				else if (gameState == GameData.LOAD) 
 				{
 					// 아직 미구현
 				}
+				else if(gameState == GameData.MAPLOADENDED)
+				{
+					//맵이 불렸다면 한번 풀로 출력
+					displayBackground(gameGraphics);
+					displayForeground(gameGraphics, false);
+					displayForeground(gameGraphics, true);
+				}
 				// 상태가 플레이이면
 				else if (gameState == GameData.PLAY) 
 				{
-					// 백그라운드 출력
-					// displayBackground(gameGraphics, false);
+					//캐릭터 밑의 배경 출력
 					displayBackground(gameGraphics);
-					// 케릭터 뒤로 깔릴 전경 출력
-					//displayForeground(gameGraphics, false);
-
-					// 캐릭터 출력순서를 잡아줘야함
+					//displayChangedForeground(gameGraphics, false);
+					//캐릭터 출력
 					displayActors(gameGraphics);
-
-					// 케릭터 앞에 깔릴 전경 출력
-					// displayBackground(gameGraphics, true);
+					//캐릭터 전경 출력
+					///displayForeground(gameGraphics, false);
 					//displayForeground(gameGraphics, true);
+					//displayChangedForeground(gameGraphics, true);
+					displayForeground(gameGraphics, false);
+					displayForeground(gameGraphics, true);
 					if(gameData.getPlayer().isLevelUp)
 					{
 						displayLevelUp(gameGraphics, gameData.getPlayer());
@@ -813,7 +826,7 @@ public class GameDisplay implements Runnable{
 					displayStatusScreen(gameGraphics);
 				}
 				
-				gameGraphics.dispose();
+				//gameGraphics.dispose();
 				hwResource.show();
 				Thread.sleep(GameDisplay.TIMER);
 			} catch (NullPointerException e) {
@@ -823,6 +836,8 @@ public class GameDisplay implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+//			hwResource.show();
+//			gameGraphics.dispose();
 
 		}// end while
 		
