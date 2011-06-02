@@ -40,6 +40,8 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	
 	private String projectPath;
 	private List<EventTile> eventTileList;
+	private Point copyStartPoint;
+	private Point copyEndPoint;
 	
 	public EventEditorSystem(String projectPath, String mapName) {
 		super(projectPath, "Event");
@@ -216,11 +218,17 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	}
 	
 	public void copyEvents(Point startPointCopy, Point endPointCopy) {
-		
+		copyStartPoint = startPointCopy;
+		copyEndPoint = endPointCopy;
 	}
 	
 	public void pasteEvents(Point startPointTarget, Point endPointTarget) {
 		
+	}
+	
+	public boolean canPaste() {
+		if(copyStartPoint != null && copyEndPoint != null)	return true;
+		else												return false;
 	}
 	
 	public void deleteEvents(Point startPoint, Point endPoint) {
