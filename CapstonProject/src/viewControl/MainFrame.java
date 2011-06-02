@@ -102,15 +102,15 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		btnProjOpen = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\projOpenBtn.png"), iconSize, iconSize);
 		btnProjClose = new EstyleButton(new ImageIcon(
-		"src\\resouce\\btnImg\\projCloseBtn.png"), iconSize, iconSize);
+				"src\\resouce\\btnImg\\projCloseBtn.png"), iconSize, iconSize);
 		btnSaveMap = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\saveBtn.gif"), iconSize, iconSize);
 		btnSaveProj = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\saveAllBtn.gif"), iconSize, iconSize);
 		btnExeProj = new EstyleButton(new ImageIcon(
-		"src\\resouce\\btnImg\\playBtn.png"), iconSize, iconSize);
+				"src\\resouce\\btnImg\\playBtn.png"), iconSize, iconSize);
 		btnHelp = new EstyleButton(new ImageIcon(
-		"src\\resouce\\btnImg\\helpBtn.png"), iconSize, iconSize);
+				"src\\resouce\\btnImg\\helpBtn.png"), iconSize, iconSize);
 
 		// SOUTH
 		southPanel = new JPanel(new BorderLayout());
@@ -167,8 +167,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				"src\\resouce\\btnImg\\newMapBtn.png"), iconSize, iconSize);
 		btnNewTileSet = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\newTileSetBtn.png"), iconSize, iconSize);
-		btnRefresh= new EstyleButton(new ImageIcon(
-		"src\\resouce\\btnImg\\refreshBtn.png"), iconSize, iconSize);
+		btnRefresh = new EstyleButton(new ImageIcon(
+				"src\\resouce\\btnImg\\refreshBtn.png"), iconSize, iconSize);
 
 		// MENU BAR
 		menuBar = new JMenuBar();
@@ -247,7 +247,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		btnSaveProj.setToolTipText("Save project");
 		btnExeProj.setToolTipText("Execute project");
 		btnHelp.setToolTipText("Help");
-		toolBar.setFloatable(false); 
+		toolBar.setFloatable(false);
 		toolBar.setRollover(true);
 		toolBar.add(btnProjOpen);
 		toolBar.add(btnProjClose);
@@ -257,14 +257,13 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		toolBar.add(btnExeProj);
 		toolBar.add(btnHelp);
 
-
 		btnSaveMap.addActionListener(this);
 		btnSaveProj.addActionListener(this);
 		btnProjOpen.addActionListener(this);
 		btnProjClose.addActionListener(this);
 		btnExeProj.addActionListener(this);
 		btnHelp.addActionListener(this);
-		
+
 		btnSaveProj.setEnabled(false);
 		btnProjClose.setEnabled(false);
 		btnExeProj.setEnabled(false);
@@ -1028,20 +1027,24 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			paletteItem_background.setSelected(true);
 			btnForePalette.setPressed(false);
 			paletteItem_foreground.setSelected(false);
+			palleteItem_upper.setEnabled(false);
 			tileSetTabPanel.add(backTileSetTab);
 		} else {
 			btnBackPalette.setPressed(false);
 			paletteItem_background.setSelected(false);
 			btnForePalette.setPressed(true);
 			paletteItem_foreground.setSelected(true);
+			palleteItem_upper.setEnabled(true);
 			tileSetTabPanel.add(foreTileSetTab);
 		}
 
 		PalettePanel p = getSelectedPaletteFromTileSetTab();
+
 		p.popupBackground.setSelected(p.isBackground());
 		p.popupForeground.setSelected(!p.isBackground());
-
 		p.popupGrid.setSelected(btnPaletteGrid.isSelected());
+
+		p.setGrid(btnPaletteGrid.isSelected());
 
 		if (btnMovable.isSelected()) {
 			p.popupMovable.setSelected(true);
@@ -1447,7 +1450,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		paletteItem_foreground.setEnabled(b);
 		palleteItem_grid.setEnabled(b);
 		palleteItem_movable.setEnabled(b);
-		palleteItem_upper.setEnabled(b);
 	}
 
 	private void syncPaletteCanvas() {
@@ -1691,10 +1693,11 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		mainFrameThread.start();
 	}
 
-	public void syncProjOpenCloseBtn(){
+	public void syncProjOpenCloseBtn() {
 		btnProjOpen.setEnabled(false);
 		btnProjClose.setEnabled(true);
 	}
+
 	public ProjectTree getProjTree() {
 		return projTree;
 	}
