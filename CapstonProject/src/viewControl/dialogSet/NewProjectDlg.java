@@ -380,6 +380,7 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		File job = new File(fullPath + "\\Job");
 		File skill = new File(fullPath + "\\Skill");
 		File map = new File(fullPath + "\\Map");
+		File utilImg = new File(fullPath + "\\.UtilImages");
 
 		tileSet.mkdir();
 		tileSetFore.mkdir();
@@ -397,12 +398,15 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		
 		File defaultData = new File(fullPath + "\\.DefaultData");
 		File originalDefaultData = new File(this.getClass().getResource("").getPath() + "\\DefaultData");
+		File srcData = new File("src\\resouce\\utilImg");
 		try {
-			directoryCopy(originalDefaultData, defaultData);
+
+			directoryCopy(srcData, utilImg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+
 		try {
 			// 프로젝트 폴더인지 확인을 위한 파일
 			File isProjDir = new File(fullPath+"\\.isProj");
@@ -432,6 +436,7 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			File attributeJob =  new File(job.getPath()+"\\.job");
 			File attributeSkill =  new File(skill.getPath()+"\\.skill");
 			File attributeMap =  new File(map.getPath()+"\\.map");
+			File attributeUtilImg =  new File(utilImg.getPath()+"\\.utilImg");
 
 			attributeTileSet.createNewFile();
 			attributeCharacter.createNewFile();
@@ -446,6 +451,7 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			attributeMap.createNewFile();
 			attributeBackground.createNewFile();
 			attributeForeground.createNewFile();
+			attributeUtilImg.createNewFile();
 
 			File originalResouce = new File("src\\resouce\\tileSet\\background");
 			for(int i=0; i<originalResouce.list().length-1; i++){
