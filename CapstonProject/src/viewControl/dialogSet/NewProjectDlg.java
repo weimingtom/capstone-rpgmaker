@@ -379,7 +379,6 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		File item = new File(fullPath + "\\Item");
 		File job = new File(fullPath + "\\Job");
 		File skill = new File(fullPath + "\\Skill");
-		File statement = new File(fullPath + "\\Statement");
 		File map = new File(fullPath + "\\Map");
 
 		tileSet.mkdir();
@@ -394,7 +393,6 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		item.mkdir();
 		job.mkdir();
 		skill.mkdir();
-		statement.mkdir();
 		map.mkdir();
 		
 		File defaultData = new File(fullPath + "\\.DefaultData");
@@ -420,7 +418,6 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			// .item
 			// .job
 			// .skill
-			// .statement
 			// .map
 			File attributeTileSet = new File(tileSet.getPath()+"\\.tileSet");
 			File attributeBackground = new File(tileSetBack.getPath()+"\\.background");
@@ -434,7 +431,6 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			File attributeItem =  new File(item.getPath()+"\\.item");
 			File attributeJob =  new File(job.getPath()+"\\.job");
 			File attributeSkill =  new File(skill.getPath()+"\\.skill");
-			File attributeStatement =  new File(statement.getPath()+"\\.statement");
 			File attributeMap =  new File(map.getPath()+"\\.map");
 
 			attributeTileSet.createNewFile();
@@ -446,8 +442,7 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			attributeArmor.createNewFile();
 			attributeItem.createNewFile();
 			attributeJob.createNewFile();
-			attributeSkill.createNewFile();
-			attributeStatement.createNewFile();		
+			attributeSkill.createNewFile();		
 			attributeMap.createNewFile();
 			attributeBackground.createNewFile();
 			attributeForeground.createNewFile();
