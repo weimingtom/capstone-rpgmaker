@@ -49,6 +49,7 @@ import viewControl.dialogSet.OpenProjectDlg;
 import viewControl.dialogSet.TileSetChooserDlg;
 import viewControl.editorDlg.ArmorDlg;
 import viewControl.editorDlg.EffectAniDlg;
+import viewControl.editorDlg.EventDlg;
 import viewControl.editorDlg.ItemDlg;
 import viewControl.editorDlg.JobDlg;
 import viewControl.editorDlg.NewCharacterDlg;
@@ -212,7 +213,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		eventItem_edit = new JMenuItem("Edit event");
 		eventItem_new = new JMenuItem("New event");
 		eventItem_paste = new JMenuItem("Paste event");
-
+		eventItem_delete = new JMenuItem("Delete event");
+		eventItem_setStartingPoint = new JMenuItem("Set user charactor starting point");
+		
 		palleteGroundGroup = new ButtonGroup();
 		palleteModeGroup = new EstyleCheckBoxItemGroup();
 		paletteItem_background = new JRadioButtonMenuItem(
@@ -520,18 +523,25 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuEvent.addSeparator();
 		menuEvent.add(eventItem_copy);
 		menuEvent.add(eventItem_paste);
+		menuEvent.add(eventItem_delete);
+		menuEvent.add(eventItem_setStartingPoint);
 
 		eventItem_viewOnEvent.setEnabled(false);
 		eventItem_new.setEnabled(false);
 		eventItem_edit.setEnabled(false);
 		eventItem_copy.setEnabled(false);
 		eventItem_paste.setEnabled(false);
-
+		eventItem_delete.setEnabled(false);
+		eventItem_setStartingPoint.setEnabled(false);
+		
 		eventItem_viewOnEvent.addActionListener(this);
 		eventItem_new.addActionListener(this);
 		eventItem_edit.addActionListener(this);
 		eventItem_copy.addActionListener(this);
 		eventItem_paste.addActionListener(this);
+		eventItem_delete.addActionListener(this);
+		eventItem_setStartingPoint.addActionListener(this);
+		
 
 		// pallete
 		palleteGroundGroup.add(paletteItem_background);
@@ -677,7 +687,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private JMenuItem eventItem_edit;
 	private JMenuItem eventItem_copy;
 	private JMenuItem eventItem_paste;
-
+	private JMenuItem eventItem_delete;
+	private JMenuItem eventItem_setStartingPoint;
+	
 	private ButtonGroup palleteGroundGroup;
 	private EstyleCheckBoxItemGroup palleteModeGroup;
 	private JRadioButtonMenuItem paletteItem_background;
@@ -795,6 +807,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		// event
 		else if (e.getSource() == eventItem_viewOnEvent) {
 			setCanvasEventMode(eventItem_viewOnEvent.isSelected());
+		} else if (e.getSource() == eventItem_new){
+			new EventDlg(this, getSelectedCanvasFromCanvasTab().getStartEventPoint(), getSelectedCanvasFromCanvasTab().getEndEventPoint(),
+					getSelectedCanvasFromCanvasTab().getMapSys().getEventEditSys());
 		}
 
 		// pallete
@@ -1503,6 +1518,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		eventItem_edit.setEnabled(b);
 		eventItem_new.setEnabled(b);
 		eventItem_viewOnEvent.setEnabled(b);
+		eventItem_delete.setEnabled(b);
+		eventItem_setStartingPoint.setEnabled(b);
+		
 		paletteItem_background.setEnabled(b);
 		paletteItem_foreground.setEnabled(b);
 		palleteItem_grid.setEnabled(b);

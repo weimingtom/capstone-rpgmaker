@@ -76,13 +76,14 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	private int xAxis = 0;
 	private int yAxis = 0;
 
-//	// 이벤트 시스템
-//	private EventEditorSystem eventEditorSystem;
+	// // 이벤트 시스템
+	// private EventEditorSystem eventEditorSystem;
 
 	// 팝업 메뉴
 	private JPopupMenu popupmenuCanvas;
 	private JPopupMenu popupmenuEvent;
 	private JMenu popupViewStyle;
+
 	public EstyleCheckBoxItemGroup poppuEventBtnGroup;
 	public EstyleCheckBoxItem popupEventGrid;
 	public EstyleCheckBoxItem popupEventBgOnly;
@@ -97,10 +98,12 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	private JMenuItem popupEventMode;
 	private JMenuItem popupNewEvent;
-	private JMenuItem popupDelEvent;
 	private JMenuItem popupCopyEvent;
 	private JMenuItem popupEditEvent;
 	private JMenuItem popupPasteEvent;
+	private JMenuItem popupDeleteEvent;
+	private JMenuItem popupSetStartingPointEvent;
+
 	private JMenuItem popupCanvasMode;
 
 	public MapIntegrateGUI(MapEditorSystem mapsys) throws IOException {
@@ -138,22 +141,23 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				"background translucence", poppuEventBtnGroup);
 		popupEventMode = new JMenuItem("Set event mode");
 		popupNewEvent = new JMenuItem("New event");
-		popupDelEvent = new JMenuItem("Delete event");
 		popupCopyEvent = new JMenuItem("Copy event");
 		popupEditEvent = new JMenuItem("Edit event");
 		popupPasteEvent = new JMenuItem("Paste event");
+		popupDeleteEvent = new JMenuItem("Delete event");
+		popupSetStartingPointEvent = new JMenuItem(
+				"Set user charactor starting point");
 		popupCanvasMode = new JMenuItem("Set canvas mode");
 
 		poppuCanvasBtnGroup = new EstyleCheckBoxItemGroup();
 		popupGrid = new EstyleCheckBoxItem("Grid");
 		popupBgOnly = new EstyleCheckBoxItem("Background only",
 				poppuCanvasBtnGroup);
-		popupFgOnly = new EstyleCheckBoxItem("ForeGround only",
+		popupFgOnly = new EstyleCheckBoxItem("Foreground only",
 				poppuCanvasBtnGroup);
 		popupSemitransparent = new EstyleCheckBoxItem(
 				"background translucence", poppuCanvasBtnGroup);
 
-		
 		popupmenuCanvas.add(popupBgOnly);
 		popupmenuCanvas.add(popupFgOnly);
 		popupmenuCanvas.add(popupSemitransparent);
@@ -171,6 +175,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupmenuEvent.add(popupEditEvent);
 		popupmenuEvent.add(popupCopyEvent);
 		popupmenuEvent.add(popupPasteEvent);
+		popupmenuEvent.add(popupDeleteEvent);
+		popupmenuEvent.add(popupSetStartingPointEvent);
 		popupmenuEvent.add(new JSeparator());
 		popupmenuEvent.add(popupViewStyle);
 		popupmenuEvent.add(popupCanvasMode);
@@ -182,10 +188,11 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupEventFgOnly.addActionListener(this);
 		popupEventSemitransparent.addActionListener(this);
 		popupNewEvent.addActionListener(this);
-		popupDelEvent.addActionListener(this);
 		popupCopyEvent.addActionListener(this);
 		popupEditEvent.addActionListener(this);
 		popupPasteEvent.addActionListener(this);
+		popupDeleteEvent.addActionListener(this);
+		popupSetStartingPointEvent.addActionListener(this);
 		popupCanvasMode.addActionListener(this);
 
 		popupGrid.addActionListener(this);
@@ -204,9 +211,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void createMap(String mapName, int mapWidth, int mapHeight) {
 		try {
 			mapSys.newMap(mapName, mapWidth, mapHeight);
-//			eventEditorSystem = new EventEditorSystem(
-//					MainFrame.OWNER.projectPath, mapSys.getMapInfo()
-//							.getM_MapName());
+			// eventEditorSystem = new EventEditorSystem(
+			// MainFrame.OWNER.projectPath, mapSys.getMapInfo()
+			// .getM_MapName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -296,12 +303,12 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void load(String fileName) {
 		try {
 			mapSys.load(fileName);
-//			eventEditorSystem = new EventEditorSystem(
-//					MainFrame.OWNER.projectPath, mapSys.getMapInfo()
-//							.getM_MapName());
-//			eventEditorSystem.load(MainFrame.OWNER.ProjectFullPath
-//					+ File.separator + "Event" + File.separator
-//					+ mapSys.getMapInfo().getM_MapName() + ".event");
+			// eventEditorSystem = new EventEditorSystem(
+			// MainFrame.OWNER.projectPath, mapSys.getMapInfo()
+			// .getM_MapName());
+			// eventEditorSystem.load(MainFrame.OWNER.ProjectFullPath
+			// + File.separator + "Event" + File.separator
+			// + mapSys.getMapInfo().getM_MapName() + ".event");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -586,7 +593,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (EVENTMODE_FLAG) {
-			if (e.getClickCount() == 2) {
+			if (e.getClickCount() >= 2) {
 
 				int col = e.getY() / DrawingTemplate.pixel;
 				int row = e.getX() / DrawingTemplate.pixel;
@@ -594,11 +601,13 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 						+ File.separator + "Event" + File.separator
 						+ mapSys.getMapInfo().getM_MapName() + ".event";
 
-//				if (mapSys.getEventEditSys().hasEventOnTile(col, row)) {
-//					new EventDlg(MainFrame.OWNER, new Point(row,col), new Point(row,col), false, mapSys.getEventEditSys());
-//				} else {
-					new EventDlg(MainFrame.OWNER, new Point(row,col), new Point(row,col), mapSys.getEventEditSys());
-//				}
+				// if (mapSys.getEventEditSys().hasEventOnTile(col, row)) {
+				// new EventDlg(MainFrame.OWNER, new Point(row,col), new
+				// Point(row,col), false, mapSys.getEventEditSys());
+				// } else {
+				new EventDlg(MainFrame.OWNER, new Point(row, col), new Point(
+						row, col), mapSys.getEventEditSys());
+				// }
 			}
 		} else {
 
@@ -713,9 +722,12 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				MainFrame.OWNER.setCanvasSemitransparentMode(false);
 			} else
 				MainFrame.OWNER.setCanvasSemitransparentMode(true);
-		} else if (e.getSource() == popupNewEvent) {
+		}
 
-		} else if (e.getSource() == popupDelEvent) {
+		else if (e.getSource() == popupNewEvent) {
+			new EventDlg(MainFrame.OWNER, startEventPoint, endEventPoint,
+					mapSys.getEventEditSys());
+		} else if (e.getSource() == popupDeleteEvent) {
 
 		} else if (e.getSource() == popupCopyEvent) {
 
@@ -726,5 +738,13 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		} else if (e.getSource() == popupCanvasMode) {
 			MainFrame.OWNER.setCanvasEventMode(false);
 		}
+	}
+
+	public Point getStartEventPoint() {
+		return startEventPoint;
+	}
+
+	public Point getEndEventPoint() {
+		return endEventPoint;
 	}
 }
