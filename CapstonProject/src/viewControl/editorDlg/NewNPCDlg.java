@@ -185,7 +185,7 @@ public class NewNPCDlg extends EditorDlg implements ActionListener  {
 		tf_speed = new JTextField((new Integer(npcEditSystem.getSpeed())).toString(), 3);
 		
 		// JComboBox
-		cb_indexChar = setComboBoxList("character", 1000);
+		cb_indexChar = setComboBoxList("npc", 1000);
 		
 		cb_indexJob = setComboBoxList("job", 999);
 		cb_indexJob.setSelectedIndex(npcEditSystem.getIndexJob());

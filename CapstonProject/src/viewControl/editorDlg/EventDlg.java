@@ -20,6 +20,7 @@ import viewControl.MainFrame;
 import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.EventTile;
+import eventEditor.exceptions.NotExistType;
 
 
 // 필요한 자동화 함수
@@ -104,7 +105,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 			addNewEvent();
 		} else {
 			try {
-				initEventPanel((EventTile)DeepCopier.deepCopy(eventEditsSys.getEventTile(startPoint.y, startPoint.y)));
+				initEventPanel((EventTile)DeepCopier.deepCopy(eventEditsSys.getEventTile(startPoint.y, startPoint.x)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -179,7 +180,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	
  	private boolean isNew(EventEditorSystem eventEditsSys, Point startPoint, Point endPoint) {
 		if(startPoint.x == endPoint.x && startPoint.y == endPoint.y){
-			if(eventEditsSys.getEventList(endPoint.y, startPoint.y) != null)
+			if(eventEditsSys.getEventList(startPoint.y, startPoint.x) != null)
 				return false;
 			else
 				return true;
@@ -261,17 +262,28 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		tp_eventTab.revalidate();
 		this.repaint();
 	}
+	
+	private Event getEventInTapPanel(int index) {
+		return eventTabPanelList.get(index).getEvent();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btn_OK || e.getSource() == btn_apply) {
 			// 데이터를 파일로 저장한다. 만약 eventEditsSys를 이용하여 map 안의 변수를 조작한다.
-			for (int i = startPoint.y; i < endPoint.y; i++) {
-				for (int j = startPoint.x; j < startPoint.y; j++) {
+			for (int i = startPoint.y; i < endPoint.y+1; i++) {
+				for (int j = startPoint.x; j < endPoint.x+1; j++) {
 					EventTile addEventTile = new EventTile(i, j);
 					addEventTile.setObjectType(cb_objectType.getSelectedIndex());
 					for (int k = 0; k < eventTabPanelList.size(); k++) {
-						addEventTile.addEvent(eventTabPanelList.get(k).getEvent());
+						try {
+							getEventInTapPanel(k).setActionType(eventTabPanelList.get(k).getActionType());
+							getEventInTapPanel(k).setActorIndex(eventTabPanelList.get(k).getActorIndex());
+							getEventInTapPanel(k).setStartType(eventTabPanelList.get(k).getStartType());
+						} catch (NotExistType e1) {
+							e1.printStackTrace();
+						}
+						addEventTile.addEvent(getEventInTapPanel(k));
 					}
 					eventEditsSys.addEventTile(addEventTile);
 				}
