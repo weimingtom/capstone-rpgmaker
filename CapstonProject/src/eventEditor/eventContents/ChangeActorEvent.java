@@ -31,6 +31,7 @@ public class ChangeActorEvent extends EventContent implements Serializable  {
 			actorType = 0;
 		}
 		
+		this.contentType = CHANGE_ACTOR_EVENT;
 		this.actorType = actorType;
 		this.actorIndex = actorIndex;
 	}

@@ -13,7 +13,7 @@ public class StoreEvent extends EventContent implements Serializable {
 	
 	
 	public StoreEvent() {
-		this.contentType = this.STORE_EVNET;
+		this.contentType = STORE_EVNET;
 		storeName = "New_Store";
 		goodsList = new LinkedList<Goods>();
 	}

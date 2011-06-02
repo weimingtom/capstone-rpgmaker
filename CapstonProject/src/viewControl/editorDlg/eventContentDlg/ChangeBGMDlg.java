@@ -16,6 +16,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import viewControl.MainFrame;
 import eventEditor.Event;
+import eventEditor.eventContents.ChangeBGMEvent;
 
 public class ChangeBGMDlg extends JDialog implements ActionListener {
 
@@ -32,14 +33,14 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	
 	private MainFrame owner;
 	private Event event;
-	private int insetIndex;
+	private int insertIndex;
 	
-	public ChangeBGMDlg(MainFrame parent, Event event, int insetIndex) {
+	public ChangeBGMDlg(MainFrame parent, Event event, int insertIndex) {
 		super(parent, "Change BGM Event");
 		
 		this.owner = parent;
 		this.event = event;
-		this.insetIndex = insetIndex;
+		this.insertIndex = insertIndex;
 		
 		setResizable(false);
 		setModal(true);
@@ -110,6 +111,9 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
+			// EventContent를 event에 삽입한다.
+			event.getEventContentList().add(insertIndex, new ChangeBGMEvent(tf_filePath.getText(), (new Integer(tf_volumn.getText())).intValue()));
+			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {
 			this.dispose();
@@ -137,8 +141,6 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				
-				// EventContent를 event에 삽입한다.
 			}
 		}
 	}

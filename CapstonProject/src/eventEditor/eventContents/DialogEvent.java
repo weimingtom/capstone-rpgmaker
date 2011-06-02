@@ -8,9 +8,9 @@ public class DialogEvent extends EventContent implements Serializable {
 	private String text;
 	
 	
-	public DialogEvent() {
-		this.contentType = this.DIALOG_EVNET;
-		text = "";
+	public DialogEvent(String text) {
+		this.contentType = DIALOG_EVNET;
+		this.text = text;
 	}
 
 

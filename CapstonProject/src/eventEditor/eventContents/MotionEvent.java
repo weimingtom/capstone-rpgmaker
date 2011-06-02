@@ -32,12 +32,12 @@ public class MotionEvent extends EventContent implements Serializable {
 	}
 	
 	public MotionEvent(int startCol, int startRow, int direction, int countMove, int speed) {
-		this.contentType = this.MOTION_EVNET;
 		if(direction<0 || direction>3) {
 			System.err.println("error: MotionEvent.MotionEvent() (direction: "+ direction +")");
 			direction = SOUTH;
 		}
-		
+
+		this.contentType = MOTION_EVNET;
 		this.startCol = startCol;
 		this.startRow = startRow;
 		this.direction = direction;
