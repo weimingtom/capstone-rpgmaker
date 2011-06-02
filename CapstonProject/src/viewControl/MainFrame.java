@@ -41,6 +41,8 @@ import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import execute.GameDemoExecution;
+
 import palette.PalettePanel;
 import viewControl.dialogSet.NewMapDlg;
 import viewControl.dialogSet.NewMapNameDlg;
@@ -55,6 +57,7 @@ import viewControl.editorDlg.NewCharacterDlg;
 import viewControl.editorDlg.NewMonsterDlg;
 import viewControl.editorDlg.SkillDlg;
 import viewControl.editorDlg.WeaponDlg;
+import viewControl.editorDlg.eventContentDlg.NextMapDstDlg;
 import viewControl.esComponent.EstyleButton;
 import viewControl.esComponent.EstyleCheckBoxItem;
 import viewControl.esComponent.EstyleCheckBoxItemGroup;
@@ -94,7 +97,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		ProjectName = null;
 		iconSize = 25;
 		// explorer ฐüทร
-		explorerWidth = 300;
+		explorerWidth = 250;
 		tileSetWidth = 600;
 
 		// NORTH
@@ -268,7 +271,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		btnSaveProj.setEnabled(false);
 		btnProjClose.setEnabled(false);
-		btnExeProj.setEnabled(false);
 
 		getContentPane().add(toolBar, BorderLayout.PAGE_START);
 		// SOUTH
@@ -564,9 +566,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuExecution.add(executionItem_execute);
 		menuExecution.add(executionItem_makeRelease);
 
-		executionItem_execute.setEnabled(false);
-		executionItem_makeRelease.setEnabled(false);
-
 		executionItem_execute.addActionListener(this);
 		executionItem_makeRelease.addActionListener(this);
 
@@ -805,7 +804,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			getSelectedCanvasFromCanvasTab().pasteEvent();
 		} else if (e.getSource() == eventItem_setStartingPoint) {
 			getSelectedCanvasFromCanvasTab().setCharactorStartingPoint();
-		} 
+		}
 
 		// pallete
 		else if (e.getSource() == paletteItem_background) {
@@ -828,6 +827,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				syncBetweenPalettesMode(PalettePanel.UPPERMODE);
 		} else if (e.getSource() == palleteItem_grid) {
 			setPalletSetGridMode(palleteItem_grid.isSelected());
+		}
+
+		else if (e.getSource() == executionItem_execute) {
+			GameDemoExecution.getInstanse(ProjectFullPath).execute();
+		} else if (e.getSource() == executionItem_makeRelease) {
+
 		}
 
 		// Tool bar
@@ -888,7 +893,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			setCanvasSemitransparentMode(btnSemitransparent.isSelected());
 		} else if (e.getSource() == btnEvent) {
 			setCanvasEventMode(btnEvent.isSelected());
-		}
+		} else if (e.getSource() == btnExeProj) {
+			//GameDemoExecution.getInstanse(ProjectFullPath).execute();
+			new NextMapDstDlg(this);
+		} 
 	}
 
 	// TODO
@@ -918,12 +926,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				p.popupUpperTile.setSelected(btnUpperAble.isSelected());
 			} else if (e.getSource() == canvasTab) {
 				syncPaletteCanvas();
-				
+
 				MapIntegrateGUI m = getSelectedCanvasFromCanvasTab();
 				m.setGrid(btnCanvasGrid.isSelected());
 				m.popupGrid.setSelected(btnCanvasGrid.isSelected());
-				eventItem_paste.setEnabled(m.syncEventPasteBtn());				
-				
+				eventItem_paste.setEnabled(m.syncEventPasteBtn());
+
 				if (btnEvent.isSelected()) {
 					setCanvasEventMode(true);
 				}
@@ -1427,8 +1435,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			fileItem_saveMap.setEnabled(false);
 			enableMapRelatedBtn(false);
 			eventItem_paste.setEnabled(false);
+			return;
 		}
-		eventItem_paste.setEnabled(getSelectedCanvasFromCanvasTab().syncEventPasteBtn());
+		eventItem_paste.setEnabled(getSelectedCanvasFromCanvasTab()
+				.syncEventPasteBtn());
 	}
 
 	private MapIntegrateGUI getSelectedCanvasFromCanvasTab() {

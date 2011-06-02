@@ -28,7 +28,6 @@ import viewControl.MainFrame;
 import viewControl.editorDlg.EventDlg;
 import viewControl.esComponent.EstyleCheckBoxItem;
 import viewControl.esComponent.EstyleCheckBoxItemGroup;
-import eventEditor.EventEditorSystem;
 
 public class MapIntegrateGUI extends JPanel implements MouseListener,
 		MouseMotionListener, ActionListener {

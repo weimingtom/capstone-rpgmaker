@@ -154,6 +154,10 @@ public class FileTree extends JTree implements TreeWillExpandListener,
 		super.setSelectionRow(0); // 시작했을 때 기본적인 루트를 선택해게함
 	}
 
+	public DefaultTreeModel getTreeModel() {
+		return treeModel;
+	}
+
 	public File getCurrentDirectory() {
 		Object o = root.getUserObject();
 		return (o != null) ? (File) o : null;

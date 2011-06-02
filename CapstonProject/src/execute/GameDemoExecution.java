@@ -6,8 +6,16 @@ public class GameDemoExecution {
 	//더블 버퍼링모드
 	public static int DOUBLEBUFFERMODE = 2;
 	
-	private String gamePath = "D:/GameDataFiles";
+	private String gamePath = null;
+	private static GameDemoExecution instanse = null;
 	
+	public static GameDemoExecution getInstanse(String gamePath) {
+		instanse = new  GameDemoExecution(gamePath);
+		return instanse;
+	}
+
+
+
 	//게임 데이터, 디스플레이, 윈도우
 	private GameData gameData;
 	private GameDisplay gameDisplay;
@@ -16,7 +24,7 @@ public class GameDemoExecution {
 	//키입력 객체
 	private KeyFlags keyFlag;
 	
-	public GameDemoExecution(String gamePath)
+	private GameDemoExecution(String gamePath)
 	{
 		this.gamePath = gamePath;
 		//객체 생성
@@ -79,12 +87,4 @@ public class GameDemoExecution {
 	public String getGamePath() {
 		return gamePath;
 	}	
-	
-	
-	
-	public static void main(String args[])
-	{
-		GameDemoExecution game = new GameDemoExecution("D:/GameDataFiles");
-		game.execute();
-	}
 }

@@ -21,12 +21,11 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
-import bootstrap.Bootstrap;
-import bootstrap.BootstrapInfo;
-
 import MapEditor.DrawingTemplate;
 import MapEditor.Map;
 import MapEditor.Tile;
+import bootstrap.Bootstrap;
+import bootstrap.BootstrapInfo;
 
 public class GameData implements Runnable{
 	

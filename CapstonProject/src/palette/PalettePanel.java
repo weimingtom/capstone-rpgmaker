@@ -131,7 +131,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 
 		if (!isBackground())
 			popup.add(popupUpperTile);
-		
+
 		popup.addSeparator();
 		popup.add(popupGrid);
 
@@ -210,7 +210,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 		else if (mode == PalettePanel.UPPERMODE)
 			if (!isBackground())
 				upperMode = true;
-			else 
+			else
 				paletteMode = true;
 
 		repaint();
@@ -421,7 +421,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 		yPoints[11] = y + 3 * 2;
 
 		Color tmp = g2d.getColor();
-		g2d.setColor(new Color(255, 0, 0, 200));
+		g2d.setColor(new Color(255, 0, 0, 100));
 		g2d.fillPolygon(xPoints, yPoints, 12);
 		g2d.setColor(new Color(0, 0, 0, 100));
 		g2d.drawPolygon(xPoints, yPoints, 12);
@@ -431,14 +431,14 @@ public class PalettePanel extends JPanel implements MouseListener,
 	public void drawO(Graphics2D g2d, int x, int y) {
 		Color tmp = g2d.getColor();
 
-		g2d.setColor(new Color(0, 255, 0, 200));
+		g2d.setColor(new Color(0, 255, 0, 100));
 		g2d
-				.fillOval(x, y, DrawingTemplate.pixel / 2,
-						DrawingTemplate.pixel / 2);
+				.fillOval(x, y, DrawingTemplate.pixel / 3,
+						DrawingTemplate.pixel / 3);
 		g2d.setColor(new Color(0, 0, 0, 100));
 		g2d
-				.drawOval(x, y, DrawingTemplate.pixel / 2,
-						DrawingTemplate.pixel / 2);
+				.drawOval(x, y, DrawingTemplate.pixel / 3,
+						DrawingTemplate.pixel / 3);
 		g2d.setColor(tmp);
 	}
 
@@ -468,7 +468,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 		yPoints[6] = y + 5;
 
 		Color tmp = g2d.getColor();
-		g2d.setColor(new Color(0, 255, 0, 200));
+		g2d.setColor(new Color(0, 255, 0, 100));
 		g2d.fillPolygon(xPoints, yPoints, 7);
 		g2d.setColor(new Color(0, 0, 0, 200));
 		g2d.drawPolygon(xPoints, yPoints, 7);
@@ -502,7 +502,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 		yPoints[6] = y + 4;
 
 		Color tmp = g2d.getColor();
-		g2d.setColor(new Color(255, 0, 0, 200));
+		g2d.setColor(new Color(255, 0, 0, 100));
 		g2d.fillPolygon(xPoints, yPoints, 7);
 		g2d.setColor(new Color(0, 0, 0, 200));
 		g2d.drawPolygon(xPoints, yPoints, 7);
