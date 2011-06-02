@@ -7,6 +7,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
+import java.awt.image.VolatileImage;
 import java.util.Vector;
 
 import characterEditor.CharacterEditorSystem;
@@ -34,6 +35,7 @@ public class GameDisplay implements Runnable{
 	private GameData gameData;
 	// 하드웨어 자원
 	private BufferStrategy hwResource = null;
+	private GameWindow gameWindow;
 	// 출력할 객체
 	private Graphics2D gameGraphics = null;
 
@@ -57,9 +59,10 @@ public class GameDisplay implements Runnable{
 
 	
 	//생성자
-	public GameDisplay(GameData gameData) {
+	public GameDisplay(GameData gameData, GameWindow gameWindow) {
 		// TODO Auto-generated constructor stub
 		this.gameData = gameData;
+		this.gameWindow = gameWindow;
 	}
 	//하드웨어 자원 설정
 	public void setHardWareBuffer(BufferStrategy bufferStrategy) {
@@ -231,46 +234,46 @@ public class GameDisplay implements Runnable{
 		Image cursorImage = cursor.getUtilImage();
 //		g.drawString("아이템", screenWidth/10 + 2*cursorImage.getWidth(null), status.getFontSize()+screenHeight/10);
 //		g.drawString("장   비", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*3+screenHeight/10);
-		g.drawString("상    태", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*1+screenHeight/10);
-		g.drawString("저    장", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*3+screenHeight/10);
-		g.drawString("게임으로", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*5+screenHeight/10);
-		g.drawString("종    료", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*7+screenHeight/10);
+		g.drawString("상    태", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*1+screenHeight/10);
+		g.drawString("저    장", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*3+screenHeight/10);
+		g.drawString("게임으로", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*5+screenHeight/10);
+		g.drawString("종    료", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*7+screenHeight/10);
 		//첫번째에 위치
 		if(cursor.getPosition() == 0)
 		{
-			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*1+screenHeight/10 - status.getFontSize()/2, null);
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null))- status.getFontSize()/2, status.getFontSize()*1+screenHeight/10 - status.getFontSize()/2, null);
 			g.drawString("주인공의 상태", (int)(screenWidth*(4.0/10.0)), status.getFontSize()*1+screenHeight/10);
 			g.drawString("LEVEL : "+player.getLevel(), 
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*2+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*2+screenHeight/10);
 			g.drawString("HP : "+player.getNowStatus().getHP() + " / " + player.getMaxStatus().getHP(), 
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*3+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*3+screenHeight/10);
 			g.drawString("MP : "+player.getNowStatus().getMP() + " / " + player.getMaxStatus().getMP(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*4+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*4+screenHeight/10);
 			g.drawString("Str : "+player.getNowStatus().getStrength() + " / " + player.getMaxStatus().getStrength(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*5+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*5+screenHeight/10);
 			g.drawString("Vit : "+player.getNowStatus().getVitality() + " / " + player.getMaxStatus().getVitality(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*6+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*6+screenHeight/10);
 			g.drawString("Agt : "+player.getNowStatus().getAgility()+ " / " + player.getMaxStatus().getAgility(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*7+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*7+screenHeight/10);
 			g.drawString("Int : "+player.getNowStatus().getIntelligence()+ " / " + player.getMaxStatus().getIntelligence(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*8+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*8+screenHeight/10);
 			g.drawString("Knw : "+player.getNowStatus().getKnowledge()+ " / " + player.getMaxStatus().getKnowledge(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*9+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*9+screenHeight/10);
 			g.drawString("EXP : "+player.getNowEXP()+ " / " + player.getMaxStatus().getEXP(),
-					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*10+screenHeight/10);
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*10+screenHeight/10);
 			
 		}
 		else if(cursor.getPosition() == 1)
 		{
-			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*3+screenHeight/10 - status.getFontSize()/2, null);
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null))- status.getFontSize()/2, status.getFontSize()*3+screenHeight/10 - status.getFontSize()/2, null);
 		}
 		else if(cursor.getPosition() == 2)
 		{
-			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*5+screenHeight/10 - status.getFontSize()/2, null);
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null))- status.getFontSize()/2, status.getFontSize()*5+screenHeight/10 - status.getFontSize()/2, null);
 		}
 		else if(cursor.getPosition() == 3)
 		{
-			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*7+screenHeight/10 - status.getFontSize()/2, null);
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null))- status.getFontSize()/2, status.getFontSize()*7+screenHeight/10 - status.getFontSize()/2, null);
 		}
 	}
 
@@ -280,7 +283,7 @@ public class GameDisplay implements Runnable{
 		g.setColor(Color.black);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 		//맵의 백그라운드 출력
-		BufferedImage gameMap = gameData.getGameMap().getM_Background();
+		BufferedImage gameMap = gameData.getBackground();
 		int sizeW = (int) ((double)gameMap.getWidth()*ratioX);
 		int sizeH = (int) ((double)gameMap.getHeight()*ratioY);
 		//맵의 시작위치 설정
@@ -294,54 +297,23 @@ public class GameDisplay implements Runnable{
 	//전경, 어느 부분에서 어느 부분을 출력해야하는가?
 	public void displayForeground(Graphics2D g, boolean isUpper)
 	{
-		Tile[][] mapTile = gameData.getGameMap().getM_ForegroundTile();
 
 		if(isUpper == false)
 		{
-			//캐릭 아래에 깔리는 것 부터 출력
-			for(int i = 0 ; i < mapTile.length; i++)
-			{
-				for(int j = 0 ; j < mapTile[0].length; j++)
-				{
-					if(mapTile[i][j].getIsUpper() == false)
-					{
-						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
-								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
-								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
-								null);
-					}
-				}
-			}
+			BufferedImage fore = gameData.getForeBackImage();
+			int sizeW = (int) ((double)fore.getWidth()*ratioX);
+			int sizeH = (int) ((double)fore.getHeight()*ratioY);
+			g.drawImage(fore, mapStartingPointX, mapStartingPointY, sizeW, sizeH, null);
 		}
 		else
 		{
-			for(int i = 0 ; i < mapTile.length; i++)
-			{
-				for(int j = 0 ; j < mapTile[0].length; j++)
-				{
-					if(mapTile[i][j].getIsUpper() == true)
-					{
-						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
-								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
-								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
-								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
-								null);
-					}
-				}
-			}
+			BufferedImage fore = gameData.getForeForeImage();
+			int sizeW = (int) ((double)fore.getWidth()*ratioX);
+			int sizeH = (int) ((double)fore.getHeight()*ratioY);
+			g.drawImage(fore, mapStartingPointX, mapStartingPointY, sizeW, sizeH, null);
 		}
 	}
 
-	//변화된 전경만 출력해줌
-	public void displayChangedForeground(Graphics2D g, boolean isUpper)
-	{
-		//정렬된 캐릭정보를 활용
-	}
-	
-	
-	
-	
 	//액터 출력 플레이어 무브모션 출력
 	public void displayActorMoveMotion(Graphics2D g, Animations actorAnim, boolean isStop , GameCharacter actor)
 	{
@@ -693,7 +665,6 @@ public class GameDisplay implements Runnable{
 	//GameRunning!!!!!!!
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 
 		while (gameData.getGameState() != GameData.EXIT) 
 		{
@@ -725,8 +696,8 @@ public class GameDisplay implements Runnable{
 				// 상태가 플레이이면
 				else if (gameState == GameData.PLAY) 
 				{
-					BufferedImage tmpImage = new BufferedImage(screenWidth, screenWidth, BufferedImage.TYPE_4BYTE_ABGR);
-					Graphics2D g = (Graphics2D) tmpImage.getGraphics();
+					BufferedImage gameImage = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_4BYTE_ABGR);
+					Graphics2D g = gameImage.createGraphics();
 					//캐릭터 밑의 배경 출력
 					displayBackground(g);
 					displayForeground(g, false);
@@ -739,7 +710,7 @@ public class GameDisplay implements Runnable{
 					{
 						displayLevelUp(g, gameData.getPlayer());
 					}
-					gameGraphics.drawImage(tmpImage, 0, 0, null);
+					gameGraphics.drawImage(gameImage,0,0,null);
 				} 
 				else if (gameState == GameData.GAMEOVER)
 				{
@@ -755,6 +726,7 @@ public class GameDisplay implements Runnable{
 				gameGraphics.dispose();
 				hwResource.show();
 				Thread.sleep(GameDisplay.TIMER);
+				
 			} catch (NullPointerException e) {
 				// 게임 데이터가 먼저 종료된 경우
 				System.exit(0);

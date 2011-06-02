@@ -27,11 +27,11 @@ public class GameExecution {
 		gameWindow = new GameWindow(gameData);
 		//그래픽 자원 생성, 출력 모드는 더블 버퍼링 모드
 		gameWindow.createBufferStrategy(DOUBLEBUFFERMODE);
-		gameData.setScreenHeight(gameWindow.getHeight());
+		gameData.setGameWindow(gameWindow);
 
 		
 		//게임 화면 출력할 객체, gameData 주입
-		gameDisplay = new GameDisplay(gameData);
+		gameDisplay = new GameDisplay(gameData, gameWindow);
 		//그래픽 자원 입력
 		gameDisplay.setHardWareBuffer(gameWindow.getBufferStrategy());
 		//윈도우 크기 설정
