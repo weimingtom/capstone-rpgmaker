@@ -1,9 +1,10 @@
 /********************************************/
 //주의사항!
-//현재 캐릭터의 상태가 움직임상태, 전투 상태 등에 대한 구분이 없음
-//즉, 움직임상태에서 액션이 가능함
-//player.setActorState(MOVESTATE)이 구문 수정바람
-//player.getActorState()도
+//1. 현재 캐릭터의 상태가 움직임상태, 전투 상태 등에 대한 구분이 없음
+//   즉, 움직임상태에서 액션이 가능함
+//   player.setActorState(MOVESTATE)이 구문 수정바람
+//   player.getActorState()도
+//2. 추가 파일 경로가 필요할 수도 있음 ex) Utilimage와 같은것들 수정 가능성 농후함
 /**********************************************/
 
 
@@ -37,7 +38,6 @@ public class GameData implements Runnable{
 	public static final int PAUSE = 7;
 	public static final int DIALOG = 8;
 	public static final int FADEPAUSE = 9;
-	public static final int MAPLOAD = 10;
 	public static final int ACTORLOAD = 11;
 	public static final int MAPLOADENDED = 12;
 	public static final int ACTORLOADENDED = 13;
@@ -163,34 +163,7 @@ public class GameData implements Runnable{
 			}
 			else if(gameState == GameData.TITLEMENU)
 			{
-				TIMER = SLOWTIMER;
-				//커서의 위치에 따라
-				if(cursorImage.getPosition() == 0)
-				{
-					if(keyFlag.isAction() || keyFlag.isEnter())
-					{
-						exGameState = GameData.TITLEMENU;
-						gameState = GameData.NEWSTART;
-						cursorImage.setPosition(0);
-						TIMER = FASTTIMER;
-					}
-				}
-				else if(cursorImage.getPosition() == 1)
-				{
-					if(keyFlag.isAction() || keyFlag.isEnter())
-					{
-						gameState = GameData.LOAD;
-						cursorImage.setPosition(0);
-					}
-				}
-				else if(cursorImage.getPosition() == 2)
-				{
-					if(keyFlag.isAction() || keyFlag.isEnter())
-					{
-						gameState = GameData.EXIT;
-						cursorImage.setPosition(0);
-					}				
-				}
+				runAtTitle();
 			}
 			else if(gameState == GameData.NEWSTART)
 			{
@@ -251,6 +224,65 @@ public class GameData implements Runnable{
 		}
 		this.exitGame();
 	}
+	
+	//타이틀 메뉴에서
+	private void runAtTitle()
+	{
+		//커서의 위치에 따라
+		if(keyFlag.isUp())
+		{
+			if(cursorImage.getPosition() == 0)
+				cursorImage.setPosition(2);
+			else
+				cursorImage.setPosition(cursorImage.getPosition() - 1);
+			try {
+				Thread.sleep(SLOWTIMER);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if(keyFlag.isDown())
+		{
+			if(cursorImage.getPosition() == 2)
+				cursorImage.setPosition(0);
+			else
+				cursorImage.setPosition(cursorImage.getPosition() + 1);
+			try {
+				Thread.sleep(SLOWTIMER);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if(cursorImage.getPosition() == 0)
+		{
+			if(keyFlag.isAction() || keyFlag.isEnter())
+			{
+				exGameState = GameData.TITLEMENU;
+				gameState = GameData.NEWSTART;
+				cursorImage.setPosition(0);
+				TIMER = FASTTIMER;
+			}
+		}
+		else if(cursorImage.getPosition() == 1)
+		{
+			if(keyFlag.isAction() || keyFlag.isEnter())
+			{
+				gameState = GameData.LOAD;
+				cursorImage.setPosition(0);
+			}
+		}
+		else if(cursorImage.getPosition() == 2)
+		{
+			if(keyFlag.isAction() || keyFlag.isEnter())
+			{
+				gameState = GameData.EXIT;
+				cursorImage.setPosition(0);
+			}				
+		}
+	}
+	
 	//실행중 플레이일때
 	private void runAtPlay()
 	{		
@@ -290,9 +322,14 @@ public class GameData implements Runnable{
 			this.computeGameTile();
 
 		}
+		
 		//캐릭터 체력 채워줌
 		if(player.getNowStatus().getHP() < player.getMaxStatus().getHP() && player.getNowStatus().getHP() > 0 )
-			player.getNowStatus().setHP(player.getNowStatus().getHP() + 1);
+			player.getNowStatus().setHP(player.getNowStatus().getHP() + player.level);
+		if(player.getNowStatus().getHP() > player.getMaxStatus().getHP())
+		{
+			player.getNowStatus().setHP(player.getMaxStatus().getHP());
+		}
 	}
 	
 	//실행중 스테이터스 화면일때
@@ -341,6 +378,13 @@ public class GameData implements Runnable{
 			}
 			if(cursorImage.getPosition() == 2)
 			{
+				gameState = GameData.MAPLOADENDED;
+				try {
+					Thread.sleep(SLOWTIMER);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				gameState = GameData.PLAY;
 				player.setActorState(GameCharacter.MOVESTATE);
 				TIMER = FASTTIMER;
@@ -352,9 +396,11 @@ public class GameData implements Runnable{
 		}
 		else if(keyFlag.isCancel())
 		{
+			gameState = GameData.MAPLOADENDED;
 			try {
-				Thread.sleep(FASTTIMER);
+				Thread.sleep(SLOWTIMER);
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			gameState = GameData.PLAY;
@@ -567,29 +613,17 @@ public class GameData implements Runnable{
 			monsters.add(new Monster(gamePath));
 			monsters.elementAt(0).deployActor(2, 60, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(1).deployActor(2, 30, 60, null);
+			monsters.elementAt(1).deployActor(2, 10, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(2).deployActor(2, 40, 60, null);
+			monsters.elementAt(2).deployActor(2, 20, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(3).deployActor(2, 50, 60, null);
+			monsters.elementAt(3).deployActor(2, 30, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(4).deployActor(2, 60, 70, null);
+			monsters.elementAt(4).deployActor(2, 40, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(5).deployActor(2, 60, 80, null);
+			monsters.elementAt(5).deployActor(2, 50, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(6).deployActor(2, 60, 90, null);
-			
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(7).deployActor(2, 10, 40, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(8).deployActor(2, 40, 30, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(9).deployActor(2, 90, 30, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(10).deployActor(2, 90, 70, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(11).deployActor(2, 10, 70, null);
-		}
+			monsters.elementAt(6).deployActor(2, 70, 60, null);}
 		catch(Exception e)
 		{
 //			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMonster()");
@@ -650,6 +684,8 @@ public class GameData implements Runnable{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMap()\nCan't allocate gameTile");
 			System.exit(0);
 		}
+		
+		gameState = GameData.MAPLOADENDED;
 	}
 
 	//플레이어로드
@@ -661,6 +697,7 @@ public class GameData implements Runnable{
 			//player.setNowStatus(nowStatus);
 			player.deployActor(0,100, 100, null);
 			player.setNowEXP(1909);
+			player.getMaxStatus().setEXP(10);
 		}
 		catch(Exception e)
 		{

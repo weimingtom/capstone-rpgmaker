@@ -427,7 +427,6 @@ public class AI {
 			Abilities max = player.getMaxStatus();
 			Abilities curve = player.getCharacter().getGrowthCurve();
 			max.setAgility(max.getAgility() + curve.getAgility());
-			max.setEXP(0);
 			max.setHP((max.getHP() + curve.getHP()));
 			max.setIntelligence(max.getIntelligence() + curve.getIntelligence());
 			max.setKnowledge(max.getKnowledge() + curve.getKnowledge());
@@ -443,6 +442,7 @@ public class AI {
 			nowStatus.setMP(max.getMP());
 			nowStatus.setStrength(max.getStrength());
 			nowStatus.setVitality(max.getVitality());
+			max.setEXP(max.getEXP()*2);
 			player.setLevelUp(true);
 		}
 	}
