@@ -64,6 +64,7 @@ public class GameDisplay implements Runnable{
 		this.gameData = gameData;
 		this.gameWindow = gameWindow;
 	}
+	
 	//하드웨어 자원 설정
 	public void setHardWareBuffer(BufferStrategy bufferStrategy) {
 		// TODO Auto-generated method stub
@@ -75,7 +76,6 @@ public class GameDisplay implements Runnable{
 		}
 	}
 
-	
 	//로고 출력
 	public void displayLogoImage(Graphics2D g)
 	{	

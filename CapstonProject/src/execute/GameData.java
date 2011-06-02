@@ -13,6 +13,7 @@ package execute;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,9 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
+
+import bootstrap.Bootstrap;
+import bootstrap.BootstrapInfo;
 
 import MapEditor.DrawingTemplate;
 import MapEditor.Map;
@@ -177,27 +181,7 @@ public class GameData implements Runnable{
 			}
 			else if(gameState == GameData.NEWSTART)
 			{
-				exGameState = GameData.NEWSTART;
-				/*****************************************************************/
-				/*****************************************************************/
-				//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
-				/*****************************************************************/
-				/*****************************************************************/
-				/*****************************************************************/
-				gameState = GameData.LOADING;
-				/****************************************************/
-				/****************************************************/
-				//테스트를 위해 임의 코드 작성
-				//우선 맵 로드
-				loadMap();
-				loadPlayer();
-				//loadAlliances();
-				loadMonsters();
-				//startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
-				/****************************************************/
-				this.computeGameTile();
-				
-				gameState = GameData.PLAY;
+				runAtNewStart();
 			}
 			else if(gameState == GameData.LOAD)
 			{
@@ -233,6 +217,30 @@ public class GameData implements Runnable{
 			
 		}
 		this.exitGame();
+	}
+	//새로 시작일경우
+	private void runAtNewStart()
+	{
+		exGameState = GameData.NEWSTART;
+		//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
+		/*****************************************************************/
+		gameState = GameData.LOADING;
+		/****************************************************/
+
+		//부트스트랩 이벤트 실행
+		BootstrapInfo bs = Bootstrap.getBootstrap(gamePath);
+		Point startPoint = bs.getStartPoint();
+		//우선 맵 로드
+		loadMap(bs.getMapName());
+		//플레이어 로드
+		loadPlayer(0 , startPoint);
+		//loadAlliances();
+		loadMonsters();
+		//startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
+		/****************************************************/
+		this.computeGameTile();
+		
+		gameState = GameData.PLAY;
 	}
 	
 	//타이틀 메뉴에서
@@ -409,7 +417,6 @@ public class GameData implements Runnable{
 			TIMER = FASTTIMER;
 		}
 	}
-	
 	
 	//캐릭터들 정렬
 	private void sortCharacters() {
@@ -666,11 +673,11 @@ public class GameData implements Runnable{
 	}
 
 	//맵로드
-	public void loadMap()
+	public void loadMap(String mapName)
 	{
 
 		GameMapLoader mapLoader = new GameMapLoader();
-		this.setGameMap(mapLoader.loadMap(this.gamePath+"/Map/caucse.map"));
+		this.setGameMap(mapLoader.loadMap(this.gamePath+"/Map/"+mapName));
 		//맵의 크기에 따라 게임 배열 설정
 		try 
 		{
@@ -700,13 +707,15 @@ public class GameData implements Runnable{
 	}
 
 	//플레이어로드
-	public void loadPlayer()
+	public void loadPlayer(int charIndex, Point startPoint)
 	{
 		try{
 			this.player = new Alliance(gamePath);
 			
-			//player.setNowStatus(nowStatus);
-			player.deployActor(0,100, 100, null);
+			int startX = startPoint.x*mapCharArrayRatio-mapCharArrayRatio/2;
+			int startY = startPoint.y*mapCharArrayRatio-mapCharArrayRatio/2;
+			
+			player.deployActor(charIndex, startX, startY, null);
 			player.setNowEXP(1909);
 			player.getMaxStatus().setEXP(10);
 		}
@@ -774,7 +783,8 @@ public class GameData implements Runnable{
 	}
 	
 	
-	public void setGameWindow(GameWindow gameWindow) {
+	public void setGameWindow(GameWindow gameWindow) 
+	{
 		this.gameWindow = gameWindow;
 		this.screenHeight = gameWindow.getHeight();
 		setScreenHeight(screenHeight);
@@ -828,26 +838,13 @@ public class GameData implements Runnable{
 		this.logoScreen = logoScreen;
 	}
 
-
 	public GameUtilityInformation getLoadScreen() {
 		return loadScreen;
 	}
 
-
-	public void setLoadScreen(GameUtilityInformation loadScreen) {
-		this.loadScreen = loadScreen;
-	}
-
-
 	public GameUtilityInformation getCursorImage() {
 		return cursorImage;
 	}
-
-
-	public void setCursorImage(GameUtilityInformation cursorImage) {
-		this.cursorImage = cursorImage;
-	}
-
 
 	public int getExGameState() {
 		return exGameState;
@@ -858,31 +855,13 @@ public class GameData implements Runnable{
 		this.exGameState = exGameState;
 	}
 
-
-	public void setPlayer(GameCharacter player) {
-		this.player = player;
-	}
-
-
 	public GameCharacter getPlayer() {
 		return player;
 	}
 
-
-	public void setMonsters(Vector<GameCharacter> monsters) {
-		this.monsters = monsters;
-	}
-
-
 	public Vector<GameCharacter> getMonsters() {
 		return monsters;
 	}
-
-
-	public void setAlliances(Vector<GameCharacter> alliances) {
-		this.alliances = alliances;
-	}
-
 
 	public Vector<GameCharacter> getAlliances() {
 		return alliances;
@@ -903,11 +882,6 @@ public class GameData implements Runnable{
 		return gameTile;
 	}
 
-
-	public void setGameTile(int[][] gameTile) {
-		this.gameTile = gameTile;
-	}
-	
 	public int getPlayerPositionX()
 	{
 		return this.player.getxPosition();
@@ -965,12 +939,6 @@ public class GameData implements Runnable{
 		return animTimer;
 	}
 
-
-	public void setAnimTimer(int animTimer) {
-		this.animTimer = animTimer;
-	}
-
-
 	public GameUtilityInformation getGameOver() {
 		return gameOver;
 	}
@@ -1002,29 +970,13 @@ public class GameData implements Runnable{
 		return levelUpImage;
 	}
 
-
-	public void setBackground(BufferedImage background) {
-		this.background = background;
-	}
-
-
 	public BufferedImage getBackground() {
 		return background;
 	}
 
-
-	public void setForeBackImage(BufferedImage foreBackImage) {
-		this.foreBackImage = foreBackImage;
-	}
-
-
 	public BufferedImage getForeBackImage() {
 		return foreBackImage;
 	}
-	public void setForeForeImage(BufferedImage foreForeImage) {
-		this.foreForeImage = foreForeImage;
-	}
-
 	public BufferedImage getForeForeImage() {
 		return foreForeImage;
 	}
@@ -1068,4 +1020,6 @@ public class GameData implements Runnable{
 			}
 		}
 	}
+	
+	
 }
