@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import MapEditor.MapIntegrateGUI;
+
 import viewControl.MainFrame;
 import editor.ObjectEditorSystem;
 
@@ -227,8 +229,12 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	}
 	
 	public boolean canPaste() {
-		if(copyStartPoint != null && copyEndPoint != null)	return true;
-		else												return false;
+		if(copyStartPoint != null && copyEndPoint != null
+				&& copyStartPoint.x != MapIntegrateGUI.STARTING_POINT && copyStartPoint.y != MapIntegrateGUI.STARTING_POINT
+				&& copyEndPoint.x != MapIntegrateGUI.STARTING_POINT && copyEndPoint.y!= MapIntegrateGUI.STARTING_POINT)
+			return true;
+		else
+			return false;
 	}
 	
 	public void deleteEvents(Point startPoint, Point endPoint) {
