@@ -10,15 +10,21 @@
 
 package execute;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import MapEditor.DrawingTemplate;
 import MapEditor.Map;
+import MapEditor.Tile;
 
 public class GameData implements Runnable{
 	
@@ -106,6 +112,10 @@ public class GameData implements Runnable{
 	private int animTimer;
 	private int screenHeight;
 
+	//맵데이터
+	private BufferedImage background;
+	private BufferedImage foreBackImage;
+	private BufferedImage foreForeImage;
 	
 	//생성자
 	public GameData()
@@ -675,7 +685,18 @@ public class GameData implements Runnable{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMap()\nCan't allocate gameTile");
 			System.exit(0);
 		}
-
+		//맵 이미지 설정
+		//백그라운드 설정
+		background = gameMap.getM_Background();
+		
+		foreBackImage = new BufferedImage(gameWindow.getWidth(), gameWindow.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D g = foreBackImage.createGraphics();	
+		displayForeground(g, false);
+		g.dispose();
+		foreForeImage = new BufferedImage(gameWindow.getWidth(), gameWindow.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		g = foreForeImage.createGraphics();
+		displayForeground(g, true);
+		g.dispose();
 	}
 
 	//플레이어로드
@@ -753,9 +774,10 @@ public class GameData implements Runnable{
 	}
 	
 	
-	
 	public void setGameWindow(GameWindow gameWindow) {
 		this.gameWindow = gameWindow;
+		this.screenHeight = gameWindow.getHeight();
+		setScreenHeight(screenHeight);
 	}
 
 	public GameWindow getGameWindow() {
@@ -978,5 +1000,72 @@ public class GameData implements Runnable{
 
 	public GameUtilityInformation getLevelUpImage() {
 		return levelUpImage;
+	}
+
+
+	public void setBackground(BufferedImage background) {
+		this.background = background;
+	}
+
+
+	public BufferedImage getBackground() {
+		return background;
+	}
+
+
+	public void setForeBackImage(BufferedImage foreBackImage) {
+		this.foreBackImage = foreBackImage;
+	}
+
+
+	public BufferedImage getForeBackImage() {
+		return foreBackImage;
+	}
+	public void setForeForeImage(BufferedImage foreForeImage) {
+		this.foreForeImage = foreForeImage;
+	}
+
+	public BufferedImage getForeForeImage() {
+		return foreForeImage;
+	}
+	public void displayForeground( Graphics2D g, boolean isUpper)
+	{
+		Tile[][] mapTile = gameMap.getM_ForegroundTile();
+
+		if(isUpper == false)
+		{
+//			//캐릭 아래에 깔리는 것 부터 출력
+			for(int i = 0 ; i < mapTile.length; i++)
+			{
+				for(int j = 0 ; j < mapTile[0].length; j++)
+				{
+					if(mapTile[i][j].getIsUpper() == false)
+					{
+						g.drawImage(mapTile[i][j].getM_TileIcon(), j*DrawingTemplate.pixel,
+								i*DrawingTemplate.pixel,
+								mapTile[i][j].getM_TileIcon().getWidth(),
+								mapTile[i][j].getM_TileIcon().getHeight(),
+								null);
+					}
+				}
+			}
+		}
+		else
+		{
+			for(int i = 0 ; i < mapTile.length; i++)
+			{
+				for(int j = 0 ; j < mapTile[0].length; j++)
+				{
+					if(mapTile[i][j].getIsUpper() == true)
+					{
+						g.drawImage(mapTile[i][j].getM_TileIcon(), j*DrawingTemplate.pixel,
+								i*DrawingTemplate.pixel,
+								mapTile[i][j].getM_TileIcon().getWidth(),
+								mapTile[i][j].getM_TileIcon().getHeight(),
+								null);
+					}
+				}
+			}
+		}
 	}
 }
