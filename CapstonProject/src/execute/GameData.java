@@ -39,7 +39,7 @@ public class GameData implements Runnable{
 	public static final int DIALOG = 8;
 	public static final int FADEPAUSE = 9;
 	public static final int ACTORLOAD = 11;
-	public static final int MAPLOADENDED = 12;
+//	public static final int MAPLOADENDED = 12;
 	public static final int ACTORLOADENDED = 13;
 	public static final int PLAYERDEATH = 14;
 	public static final int LOADING = 15;
@@ -378,13 +378,6 @@ public class GameData implements Runnable{
 			}
 			if(cursorImage.getPosition() == 2)
 			{
-				gameState = GameData.MAPLOADENDED;
-				try {
-					Thread.sleep(SLOWTIMER);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				gameState = GameData.PLAY;
 				player.setActorState(GameCharacter.MOVESTATE);
 				TIMER = FASTTIMER;
@@ -396,11 +389,9 @@ public class GameData implements Runnable{
 		}
 		else if(keyFlag.isCancel())
 		{
-			gameState = GameData.MAPLOADENDED;
 			try {
-				Thread.sleep(SLOWTIMER);
+				Thread.sleep(FASTTIMER);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			gameState = GameData.PLAY;
@@ -684,8 +675,7 @@ public class GameData implements Runnable{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMap()\nCan't allocate gameTile");
 			System.exit(0);
 		}
-		
-		gameState = GameData.MAPLOADENDED;
+
 	}
 
 	//플레이어로드
