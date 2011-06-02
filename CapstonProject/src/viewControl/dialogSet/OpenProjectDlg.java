@@ -231,39 +231,40 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btn_ok) {
-
-			File fproj = new File((String) (cb_workspace.getSelectedItem()));
-			MainFrame.OWNER.ProjectName = fproj.getName();
-			MainFrame.OWNER.projectPath = fproj.getParent();
-			File [] c = fproj.listFiles();
-			boolean pathVail = false;
-			for(File f : c){
-				if(f.getName().equals(".isProj"))
-					pathVail = true;
-			}
-			if(!pathVail){
-				l_state.setText("Please, choose right path!");
-				return;
-			}
 			try {
+				File fproj = new File((String) (cb_workspace.getSelectedItem()));
+				MainFrame.OWNER.ProjectName = fproj.getName();
+				MainFrame.OWNER.projectPath = fproj.getParent();
+				File[] c = fproj.listFiles();
+				boolean pathVail = false;
+				for (File f : c) {
+					if (f.getName().equals(".isProj"))
+						pathVail = true;
+				}
+				if (!pathVail) {
+					l_state.setText("Please, choose right path!");
+					return;
+				}
+
 				FileWriter fw = new FileWriter(saveData);
 				for (int i = pathStr.length - 1; i != -1; i--) {
 					fw.write(pathStr[i] + "$");
 				}
 				fw.close();
+
+				MainFrame.OWNER.setSubState(MainFrame.OWNER.ProjectName
+						+ " is made");
+				MainFrame.OWNER.setMainState(MainFrame.OWNER.projectPath);
+				MainFrame.OWNER.setTitle(MainFrame.OWNER.ProjectName);
+				MainFrame.OWNER.setNewProject();
+				MainFrame.OWNER.setAllUserTileSet();
+				MainFrame.OWNER.syncProjOpenCloseBtn();
+				dispose();
 			} catch (IOException e1) {
 				e1.printStackTrace();
+			} catch (Exception e2) {
+				l_state.setText("Choose right path!");
 			}
-
-			MainFrame.OWNER.setSubState(MainFrame.OWNER.ProjectName
-					+ " is made");
-			MainFrame.OWNER.setMainState(MainFrame.OWNER.projectPath);
-			MainFrame.OWNER.setTitle(MainFrame.OWNER.ProjectName);
-			MainFrame.OWNER.setNewProject();
-			MainFrame.OWNER.setAllUserTileSet();
-			MainFrame.OWNER.syncProjOpenCloseBtn();
-			dispose();
-
 		} else if (e.getSource() == btn_browser) {
 			btn_browser.setEnabled(false);
 			new OpenProjChooerDlg(this);

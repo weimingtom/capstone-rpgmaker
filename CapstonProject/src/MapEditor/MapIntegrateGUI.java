@@ -726,7 +726,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		} else if (e.getSource() == popupDeleteEvent) {
 			deleteEvent();
 		} else if (e.getSource() == popupCopyEvent) {
-
+			copyEvent();
 		} else if (e.getSource() == popupPasteEvent) {
 
 		} else if (e.getSource() == popupCanvasMode) {
@@ -756,13 +756,19 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 					endEventPoint);
 		}
 	}
-	
-	public void copyEvent(){
+
+	public void copyEvent() {
 		mapSys.getEventEditSys().copyEvents(startEventPoint, endEventPoint);
-		popupPasteEvent.setEnabled(true);
-		MainFrame.OWNER.getEventItem_paste().setEnabled(true);
+		MainFrame.OWNER.getEventItem_paste().setEnabled(syncEventPasteBtn());
 	}
-	
-	public void pasteEvent(){
+
+	public void pasteEvent() {
+		mapSys.getEventEditSys().pasteEvents(startEventPoint, endEventPoint);
+	}
+
+	public boolean syncEventPasteBtn() {
+		boolean b = mapSys.getEventEditSys().canPaste();
+		popupPasteEvent.setEnabled(b);
+		return b;
 	}
 }

@@ -799,6 +799,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			getSelectedCanvasFromCanvasTab().startEventDlg();
 		} else if (e.getSource() == eventItem_delete) {
 			getSelectedCanvasFromCanvasTab().deleteEvent();
+		} else if (e.getSource() == eventItem_copy) {
+			getSelectedCanvasFromCanvasTab().copyEvent();
 		} 
 
 		// pallete
@@ -912,11 +914,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				p.popupUpperTile.setSelected(btnUpperAble.isSelected());
 			} else if (e.getSource() == canvasTab) {
 				syncPaletteCanvas();
-
+				
 				MapIntegrateGUI m = getSelectedCanvasFromCanvasTab();
 				m.setGrid(btnCanvasGrid.isSelected());
 				m.popupGrid.setSelected(btnCanvasGrid.isSelected());
-
+				eventItem_paste.setEnabled(m.syncEventPasteBtn());				
+				
 				if (btnEvent.isSelected()) {
 					setCanvasEventMode(true);
 				}
