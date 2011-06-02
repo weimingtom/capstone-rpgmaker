@@ -33,9 +33,10 @@ public class Bootstrap {
 			
 			String[] strBootstrap = parseString(line);
 			int x = (new Integer(strBootstrap[1])).intValue();
-			int y = (new Integer(strBootstrap[1])).intValue();
+			int y = (new Integer(strBootstrap[2])).intValue();
+			int charIndex = (new Integer(strBootstrap[3])).intValue();
 			
-			return new BootstrapInfo(strBootstrap[0], new Point(x,y));
+			return new BootstrapInfo(strBootstrap[0], new Point(x,y), charIndex);
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -46,7 +47,7 @@ public class Bootstrap {
 		return null;
 	}
 	
-	public static void writeBootstrapInfo(String mapName, Point startPoint) {
+	public static void writeBootstrapInfo(String mapName, Point startPoint, int charIndex) {
 		String FILE_FULL_PATH = MainFrame.OWNER.ProjectFullPath + File.separator + "Map" + File.separator + ".map";
 		String START_MARKER = ":";
 		String DELIMITER = "@";
@@ -54,7 +55,8 @@ public class Bootstrap {
 		
 		Integer x = new Integer(startPoint.x);
 		Integer y = new Integer(startPoint.y);
-		String[] data = {mapName, x.toString(), y.toString()};
+		Integer index = new Integer(charIndex);
+		String[] data = {mapName, x.toString(), y.toString(), index.toString()};
 		
 		// 대체될 라인을 작성한다.
 		StringBuffer fileContent = new StringBuffer(IS_BOOTSTRAP+START_MARKER);
