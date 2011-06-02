@@ -25,6 +25,7 @@ public class ChangeActorEvent extends EventContent implements Serializable  {
 	 * - MONSTER
 	 *  */
 	public ChangeActorEvent(int actorType, int actorIndex) {
+		contentType = this.CHANGE_ACTOR_EVENT;
 		if(actorType != SELF || actorType != PLAYER) {
 			System.err.println("error: ActorChangeEvent() (actorType: "+ actorType +")");
 			actorType = 0;

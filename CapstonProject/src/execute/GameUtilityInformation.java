@@ -9,6 +9,7 @@ public class GameUtilityInformation {
 	private int position = 0;
 	private int fontSize = 60;
 	private String text;
+	private boolean isCalled = false;
 
 	public Image getUtilImage() {
 		return utilImage;
@@ -24,6 +25,7 @@ public class GameUtilityInformation {
 
 	public void setFont(Font font) {
 		this.font = font;
+		fontSize = this.font.getSize();
 	}
 
 	public int getPosition() {
@@ -48,6 +50,14 @@ public class GameUtilityInformation {
 
 	public String getText() {
 		return text;
+	}
+
+	public void setCalled(boolean isCalled) {
+		this.isCalled = isCalled;
+	}
+
+	public boolean isCalled() {
+		return isCalled;
 	}
 
 

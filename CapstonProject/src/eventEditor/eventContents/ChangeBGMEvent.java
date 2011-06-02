@@ -13,6 +13,7 @@ public class ChangeBGMEvent extends EventContent implements Serializable {
 	
 	
 	public ChangeBGMEvent() {
+		contentType = this.CHANGE_BGM_EVNET;
 		this.fileName = "";
 		this.volumn = 70;
 	}

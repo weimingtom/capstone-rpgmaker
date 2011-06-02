@@ -14,6 +14,7 @@ public class Event implements Serializable {
 	private final int lengthConditionArray;
 	private int startType;
 	private int actionType;
+	private int actorIndex;
 	
 	private int[] preconditionFlagArray;
 //	private int[] postconditionFlagArray;
@@ -23,6 +24,7 @@ public class Event implements Serializable {
 	public Event() {
 		this.startType = EventEditorSystem.PRESS_BUTTON;
 		this.actionType = EventEditorSystem.NOT_MOTION;
+		this.actorIndex = 0;
 		
 		lengthConditionArray = 3;
 		preconditionFlagArray = new int[lengthConditionArray];
@@ -43,6 +45,8 @@ public class Event implements Serializable {
 //	public int getPostconditionFlag(int index)		{	return postconditionFlagArray[index];	}
 	public List<EventContent> getEventContentList()	{	return eventContentList;				}
 	public EventContent getEventContent(int index)	{	return eventContentList.get(index);		}
+	public int getActorIndex() 						{	return actorIndex;					}
+	public void setActorIndex(int actorIndex) 		{	this.actorIndex = actorIndex;		}
 	
 	/*
 	 * -1은 비활성화 상태

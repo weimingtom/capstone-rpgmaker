@@ -32,6 +32,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 
 	private static final long serialVersionUID = 6090426854673494361L;
 	
+	private MainFrame owner;
 	private EventEditorSystem eventEditsSys;	// EventEditorSystem 이 Map에 저장된다면 이 변수를 이용해 메인프레임과 연결된다. 
 	private List<EventEditPanel> eventTabPanelList;
 	private String mapName;
@@ -57,6 +58,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	public EventDlg(MainFrame parent, Point startPoint, Point endPoint, EventEditorSystem eventEditsSys) {
 		super(parent, "Event Editor");
 		
+		this.owner = parent;
 		this.eventEditsSys = eventEditsSys;
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
@@ -190,7 +192,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		// EventEditPanel을 하나씩 생성하여 eventTabPanelList에 넣는다.
 		List<Event> tmpEvents = events.getEventList();
 		for (int i = 0; i < tmpEvents.size(); i++) {
-			EventEditPanel addPanel = new EventEditPanel(tmpEvents.get(i), cb_objectType.getSelectedIndex());
+			EventEditPanel addPanel = new EventEditPanel(owner, tmpEvents.get(i), cb_objectType.getSelectedIndex());
 			eventTabPanelList.add(addPanel);
 		}
 	}
@@ -199,7 +201,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		// 이벤트 하나를 생성하여 EventEditorSystem에 삽입
 		Event addEvent = new Event();
 		// 새 이벤트를 패널에 넣어준다.
-		eventTabPanelList.add(new EventEditPanel(addEvent, cb_objectType.getSelectedIndex()));
+		eventTabPanelList.add(new EventEditPanel(owner, addEvent, cb_objectType.getSelectedIndex()));
 	}
 	
 	private void addEvent(Event addEvent) {
@@ -224,7 +226,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	
 	private void addTabPanel(Event event) {
 		// 전달받은 event를 패널에 넣고 eventTabPanelList에 삽입한다.
-		EventEditPanel addPanel = new EventEditPanel(event, cb_objectType.getSelectedIndex());
+		EventEditPanel addPanel = new EventEditPanel(owner, event, cb_objectType.getSelectedIndex());
 		eventTabPanelList.add(addPanel);
 		
 		// 새로 생성한 패널을 tp_eventTap에 넣는다.
@@ -292,6 +294,9 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		} else if (e.getSource() == btn_editFlagList) {
 			new EditFlagListDlg(this.owner);
 			// 수정된 flag name으로 각 Tap Panel 안의 ComboBox를 갱신한다.
+			for (int i = 0; i < eventTabPanelList.size(); i++)
+				eventTabPanelList.get(i).renewConditionComboBox();
+				
 			renewConditionComboBoxImTapPanel();
 		} else if(e.getSource() == cb_objectType) {
 			for (int i = 0; i < eventTabPanelList.size(); i++) {
