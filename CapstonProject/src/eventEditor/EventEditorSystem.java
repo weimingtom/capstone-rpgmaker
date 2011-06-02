@@ -215,7 +215,11 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 		return true;
 	}
 	
-	public void copyEvents(Point startPointCopy, Point endPointCopy, Point startPointTarget, Point endPointTarget) {
+	public void copyEvents(Point startPointCopy, Point endPointCopy) {
+		
+	}
+	
+	public void pasteEvents(Point startPointTarget, Point endPointTarget) {
 		
 	}
 	
