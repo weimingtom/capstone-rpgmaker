@@ -83,8 +83,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		this.objectType = objectType;
 		this.listModel = new DefaultListModel();
 		
-		event.getEventContentList().add(new GameOverEvent());
-		
 		initComponents();
 	}
 	
@@ -559,21 +557,13 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return returnStr;
 	}
 	
-	// 설정된 objectType에 따라 actorIndex의 ComboBox를 정의한다.
-	private int getActorIndex() {
-		if(objectType != EventEditorSystem.MAP_EVENT) {
-			return (new Integer(((String)(cb_actorIndex.getSelectedItem())).substring(0, 3))).intValue();
-		}
-		return -1;
-	}
-	
 	// AniImgPanel을 설정한 actor의 이미지로 출력해준다.
 	private void setAniImgPanel() {
 		if(cb_actorIndex.getItemCount()>0 && cb_actorIndex.getSelectedIndex()!=-1) {
 			Actors actor = null;
 			
 			if(objectType == EventEditorSystem.NPC_EVENT)
-				actor = new NPCEditorSystem(MainFrame.OWNER.projectPath);
+				actor = new NPCEditorSystem(MainFrame.OWNER.ProjectFullPath);
 			else if(objectType == EventEditorSystem.MONSTER_EVENT)
 				actor = new MonsterEditorSystem(MainFrame.OWNER.projectPath);
 	
@@ -594,16 +584,70 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return event.getEventContent(index);
 	}
 	
-	public Event getEvent()	{	return event;	}
+	public Event getEvent()						{	return event;				}
+
+	public JComboBox getCb_condition1()			{	return cb_condition1;		}
+
+	public JComboBox getCb_condition2()			{	return cb_condition2;		}
+
+	public JComboBox getCb_condition3()			{	return cb_condition3;		}
+
+	public JCheckBox getCkb_condition1()		{	return ckb_condition1;		}
+
+	public JCheckBox getCkb_condition2()		{	return ckb_condition2;		}
+
+	public JCheckBox getCkb_condition3()		{	return ckb_condition3;		}
+
+	public JRadioButton getRbtn_aboveTile()		{	return rbtn_aboveTile;		}
+
+	public JRadioButton getRbtn_autoStart()		{	return rbtn_autoStart;		}
+
+	public JRadioButton getRbtn_contactPlayer()	{	return rbtn_contactPlayer;	}
+
+	public JRadioButton getRbtn_parallelStart()	{	return rbtn_parallelStart;	}
+
+	public JRadioButton getRbtn_pressButton()	{	return rbtn_pressButton;	}
 	
+	public int getActionType() {
+		return cb_actorMotionType.getSelectedIndex();
+	}
+	
+	// 설정된 objectType에 따라 actorIndex의 ComboBox를 정의한다.
+	public int getActorIndex() {
+		if(objectType != EventEditorSystem.MAP_EVENT) {
+			return (new Integer(((String)(cb_actorIndex.getSelectedItem())).substring(0, 3))).intValue();
+		}
+		return -1;
+	}
+	
+	public int getStartType() {
+		if(rbtn_aboveTile.isSelected()) {
+			return EventEditorSystem.ABOVE_EVENT_TILE;
+		} else if(rbtn_autoStart.isSelected()) {
+			return EventEditorSystem.AUTO_START;
+		} else if(rbtn_contactPlayer.isSelected()) {
+			return EventEditorSystem.CONTACT_WITH_PLAYER;
+		} else if(rbtn_parallelStart.isSelected()) {
+			return EventEditorSystem.PARALLEL_START;
+		} else if(rbtn_pressButton.isSelected()) {
+			return EventEditorSystem.PRESS_BUTTON;
+		}
+		
+		System.err.println("error: EventEditPanel.getSelectedIndexRadioButton()");
+		return 0;
+	}
+	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
 			// Combo박스의 활성화 여부를 체크하여 설정한다.
 			renewConditionComboBox();
 		} else if(e.getSource() == cb_actorIndex) {
-			// 해당 actor를 불러와서 패널에 출력해준다.
-			setAniImgPanel();
+			if(cb_actorIndex.getSelectedIndex() != EventEditorSystem.MAP_EVENT) {
+				// 해당 actor를 불러와서 패널에 출력해준다.
+				setAniImgPanel();
+			}
 		}
 	}
 	
