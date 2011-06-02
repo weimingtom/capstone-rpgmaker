@@ -148,12 +148,12 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	 *  
 	 *  주의 : col은 세로, row는 가로줄의 인덱스(0부터 시작)
 	 *  */
-	public EventTile getEventTile(int col, int row) {
+	public EventTile getEventTile(int y, int x) {
 		EventTile returnTile = null;
 		
 		for (int i = 0; i < eventTileList.size(); i++) {
 			returnTile = eventTileList.get(i);
-			if(returnTile.getInitColLocation()==col && returnTile.getInitRowLocation()==row)
+			if(returnTile.getInitColLocation()==y && returnTile.getInitRowLocation()==x)
 				return returnTile;
 		}
 		

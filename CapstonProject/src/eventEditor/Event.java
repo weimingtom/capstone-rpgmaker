@@ -41,12 +41,10 @@ public class Event implements Serializable {
 	public int getActionType()						{	return actionType;						}
 	public int[] getPreconditionFlagArray() 		{	return preconditionFlagArray;			}
 	public int getPreconditionFlag(int index) 		{	return preconditionFlagArray[index];	}
-//	public int[] getPostconditionFlagArray()		{	return postconditionFlagArray;			}
-//	public int getPostconditionFlag(int index)		{	return postconditionFlagArray[index];	}
 	public List<EventContent> getEventContentList()	{	return eventContentList;				}
 	public EventContent getEventContent(int index)	{	return eventContentList.get(index);		}
-	public int getActorIndex() 						{	return actorIndex;					}
-	public void setActorIndex(int actorIndex) 		{	this.actorIndex = actorIndex;		}
+	public int getActorIndex() 						{	return actorIndex;						}
+	public void setActorIndex(int actorIndex) 		{	this.actorIndex = actorIndex;			}
 	
 	/*
 	 * -1은 비활성화 상태
@@ -57,12 +55,6 @@ public class Event implements Serializable {
 		}
 		preconditionFlagArray[index] = flagIndex;
 	}
-//	public void setPostconditionFlag(int index, int flagIndex) {
-//		if(index > 1000 || index < -1) {
-//			System.err.println("error: Event.setPostconditionFlag() (index: " + index + ")");
-//		}
-//		postconditionFlagArray[index] = flagIndex;
-//	}
 
 
 
