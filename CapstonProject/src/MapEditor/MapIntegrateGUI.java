@@ -59,6 +59,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public static final int CANVAS_MODE = 7;
 	public static boolean GRIDMODE_FLAG = false;
 	public static boolean EVENTMODE_FLAG = false;
+	
+	
+	// 처음에 시작 마우스 위치
+	public static final int STARTING_POINT = 10000000;
 
 	private int outputFlag = 4;
 	// 마우스의 위치 확인
@@ -117,8 +121,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		mousePoint = new Point(0, 0);
 		dragPoint = new Point(0, 0);
 		pressPoint = new Point(0, 0);
-		startEventPoint = new Point(100000, 100000);
-		endEventPoint = new Point(100000, 100000);
+		startEventPoint = new Point(STARTING_POINT, STARTING_POINT);
+		endEventPoint = new Point(STARTING_POINT, STARTING_POINT);
 		xAxis = 0;
 		yAxis = 0;
 
@@ -728,7 +732,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		} else if (e.getSource() == popupCopyEvent) {
 			copyEvent();
 		} else if (e.getSource() == popupPasteEvent) {
-
+			pasteEvent();
 		} else if (e.getSource() == popupCanvasMode) {
 			MainFrame.OWNER.setCanvasEventMode(false);
 		}
