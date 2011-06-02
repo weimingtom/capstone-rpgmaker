@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -97,9 +98,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public EstyleCheckBoxItem popupSemitransparent;
 
 	private JMenuItem popupEventMode;
-	private JMenuItem popupNewEvent;
+	private JMenuItem popupSetEvent;
 	private JMenuItem popupCopyEvent;
-	private JMenuItem popupEditEvent;
 	private JMenuItem popupPasteEvent;
 	private JMenuItem popupDeleteEvent;
 	private JMenuItem popupSetStartingPointEvent;
@@ -140,9 +140,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupEventSemitransparent = new EstyleCheckBoxItem(
 				"background translucence", poppuEventBtnGroup);
 		popupEventMode = new JMenuItem("Set event mode");
-		popupNewEvent = new JMenuItem("New event");
+		popupSetEvent = new JMenuItem("Set event");
 		popupCopyEvent = new JMenuItem("Copy event");
-		popupEditEvent = new JMenuItem("Edit event");
 		popupPasteEvent = new JMenuItem("Paste event");
 		popupDeleteEvent = new JMenuItem("Delete event");
 		popupSetStartingPointEvent = new JMenuItem(
@@ -171,8 +170,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupViewStyle.add(popupEventFgOnly);
 		popupViewStyle.add(popupEventSemitransparent);
 
-		popupmenuEvent.add(popupNewEvent);
-		popupmenuEvent.add(popupEditEvent);
+		popupmenuEvent.add(popupSetEvent);
 		popupmenuEvent.add(popupCopyEvent);
 		popupmenuEvent.add(popupPasteEvent);
 		popupmenuEvent.add(popupDeleteEvent);
@@ -187,9 +185,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupEventBgOnly.addActionListener(this);
 		popupEventFgOnly.addActionListener(this);
 		popupEventSemitransparent.addActionListener(this);
-		popupNewEvent.addActionListener(this);
+		popupSetEvent.addActionListener(this);
 		popupCopyEvent.addActionListener(this);
-		popupEditEvent.addActionListener(this);
 		popupPasteEvent.addActionListener(this);
 		popupDeleteEvent.addActionListener(this);
 		popupSetStartingPointEvent.addActionListener(this);
@@ -438,7 +435,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			for (int i = 0; i < background.getWidth() / DrawingTemplate.pixel; i++) {
 				for (int j = 0; j < background.getHeight()
 						/ DrawingTemplate.pixel; j++) {
-					if (mapSys.getEventEditSys().hasEventOnTile(i, j)) {
+					if (mapSys.getEventEditSys().hasEventOnTile(j, i)) {
 						g2d.drawString("E",
 								i * DrawingTemplate.pixel + reRatio, j
 										* DrawingTemplate.pixel
@@ -724,14 +721,11 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				MainFrame.OWNER.setCanvasSemitransparentMode(true);
 		}
 
-		else if (e.getSource() == popupNewEvent) {
-			new EventDlg(MainFrame.OWNER, startEventPoint, endEventPoint,
-					mapSys.getEventEditSys());
+		else if (e.getSource() == popupSetEvent) {
+			startEventDlg();
 		} else if (e.getSource() == popupDeleteEvent) {
-
+			deleteEvent();
 		} else if (e.getSource() == popupCopyEvent) {
-
-		} else if (e.getSource() == popupEditEvent) {
 
 		} else if (e.getSource() == popupPasteEvent) {
 
@@ -746,5 +740,29 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	public Point getEndEventPoint() {
 		return endEventPoint;
+	}
+
+	public void startEventDlg() {
+		new EventDlg(MainFrame.OWNER, startEventPoint, endEventPoint, mapSys
+				.getEventEditSys());
+	}
+
+	public void deleteEvent() {
+		new JOptionPane();
+		if (JOptionPane.showConfirmDialog(this, "Really delete event?",
+				"CLOSE", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE) == 0) {
+			mapSys.getEventEditSys().deleteEvents(startEventPoint,
+					endEventPoint);
+		}
+	}
+	
+	public void copyEvent(){
+		mapSys.getEventEditSys().copyEvents(startEventPoint, endEventPoint);
+		popupPasteEvent.setEnabled(true);
+		MainFrame.OWNER.getEventItem_paste().setEnabled(true);
+	}
+	
+	public void pasteEvent(){
 	}
 }

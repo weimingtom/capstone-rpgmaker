@@ -49,7 +49,6 @@ import viewControl.dialogSet.OpenProjectDlg;
 import viewControl.dialogSet.TileSetChooserDlg;
 import viewControl.editorDlg.ArmorDlg;
 import viewControl.editorDlg.EffectAniDlg;
-import viewControl.editorDlg.EventDlg;
 import viewControl.editorDlg.ItemDlg;
 import viewControl.editorDlg.JobDlg;
 import viewControl.editorDlg.NewCharacterDlg;
@@ -210,12 +209,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		eventItem_viewOnEvent = new EstyleCheckBoxItem("Event mode");
 		eventItem_copy = new JMenuItem("Copy event");
-		eventItem_edit = new JMenuItem("Edit event");
-		eventItem_new = new JMenuItem("New event");
+		eventItem_setEvent = new JMenuItem("Set event");
 		eventItem_paste = new JMenuItem("Paste event");
 		eventItem_delete = new JMenuItem("Delete event");
-		eventItem_setStartingPoint = new JMenuItem("Set user charactor starting point");
-		
+		eventItem_setStartingPoint = new JMenuItem(
+				"Set user charactor starting point");
+
 		palleteGroundGroup = new ButtonGroup();
 		palleteModeGroup = new EstyleCheckBoxItemGroup();
 		paletteItem_background = new JRadioButtonMenuItem(
@@ -518,30 +517,25 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		// event
 		menuEvent.add(eventItem_viewOnEvent);
 		menuEvent.addSeparator();
-		menuEvent.add(eventItem_new);
-		menuEvent.add(eventItem_edit);
-		menuEvent.addSeparator();
+		menuEvent.add(eventItem_setEvent);
 		menuEvent.add(eventItem_copy);
 		menuEvent.add(eventItem_paste);
 		menuEvent.add(eventItem_delete);
 		menuEvent.add(eventItem_setStartingPoint);
 
 		eventItem_viewOnEvent.setEnabled(false);
-		eventItem_new.setEnabled(false);
-		eventItem_edit.setEnabled(false);
+		eventItem_setEvent.setEnabled(false);
 		eventItem_copy.setEnabled(false);
 		eventItem_paste.setEnabled(false);
 		eventItem_delete.setEnabled(false);
 		eventItem_setStartingPoint.setEnabled(false);
-		
+
 		eventItem_viewOnEvent.addActionListener(this);
-		eventItem_new.addActionListener(this);
-		eventItem_edit.addActionListener(this);
+		eventItem_setEvent.addActionListener(this);
 		eventItem_copy.addActionListener(this);
 		eventItem_paste.addActionListener(this);
 		eventItem_delete.addActionListener(this);
 		eventItem_setStartingPoint.addActionListener(this);
-		
 
 		// pallete
 		palleteGroundGroup.add(paletteItem_background);
@@ -683,13 +677,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private EstyleCheckBoxItem canvasItem_grid;
 
 	private EstyleCheckBoxItem eventItem_viewOnEvent;
-	private JMenuItem eventItem_new;
-	private JMenuItem eventItem_edit;
+	private JMenuItem eventItem_setEvent;
 	private JMenuItem eventItem_copy;
 	private JMenuItem eventItem_paste;
 	private JMenuItem eventItem_delete;
 	private JMenuItem eventItem_setStartingPoint;
-	
+
 	private ButtonGroup palleteGroundGroup;
 	private EstyleCheckBoxItemGroup palleteModeGroup;
 	private JRadioButtonMenuItem paletteItem_background;
@@ -747,12 +740,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == fileItem_newMap) {
 			new NewMapDlg(this);
 		} else if (e.getSource() == fileItem_projectClose) {
-			new JOptionPane();
-			if (JOptionPane.showConfirmDialog(this,
-					"Really close the project?", "CLOSE",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
-				closeProject();
-			}
+			closeProject();
 		} else if (e.getSource() == fileItem_newTileSet) {
 			new TileSetChooserDlg(this);
 		} else if (e.getSource() == fileItem_newCharacter) {
@@ -807,10 +795,11 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		// event
 		else if (e.getSource() == eventItem_viewOnEvent) {
 			setCanvasEventMode(eventItem_viewOnEvent.isSelected());
-		} else if (e.getSource() == eventItem_new){
-			new EventDlg(this, getSelectedCanvasFromCanvasTab().getStartEventPoint(), getSelectedCanvasFromCanvasTab().getEndEventPoint(),
-					getSelectedCanvasFromCanvasTab().getMapSys().getEventEditSys());
-		}
+		} else if (e.getSource() == eventItem_setEvent) {
+			getSelectedCanvasFromCanvasTab().startEventDlg();
+		} else if (e.getSource() == eventItem_delete) {
+			getSelectedCanvasFromCanvasTab().deleteEvent();
+		} 
 
 		// pallete
 		else if (e.getSource() == paletteItem_background) {
@@ -843,12 +832,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == btnProjOpen) {
 			new OpenProjectDlg(this);
 		} else if (e.getSource() == btnProjClose) {
-			new JOptionPane();
-			if (JOptionPane.showConfirmDialog(this,
-					"Really close the project?", "CLOSE",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
-				closeProject();
-			}
+			closeProject();
 		}
 
 		// CENTER EAST TOOLBAR
@@ -1515,12 +1499,11 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasItem_foregroundOnly.setEnabled(b);
 
 		eventItem_copy.setEnabled(b);
-		eventItem_edit.setEnabled(b);
-		eventItem_new.setEnabled(b);
+		eventItem_setEvent.setEnabled(b);
 		eventItem_viewOnEvent.setEnabled(b);
 		eventItem_delete.setEnabled(b);
 		eventItem_setStartingPoint.setEnabled(b);
-		
+
 		paletteItem_background.setEnabled(b);
 		paletteItem_foreground.setEnabled(b);
 		palleteItem_grid.setEnabled(b);
@@ -1746,26 +1729,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	public void closeProject() {
-		dispose();
-		mainFrameThread = new Thread(new MainFrame());
-		mainFrameThread.start();
-	}
-
-	/**
-	 * 프로젝트를 닫은 후 즉시 입력받은 메인프레임으로 다시 연다
-	 */
-	public void closeProject(MainFrame mf) {
-
-		try {
+		new JOptionPane();
+		if (JOptionPane.showConfirmDialog(this, "Really close the project?",
+				"CLOSE", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE) == 0) {
 			dispose();
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			mainFrameThread = new Thread(new MainFrame());
+			mainFrameThread.start();
 		}
-		mainFrameThread = new Thread(mf);
-		mf.setNewProject();
-		mf.setAllUserTileSet();
-		mainFrameThread.start();
 	}
 
 	public void syncProjOpenCloseBtn() {
@@ -1775,6 +1746,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 	public ProjectTree getProjTree() {
 		return projTree;
+	}
+
+	public JMenuItem getEventItem_paste() {
+		return eventItem_paste;
 	}
 
 }
