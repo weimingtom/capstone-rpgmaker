@@ -27,9 +27,9 @@ public class EventTile implements Serializable {
 		objectType = EventEditorSystem.MAP_EVENT;
 		
 
-		Event event = new Event();
+//		Event event = new Event();
 		eventList = new LinkedList<Event>();
-		eventList.add(event);
+//		eventList.add(event);
 	}
 	
 	// 원하는 index의 이벤트를 반환
