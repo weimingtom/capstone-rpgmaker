@@ -124,7 +124,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 			fileChooser.setMultiSelectionEnabled(false);
 
 			// Chooser의 필터 설정
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 File", ".mp3");
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 File", "mp3");
 			fileChooser.setFileFilter(filter);
 
 			// Chooser를 출력한다. 선택 여부가 returnName에 저장
@@ -137,6 +137,8 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+				
+				// EventContent를 event에 삽입한다.
 			}
 		}
 	}

@@ -59,13 +59,6 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	public EventDlg(MainFrame parent, Point startPoint, Point endPoint, EventEditorSystem eventEditsSys) {
 		super(parent, "Event Editor");
 		
-//		this.owner = parent;
-//		this.eventEditsSys = eventEditsSys;
-//		this.startPoint = startPoint;
-//		this.endPoint = endPoint;
-//		this.mapName = eventEditsSys.getName();
-//		this.eventTabPanelList = new LinkedList<EventEditPanel>();
-		
 		this.owner = parent;
 		this.eventEditsSys = eventEditsSys;
 		this.startPoint = startPoint;
