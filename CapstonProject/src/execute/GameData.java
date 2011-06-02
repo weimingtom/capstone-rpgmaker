@@ -10,14 +10,12 @@
 
 package execute;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -634,9 +632,6 @@ public class GameData implements Runnable{
 			monsters.elementAt(6).deployActor(2, 70, 60, null);}
 		catch(Exception e)
 		{
-//			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMonster()");
-//			e.printStackTrace();
-//			System.exit(0);
 			//몬스터가 없을 경우에
 			monsters = null;
 		}
@@ -763,7 +758,7 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
-		String utilPath = "src\\resource\\utilImg";
+		String utilPath = gamePath+"src\\resource\\utilImg";
 		try 
 		{
 			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\TITLE.png")));
