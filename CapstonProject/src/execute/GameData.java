@@ -763,15 +763,15 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
-		String utilPath = gamePath+"/UtilImage";
+		String utilPath = "src\\resource\\utilImg";
 		try 
 		{
-			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"/TITLE.png")));
-			logoScreen.setUtilImage(ImageIO.read(new File(utilPath+"/LOGO.png")));
-			cursorImage.setUtilImage(ImageIO.read(new File(utilPath+"/CURSOR.png")));
-			loadScreen.setUtilImage(ImageIO.read(new File(utilPath+"/LOADING.png")));
-			gameOver.setUtilImage(ImageIO.read(new File(utilPath+"/GAMEOVER.png")));
-			levelUpImage.setUtilImage(ImageIO.read(new File(utilPath+"/LEVELUP.png")));
+			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\TITLE.png")));
+			logoScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\LOGO.png")));
+			cursorImage.setUtilImage(ImageIO.read(new File(utilPath+"\\CURSOR.png")));
+			loadScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\LOADING.png")));
+			gameOver.setUtilImage(ImageIO.read(new File(utilPath+"\\GAMEOVER.png")));
+			levelUpImage.setUtilImage(ImageIO.read(new File(utilPath+"\\LEVELUP.png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//만약에 타이틀을 불러오는데 실패해도 진행

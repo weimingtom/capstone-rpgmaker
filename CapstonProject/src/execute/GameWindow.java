@@ -38,7 +38,7 @@ public class GameWindow extends JFrame implements KeyListener{
 //		tmp = graphicsEnvironment.getScreenDevices();
 //		graphicsDevice = tmp[1];
 		// 종료시 화면 복구를 위해
-		origDisplayMode = graphicsDevice.getDisplayMode();
+		//origDisplayMode = graphicsDevice.getDisplayMode();
 		
 		//전체화면모드 
 //		if (graphicsDevice.isFullScreenSupported()) {
@@ -55,7 +55,7 @@ public class GameWindow extends JFrame implements KeyListener{
 //			System.out.println("Full-screen mode not supported");
 //		}// end else
 		
-		this.setSize(800, 600);
+		this.setSize(800, 640);
 		this.setVisible(true);
 		
 		//키보드 입력 이벤트 리스너

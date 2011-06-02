@@ -55,6 +55,8 @@ public class GameExecution {
 		gameData.setGameState(GameData.LOGOSCREEN);
 		
 		//그리고 초기에 게임 데이터에서 이벤트 로드를 실행한다.
+//		System.out.println(gameWindow.getWidth());
+//		System.out.println(gameWindow.getHeight());
 	}
 	
 	

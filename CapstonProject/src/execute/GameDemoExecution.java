@@ -16,18 +16,19 @@ public class GameDemoExecution {
 	//키입력 객체
 	private KeyFlags keyFlag;
 	
-	public GameDemoExecution()
+	public GameDemoExecution(String gamePath)
 	{
+		this.gamePath = gamePath;
 		//객체 생성
 		gameData = new GameData();
 		//게임 패스 입력
 		gameData.setGamePath(this.gamePath);
 		
 		//키보드 입력 및 그래픽 자원을 얻을 윈도우 생성, gameData 주입
-		gameWindow = new GameWindow(gameData, true);
+		gameWindow = new GameWindow(gameData, false);
 		//그래픽 자원 생성, 출력 모드는 더블 버퍼링 모드
 		gameWindow.createBufferStrategy(DOUBLEBUFFERMODE);
-		gameData.setScreenHeight(gameWindow.getHeight());
+		gameData.setGameWindow(gameWindow);
 
 		
 		//게임 화면 출력할 객체, gameData 주입
@@ -59,10 +60,8 @@ public class GameDemoExecution {
 	
 	
 	//각 쓰레드 실행
-	public void execute(String gamePath)
+	public void execute()
 	{
-		
-		this.setGamePath(gamePath);
 		Thread displayThread = new Thread(this.gameDisplay);
 		Thread dataThread = new Thread(this.gameData);
 		Thread musicThread = new Thread(gameMusic);
@@ -72,12 +71,6 @@ public class GameDemoExecution {
 		
 	}
 	
-//	public static void main(String[] args)
-//	{
-//		GameDemoExecution game = new GameDemoExecution();
-//		game.execute("D:/GameDataFiles");
-//	}
-	
 	public void setGamePath(String gamePath) {
 		this.gamePath = gamePath;
 	}
@@ -86,4 +79,12 @@ public class GameDemoExecution {
 	public String getGamePath() {
 		return gamePath;
 	}	
+	
+	
+	
+	public static void main(String args[])
+	{
+		GameDemoExecution game = new GameDemoExecution("D:/GameDataFiles");
+		game.execute();
+	}
 }
