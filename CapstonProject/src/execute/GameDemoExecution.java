@@ -1,7 +1,7 @@
 package execute;
 
 
-public class GameExecution {
+public class GameDemoExecution {
 
 	//더블 버퍼링모드
 	public static int DOUBLEBUFFERMODE = 2;
@@ -16,7 +16,7 @@ public class GameExecution {
 	//키입력 객체
 	private KeyFlags keyFlag;
 	
-	public GameExecution()
+	public GameDemoExecution()
 	{
 		//객체 생성
 		gameData = new GameData();
@@ -24,7 +24,7 @@ public class GameExecution {
 		gameData.setGamePath(this.gamePath);
 		
 		//키보드 입력 및 그래픽 자원을 얻을 윈도우 생성, gameData 주입
-		gameWindow = new GameWindow(gameData);
+		gameWindow = new GameWindow(gameData, true);
 		//그래픽 자원 생성, 출력 모드는 더블 버퍼링 모드
 		gameWindow.createBufferStrategy(DOUBLEBUFFERMODE);
 		gameData.setScreenHeight(gameWindow.getHeight());
@@ -59,8 +59,10 @@ public class GameExecution {
 	
 	
 	//각 쓰레드 실행
-	public void execute()
+	public void execute(String gamePath)
 	{
+		
+		this.setGamePath(gamePath);
 		Thread displayThread = new Thread(this.gameDisplay);
 		Thread dataThread = new Thread(this.gameData);
 		Thread musicThread = new Thread(gameMusic);
@@ -70,6 +72,12 @@ public class GameExecution {
 		
 	}
 	
+//	public static void main(String[] args)
+//	{
+//		GameDemoExecution game = new GameDemoExecution();
+//		game.execute("D:/GameDataFiles");
+//	}
+	
 	public void setGamePath(String gamePath) {
 		this.gamePath = gamePath;
 	}
@@ -78,12 +86,4 @@ public class GameExecution {
 	public String getGamePath() {
 		return gamePath;
 	}	
-	
-	
-	
-	public static void main(String args[])
-	{
-		GameExecution game = new GameExecution();
-		game.execute();
-	}
 }

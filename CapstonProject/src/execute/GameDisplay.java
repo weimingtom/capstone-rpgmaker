@@ -21,6 +21,7 @@ import MapEditor.Tile;
 public class GameDisplay implements Runnable{
 
 	public static int TIMER = 30;
+	public static int animTimer = 0;
 	//페이드 아웃 페이드 인을 위해
 	
 	//맵과 케릭터 이벤트 배열의 비율.
@@ -69,6 +70,7 @@ public class GameDisplay implements Runnable{
 		}
 	}
 
+	
 	//로고 출력
 	public void displayLogoImage(Graphics2D g)
 	{	
@@ -207,10 +209,91 @@ public class GameDisplay implements Runnable{
 		g.drawImage(loading.getUtilImage(),0,0,screenWidth,screenHeight,null);
 	}
 	
-	/******************************************************************************/
-	/***주의!! 두 쓰레드의 접속 속도가 다르기 때문에 널값에 대한 예외상황처리!!        ******************/
-	/***예) 맵을 불러오는데 걸리는 시간이 있음. gameState에 로딩을 넣음으로 처리  *************************/
-	/******************************************************************************/
+	//게임오버 출력
+	public void displayGameOver(Graphics2D g)
+	{
+		GameUtilityInformation gameOver = gameData.getGameOver();
+		
+		if(gameData.getFadeTimer() < 255)
+		{
+			g.drawImage(gameOver.getUtilImage(), 0, 0,
+					screenWidth, screenHeight, null);
+			
+			g.setColor(new Color(gameData.getFadeTimer(),
+					gameData.getFadeTimer(),gameData.getFadeTimer(),255-gameData.getFadeTimer()));
+			g.fillRect(0, 0, screenWidth, screenHeight);
+			gameData.setFadeTimer(gameData.getFadeTimer()+20);
+		}
+		else
+		{
+			g.drawImage(gameOver.getUtilImage(), 0, 0,
+					screenWidth, screenHeight, null);
+		}
+	}
+	
+	//스테이터스 창 출력
+	public void displayStatusScreen(Graphics2D g)
+	{
+		//배경 삭제
+		GameUtilityInformation status = gameData.getStatusScreen();
+		GameUtilityInformation cursor = gameData.getCursorImage();
+		GameUtilityInformation title = gameData.getTitleScreen();
+		
+
+		g.drawImage(title.getUtilImage(), 0,0,screenWidth,screenHeight,null);
+		g.setColor(new Color(70,70,240,200));
+		g.fill3DRect(screenWidth/10, screenHeight/10, screenWidth/6, screenHeight/2, true);
+		g.fill3DRect((int)(screenWidth*(4.0/10.0)), screenHeight/10,
+				(int)(screenWidth*(5.0/10.0)), (int)(screenHeight*(8.0/10.0)), true);
+		g.setColor(Color.black);
+		g.setFont(status.getFont());
+		
+		GameCharacter player = gameData.getPlayer();
+		
+		Image cursorImage = cursor.getUtilImage();
+//		g.drawString("아이템", screenWidth/10 + 2*cursorImage.getWidth(null), status.getFontSize()+screenHeight/10);
+//		g.drawString("장   비", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*3+screenHeight/10);
+		g.drawString("상    태", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*1+screenHeight/10);
+		g.drawString("저    장", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*3+screenHeight/10);
+		g.drawString("게임으로", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*5+screenHeight/10);
+		g.drawString("종    료", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*7+screenHeight/10);
+		//첫번째에 위치
+		if(cursor.getPosition() == 0)
+		{
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*1+screenHeight/10 - status.getFontSize()/2, null);
+			g.drawString("주인공의 상태", (int)(screenWidth*(4.0/10.0)), status.getFontSize()*1+screenHeight/10);
+			g.drawString("HP : "+player.getNowStatus().getHP() + " / " + player.getMaxStatus().getHP(), 
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*2+screenHeight/10);
+			g.drawString("MP : "+player.getNowStatus().getMP() + " / " + player.getMaxStatus().getMP(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*3+screenHeight/10);
+			g.drawString("Str : "+player.getNowStatus().getStrength() + " / " + player.getMaxStatus().getStrength(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*4+screenHeight/10);
+			g.drawString("Vit : "+player.getNowStatus().getVitality() + " / " + player.getMaxStatus().getVitality(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*5+screenHeight/10);
+			g.drawString("Agt : "+player.getNowStatus().getAgility()+ " / " + player.getMaxStatus().getAgility(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*6+screenHeight/10);
+			g.drawString("Int : "+player.getNowStatus().getIntelligence()+ " / " + player.getMaxStatus().getIntelligence(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*7+screenHeight/10);
+			g.drawString("Knw : "+player.getNowStatus().getKnowledge()+ " / " + player.getMaxStatus().getKnowledge(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*8+screenHeight/10);
+			g.drawString("EXP : "+player.getNowEXP()+ " / " + player.getMaxStatus().getEXP(),
+					(int)(screenWidth*(4.0/10.0))+status.getFontSize(), status.getFontSize()*9+screenHeight/10);
+			
+		}
+		else if(cursor.getPosition() == 1)
+		{
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*3+screenHeight/10 - status.getFontSize()/2, null);
+		}
+		else if(cursor.getPosition() == 2)
+		{
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*5+screenHeight/10 - status.getFontSize()/2, null);
+		}
+		else if(cursor.getPosition() == 3)
+		{
+			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null)), status.getFontSize()*7+screenHeight/10 - status.getFontSize()/2, null);
+		}
+	}
+
 	public void displayBackground(Graphics2D g)
 	{
 		g.setColor(Color.black);
@@ -226,9 +309,60 @@ public class GameDisplay implements Runnable{
 		g.drawImage(gameMap, mapStartingPointX, mapStartingPointY, sizeW, sizeH, null);
 
 	}
+	
+	public void displayBackground(Graphics2D g, boolean isUpper)
+	{
+		g.setColor(Color.black);
+		g.fillRect(0, 0, screenWidth, screenHeight);
+		//맵의 백그라운드 출력
+		BufferedImage gameMap = gameData.getGameMap().getM_Background();
+		int sizeW = (int) ((double)gameMap.getWidth()*ratioX);
+		int sizeH = (int) ((double)gameMap.getHeight()*ratioY);
+		//맵의 시작위치 설정
+		this.mapStartingPointX = (screenWidth - sizeW)/2;
+		this.mapStartingPointY = (screenHeight - sizeH)/2;
+		//두가지 경우 
+		Tile[][] mapTile = gameData.getGameMap().getM_BackgroundTile();
+
+		if(isUpper == false)
+		{
+			//캐릭 아래에 깔리는 것 부터 출력
+			for(int i = 0 ; i < mapTile.length; i++)
+			{
+				for(int j = 0 ; j < mapTile[0].length; j++)
+				{
+					if(mapTile[i][j].getIsUpper() == false)
+					{
+						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
+								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
+								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
+								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
+								null);
+					}
+				}
+			}
+		}
+		else
+		{
+			for(int i = 0 ; i < mapTile.length; i++)
+			{
+				for(int j = 0 ; j < mapTile[0].length; j++)
+				{
+					if(mapTile[i][j].getIsUpper() == true)
+					{
+						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
+								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
+								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
+								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
+								null);
+					}
+				}
+			}
+		}
+
+	}
 
 	//전경, 어느 부분에서 어느 부분을 출력해야하는가?
-	//여기서 매개변수는 게임의 타일
 	public void displayForeground(Graphics2D g, boolean isUpper)
 	{
 		Tile[][] mapTile = gameData.getGameMap().getM_ForegroundTile();
@@ -270,7 +404,6 @@ public class GameDisplay implements Runnable{
 		}
 	}
 
-	
 	//액터 출력 플레이어 무브모션 출력
 	public void displayActorMoveMotion(Graphics2D g, Animations actorAnim, boolean isStop , GameCharacter actor)
 	{
@@ -337,8 +470,8 @@ public class GameDisplay implements Runnable{
 //		{
 //			actorImage = actorAnim.getNextImage();
 //		}
-		
-//		if(actor.getAnimActionClock()== 0)
+//		
+//		if(gameData.getGameRobot().canIchangeImage(actor, actorAnim, GameDisplay.TIMER))
 //		{
 			actorImage = actorAnim.getNextImage();
 //		}
@@ -357,7 +490,7 @@ public class GameDisplay implements Runnable{
 
 	}
 	
-	
+	//npc들 출력
 	public void displayAlliance(Graphics2D g,GameCharacter alliance)
 	{
 		// 애니메이션 정보 얻기
@@ -407,7 +540,7 @@ public class GameDisplay implements Runnable{
 		
 	}
 	
-	
+	//전체 캐릭터들의 체력 표시
 	public void displayPlayer(Graphics2D g)
 	{
 		//캐릭정보
@@ -471,10 +604,10 @@ public class GameDisplay implements Runnable{
 			}
 			
 		}//무브애니와 어택 애니 나눠야함, 무브쪽 앤드
+		
 	}
 
-	/*****************************************************************/
-	/*****************************************************************/
+	//몬스터들 출력
 	public void displayMonster(Graphics2D g, GameCharacter monster)
 	{
 		
@@ -546,10 +679,6 @@ public class GameDisplay implements Runnable{
 //		}
 	}
 
-	
-	
-	
-	
 	//액터들의 출력
 	public void displayActors(Graphics2D g)
 	{
@@ -570,21 +699,56 @@ public class GameDisplay implements Runnable{
 			else if( actors.elementAt(i) instanceof Monster)
 			{
 				//몬스터 출력
-				/*****************************************************************/
-				/*****************************************************************/
-				/*****************************************************************/
 				displayMonster(g, (GameCharacter)actors.elementAt(i));
-				/*****************************************************************/
-				/*****************************************************************/
-				/*****************************************************************/
 			}
+			displayHealthBar(g, actors.elementAt(i));
 		}
 	}
 	
 
+	//액터들의 체력 출력
+	public void displayHealthBar(Graphics2D g, GameCharacter actor)
+	{
+		int startX = (int) ((actor.getxPosition()*GameData.mapCharArrayRatio)*ratioX)
+			+mapStartingPointX - DrawingTemplate.pixel;
+		int startY = (int) ((actor.getyPosition()*GameData.mapCharArrayRatio)*ratioY)
+			+mapStartingPointY + DrawingTemplate.pixel + DrawingTemplate.pixel/2;
+//		
+		
+		int fullHP = (int) (DrawingTemplate.pixel*ratioX);
+		
+		double ratio = (double)(actor.getMaxStatus().getHP() - actor.getNowStatus().getHP())/(double)actor.getMaxStatus().getHP();
+		ratio*=fullHP;
+		
+		g.setColor(Color.green);
+		g.fill3DRect(startX, startY, fullHP,8, false);
+
+		if(ratio != 0)
+		{
+			g.setColor(Color.red);
+			g.fill3DRect(startX, startY, (int)ratio, 8, false);
+		}
+	}
 	
-	
-	
+	public void displayLevelUp(Graphics2D g, GameCharacter player)
+	{
+		int startX = (int) ((player.getxPosition()*GameData.mapCharArrayRatio)*ratioX)
+			+mapStartingPointX - DrawingTemplate.pixel;
+		int startY = (int) ((player.getyPosition()*GameData.mapCharArrayRatio)*ratioY)
+				+mapStartingPointY - DrawingTemplate.pixel;
+		
+		Image levelUp = gameData.getLevelUpImage().getUtilImage();
+		
+		if(animTimer < GameDisplay.TIMER/2)
+		{
+			animTimer++;
+			g.drawImage(levelUp, startX, startY,screenWidth/16,screenHeight/16, null);
+		}
+		else
+		{
+			player.setLevelUp(false);
+		}
+	}
 	
 	//GameRunning!!!!!!!
 	@Override
@@ -593,48 +757,62 @@ public class GameDisplay implements Runnable{
 
 		while (gameData.getGameState() != GameData.EXIT) 
 		{
-			gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
-			int gameState = gameData.getGameState();
-			// 상태가 로고면
-			if (gameState == GameData.LOGOSCREEN) 
-			{
-				TIMER = 60;
-				displayLogoImage(gameGraphics);
-			}
-			// 상태가 메뉴면
-			else if (gameState == GameData.TITLEMENU)
-			{
-				displayTitleMenu(gameGraphics);
-			}
-			// 로딩중
-			else if (gameState == GameData.LOADING) 
-			{
-				displayLoadingScreen(gameGraphics);
-				TIMER = 30;
-			}
-			// 로드화면
-			else if (gameState == GameData.LOAD) {
-				// 아직 미구현
-			}
-			// 상태가 플레이이면
-			else if (gameState == GameData.PLAY)
-			{
-				// 백그라운드 출력
-				this.displayBackground(gameGraphics);
-				// 케릭터 뒤로 깔릴 전경 출력
-				displayForeground(gameGraphics, false);
-			
-				//캐릭터 출력순서를 잡아줘야함
-			
-				displayActors(gameGraphics);
-
-				
-				// 케릭터 앞에 깔릴 전경 출력
-				displayForeground(gameGraphics, true);
-			}
-
-			//
 			try {
+				gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+				int gameState = gameData.getGameState();
+				// 상태가 로고면
+				if (gameState == GameData.LOGOSCREEN) 
+				{
+					TIMER = 60;
+					displayLogoImage(gameGraphics);
+				}
+				// 상태가 메뉴면
+				else if (gameState == GameData.TITLEMENU) 
+				{
+					displayTitleMenu(gameGraphics);
+				}
+				// 로딩중
+				else if (gameState == GameData.LOADING) 
+				{
+					displayLoadingScreen(gameGraphics);
+					TIMER = 30;
+				}
+				// 로드화면
+				else if (gameState == GameData.LOAD) 
+				{
+					// 아직 미구현
+				}
+				// 상태가 플레이이면
+				else if (gameState == GameData.PLAY) 
+				{
+					// 백그라운드 출력
+					// displayBackground(gameGraphics, false);
+					displayBackground(gameGraphics);
+					// 케릭터 뒤로 깔릴 전경 출력
+					//displayForeground(gameGraphics, false);
+
+					// 캐릭터 출력순서를 잡아줘야함
+					displayActors(gameGraphics);
+
+					// 케릭터 앞에 깔릴 전경 출력
+					// displayBackground(gameGraphics, true);
+					//displayForeground(gameGraphics, true);
+					if(gameData.getPlayer().isLevelUp)
+					{
+						displayLevelUp(gameGraphics, gameData.getPlayer());
+					}
+				} 
+				else if (gameState == GameData.GAMEOVER)
+				{
+					TIMER = 100;
+					displayGameOver(gameGraphics);
+				}
+				else if(gameState == GameData.STATUSCALLED)
+				{
+					//스테이터스 창
+					displayStatusScreen(gameGraphics);
+				}
+				
 				gameGraphics.dispose();
 				hwResource.show();
 				Thread.sleep(GameDisplay.TIMER);

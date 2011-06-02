@@ -9,6 +9,7 @@ public class DialogEvent extends EventContent implements Serializable {
 	
 	
 	public DialogEvent() {
+		this.contentType = this.DIALOG_EVNET;
 		text = "";
 	}
 

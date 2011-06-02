@@ -57,7 +57,7 @@ public abstract class Actors extends ObjectEditorSystem implements Serializable 
 	
 	
 	public Actors(String projectPath, String folderName) {
-		super(MainFrame.OWNER.ProjectFullPath, folderName);
+		super(projectPath, folderName);
 		defaultDataFolderPath = projectPath+File.separator+".DefaultData";
 
 		initLevel = 1;

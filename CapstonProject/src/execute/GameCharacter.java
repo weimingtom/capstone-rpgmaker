@@ -6,6 +6,10 @@ import eventEditor.EventTile;
 
 public abstract class GameCharacter {
 	
+	
+	//현재 액터의 상태가 어떤가? 정지, 이동중/데미지 입는중/스킬사용중/죽음..이 플래그에 따라 출력 애니메이션이 달라짐
+	protected int actorState = 0;
+	
 	public static final int MOVESTATE = 0;
 	public static final int BATTLESTATE = 1;
 	public static final int DEATH = 2;
@@ -13,6 +17,7 @@ public abstract class GameCharacter {
 	public static final int SKILLCASTING = 4;
 	public static final int EVENTSTATE = 5;
 	public static final int DELETECHARACTER = 6;
+	public static final int STATUSCALLED = 7;
 	
 
 	public static final int UP = 0;
@@ -33,8 +38,11 @@ public abstract class GameCharacter {
 	protected int attackRange;
 	//얘가 주인공과 싸울수 있는앤지 아닌지
 	protected boolean canFight;
-	//현재 액터의 상태가 어떤가? 정지, 이동중/데미지 입는중/스킬사용중/죽음..이 플래그에 따라 출력 애니메이션이 달라짐
-	protected int actorState = 0;
+	protected int nowEXP;
+	protected int maxEXP;
+	protected int level;
+	protected boolean isLevelUp = false;
+
 	protected EventTile actorEvent;
 	
 	//액터의 액션 타입. 대기냐 액션이
@@ -67,6 +75,7 @@ public abstract class GameCharacter {
 		this.actorState = GameCharacter.MOVESTATE;
 		this.actorEvent = null;
 		this.actionType = GameCharacter.RANDOM;
+		nowEXP= 0;
 		
 	}
 	
@@ -81,14 +90,17 @@ public abstract class GameCharacter {
 		
 	}
 	
-	public void attack(GameCharacter actor, GameCharacter player)
+	public void attack(GameCharacter attack, GameCharacter defender)
 	{
-		Abilities now = player.getNowStatus();
-		Abilities nowActor = actor.getNowStatus();
-		now.setHP(now.getHP() - nowActor.getStrength());
-		if(now.getHP() < 0)
+		Abilities now = defender.getNowStatus();
+		Abilities nowActor = attack.getNowStatus();
+		if(now.getHP() <= nowActor.getStrength())
 			now.setHP(0);
-		player.setNowStatus(now);
+		else
+		{
+			now.setHP(now.getHP() - nowActor.getStrength());
+		}
+		defender.setNowStatus(now);
 	}
 	
 	public void skillOrMagic(int direction, int flag)
@@ -199,6 +211,30 @@ public abstract class GameCharacter {
 
 	public int getAnimActionClock() {
 		return animActionClock;
+	}
+
+	public int getNowEXP() {
+		return nowEXP;
+	}
+
+	public void setNowEXP(int nowEXP) {
+		this.nowEXP = nowEXP;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public boolean isLevelUp() {
+		return isLevelUp;
+	}
+
+	public void setLevelUp(boolean isLevelUp) {
+		this.isLevelUp = isLevelUp;
 	}
 
 }

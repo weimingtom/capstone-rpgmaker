@@ -13,6 +13,7 @@ public class SwitchDialogEvent extends EventContent implements Serializable {
 	
 	
 	public SwitchDialogEvent() {
+		this.contentType = this.SWITCH_DIALOG_EVNET;
 		this.question = "Question";
 		switchList = new LinkedList<Switch>();
 	}

@@ -16,6 +16,8 @@ public abstract class EventContent implements Serializable {
 	public static final int GAMEOVER_EVNET = 4;
 	public static final int STORE_EVNET = 5;
 	public static final int CHANGE_BGM_EVNET = 6;
+	public static final int CHANGE_ACTOR_EVENT = 7;
+	public static final int CHANGE_FLAG_EVENT = 8;
 	
 	/**
 	 * contentType 로 입력 가능한 변수

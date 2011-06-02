@@ -12,6 +12,7 @@ public class ChangeFlagEvent extends EventContent implements Serializable {
 	private boolean state;	// flag를 어떻게 변환할 지 저장
 	
 	public ChangeFlagEvent() {
+		contentType = this.CHANGE_FLAG_EVENT;
 		indexFlag = 0;
 		state = true;
 	}

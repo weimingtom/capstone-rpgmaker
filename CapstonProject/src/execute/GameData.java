@@ -1,3 +1,12 @@
+/********************************************/
+//주의사항!
+//현재 캐릭터의 상태가 움직임상태, 전투 상태 등에 대한 구분이 없음
+//즉, 움직임상태에서 액션이 가능함
+//player.setActorState(MOVESTATE)이 구문 수정바람
+//player.getActorState()도
+/**********************************************/
+
+
 package execute;
 
 import java.awt.Font;
@@ -36,9 +45,12 @@ public class GameData implements Runnable{
 	public static final int LOADING = 15;
 	public static final int NEWSTART = 16;
 	public static final int GAMEOVER = 17;
+	public static final int STATUSCALLED = 18;
 	/**************************************************/
 	//이 쓰레드의 클럭 타이머
 	public static int TIMER = 100;
+	private static int FASTTIMER = 60;
+	private static int SLOWTIMER = 100;
 	
 	/***유틸인포/ 로드화면, 타이틀화면/로고화면***********************/
 	private GameUtilityInformation titleScreen;
@@ -46,6 +58,9 @@ public class GameData implements Runnable{
 	private GameUtilityInformation loadScreen;
 	private GameUtilityInformation cursorImage;
 	private GameUtilityInformation dialogScreen;
+	private GameUtilityInformation gameOver;
+	private GameUtilityInformation statusScreen;
+	private GameUtilityInformation levelUpImage;
 	
 	/*********************************************************/
 	/****게임 액터들, 몬스터들, 플레이어******************************/
@@ -89,6 +104,7 @@ public class GameData implements Runnable{
 	private boolean actionAnimFlag = false;
 
 	private int animTimer;
+	private int screenHeight;
 
 	
 	//생성자
@@ -96,14 +112,21 @@ public class GameData implements Runnable{
 	{
 		//폰트설정
 		titleScreen = new GameUtilityInformation();
-		Font screenFont = new Font("Courier New", Font.BOLD , titleScreen.getFontSize());
-		titleScreen.setFont(screenFont);
+		//로고화면
 		logoScreen = new GameUtilityInformation();
 		loadScreen = new GameUtilityInformation();
+		//커서이미지
 		cursorImage = new GameUtilityInformation();
 		cursorImage.setPosition(0);
+		//게임종료
+		gameOver = new GameUtilityInformation();
+		//다이얼로그 설정(대화)
+		dialogScreen = new GameUtilityInformation();
+		//상태창
+		statusScreen = new GameUtilityInformation();
+		//레벨업
+		levelUpImage = new GameUtilityInformation();
 		
-		setDialogScreen(new GameUtilityInformation());
 		gameWindow = null;
 		gameDisplay = null;
 		gameRobot = new AI(this);
@@ -140,7 +163,7 @@ public class GameData implements Runnable{
 			}
 			else if(gameState == GameData.TITLEMENU)
 			{
-				TIMER = 100;
+				TIMER = SLOWTIMER;
 				//커서의 위치에 따라
 				if(cursorImage.getPosition() == 0)
 				{
@@ -148,7 +171,8 @@ public class GameData implements Runnable{
 					{
 						exGameState = GameData.TITLEMENU;
 						gameState = GameData.NEWSTART;
-						TIMER = 60;
+						cursorImage.setPosition(0);
+						TIMER = FASTTIMER;
 					}
 				}
 				else if(cursorImage.getPosition() == 1)
@@ -156,6 +180,7 @@ public class GameData implements Runnable{
 					if(keyFlag.isAction() || keyFlag.isEnter())
 					{
 						gameState = GameData.LOAD;
+						cursorImage.setPosition(0);
 					}
 				}
 				else if(cursorImage.getPosition() == 2)
@@ -163,14 +188,13 @@ public class GameData implements Runnable{
 					if(keyFlag.isAction() || keyFlag.isEnter())
 					{
 						gameState = GameData.EXIT;
+						cursorImage.setPosition(0);
 					}				
 				}
 			}
 			else if(gameState == GameData.NEWSTART)
 			{
 				exGameState = GameData.NEWSTART;
-				/*****************************************************************/
-				/*****************************************************************/
 				/*****************************************************************/
 				/*****************************************************************/
 				//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
@@ -202,40 +226,21 @@ public class GameData implements Runnable{
 			}
 			else if(gameState == GameData.PLAY)
 			{
-				//캐릭터 뒤짐
-				if(player.getNowStatus().getHP() <=0)
-				{
-					player.setActorState(GameCharacter.DEATH);
-					gameState = GameData.GAMEOVER;
-				}
-				//게임 타일 초기화
-				if(keyFlag.isEnter())
-				{
-					gameState = GameData.EXIT;
-				}
-				//플레이어의 액션상태확인, 무브거나 배틀이면
-				if (player.getActorState() == player.MOVESTATE
-						|| player.getActorState() == player.BATTLESTATE) 
-				{
-					//애니메이션을 부드럽게
-					this.animTimer++;
-					
-					//플레이어의 키입력에 따른 움직임 설정
-					actionPlayer(player.getActorState());
-					//npc들의 움직임
-					gameRobot.NPCAction(alliances, player, gameMap, gameTile);
-					//몬스터 움직임
-					gameRobot.monsterAction(monsters, player, gameMap, gameTile);
-					
-					//한꺼번에 배열에 움직임 작성
-					this.computeGameTile();
-
-				}
-				else if(gameState == GameData.GAMEOVER)
+				runAtPlay();
+			}
+			else if(gameState == GameData.GAMEOVER)
+			{
+				if(keyFlag.isCancel() || keyFlag.isEnter())
 				{
 					gameState = GameData.EXIT;
 				}
 			}
+			//스테이터스 창
+			else if(gameState == GameData.STATUSCALLED)
+			{
+				runAtStatus();
+			}
+			
 			try {
 				Thread.sleep(GameData.TIMER);
 			} catch (InterruptedException e) {
@@ -245,6 +250,117 @@ public class GameData implements Runnable{
 			
 		}
 		this.exitGame();
+	}
+	//실행중 플레이일때
+	private void runAtPlay()
+	{		
+		if(keyFlag.isCancel())
+		{
+			//스테이터스 창 보여주기
+			gameState = GameData.STATUSCALLED;
+			statusScreen.setCalled(true);
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		//캐릭터 뒤짐
+		if(player.getNowStatus().getHP() <=0)
+		{
+			player.setActorState(GameCharacter.DEATH);
+			this.fadeTimer = 0;
+			gameState = GameData.GAMEOVER;
+		}
+		//플레이어의 액션상태확인, 무브거나 배틀이면
+		if (player.getActorState() == player.MOVESTATE
+				|| player.getActorState() == player.BATTLESTATE) 
+		{
+			//애니메이션을 부드럽게
+			this.animTimer++;
+			
+			//플레이어의 키입력에 따른 움직임 설정
+			actionPlayer(player.getActorState());
+			//npc들의 움직임
+			gameRobot.NPCAction(alliances, player, gameMap, gameTile);
+			//몬스터 움직임
+			gameRobot.monsterAction(monsters, player, gameMap, gameTile);
+			
+			//한꺼번에 배열에 움직임 작성
+			this.computeGameTile();
+
+		}
+		//캐릭터 체력 채워줌
+		if(player.getNowStatus().getHP() < player.getMaxStatus().getHP() && player.getNowStatus().getHP() > 0 )
+			player.getNowStatus().setHP(player.getNowStatus().getHP() + 1);
+	}
+	
+	//실행중 스테이터스 화면일때
+	private void runAtStatus()
+	{
+		player.setActorState(GameCharacter.STATUSCALLED);
+		
+		if(keyFlag.isDown())
+		{
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if(cursorImage.getPosition() < 3)
+			{
+				cursorImage.setPosition(cursorImage.getPosition()+1);
+			}
+			else if(cursorImage.getPosition() == 3)
+			{
+				cursorImage.setPosition(0);
+			}
+		}
+		else if(keyFlag.isUp())
+		{
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if(cursorImage.getPosition() != 0)
+			{
+				cursorImage.setPosition(cursorImage.getPosition()-1);
+			}
+			else if(cursorImage.getPosition() == 0)
+			{
+				cursorImage.setPosition(3);
+			}
+		}
+		else if(keyFlag.isAction() || keyFlag.isEnter())
+		{
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if(cursorImage.getPosition() == 2)
+			{
+				gameState = GameData.PLAY;
+				player.setActorState(GameCharacter.MOVESTATE);
+				TIMER = FASTTIMER;
+			}
+			else if(cursorImage.getPosition() == 3)
+			{
+				gameState = GameData.EXIT;
+			}
+		}
+		else if(keyFlag.isCancel())
+		{
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			gameState = GameData.PLAY;
+			player.setActorState(GameCharacter.MOVESTATE);
+			TIMER = FASTTIMER;
+		}
 	}
 	
 	
@@ -307,6 +423,7 @@ public class GameData implements Runnable{
 		
 	}
 
+	//타일 계산, 캐릭터를 자동정렬한다.
 	private void computeGameTile() {
 		// TODO Auto-generated method stub
 		this.initGameTile();
@@ -448,17 +565,30 @@ public class GameData implements Runnable{
 			//현재 맵에 정의된 npc들 출력
 			monsters = new Vector<GameCharacter>();
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(0).deployActor(2, 30, 30, null);
+			monsters.elementAt(0).deployActor(2, 60, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(1).deployActor(2, 40, 30, null);
+			monsters.elementAt(1).deployActor(2, 30, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(2).deployActor(2, 50, 30, null);
+			monsters.elementAt(2).deployActor(2, 40, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(3).deployActor(2, 60, 30, null);
+			monsters.elementAt(3).deployActor(2, 50, 60, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(4).deployActor(2, 70, 30, null);
+			monsters.elementAt(4).deployActor(2, 60, 70, null);
 			monsters.add(new Monster(gamePath));
-			monsters.elementAt(5).deployActor(2, 30, 50, null);
+			monsters.elementAt(5).deployActor(2, 60, 80, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(6).deployActor(2, 60, 90, null);
+			
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(7).deployActor(2, 10, 40, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(8).deployActor(2, 40, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(9).deployActor(2, 90, 30, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(10).deployActor(2, 90, 70, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(11).deployActor(2, 10, 70, null);
 		}
 		catch(Exception e)
 		{
@@ -494,13 +624,13 @@ public class GameData implements Runnable{
 		}
 	}
 
-
+	//음악시작
 	private void startMusic(String string) {
 		// TODO Auto-generated method stub
 		this.musicFile = string;
 	}
 
-
+	//맵로드
 	public void loadMap()
 	{
 
@@ -522,6 +652,7 @@ public class GameData implements Runnable{
 		}
 	}
 
+	//플레이어로드
 	public void loadPlayer()
 	{
 		try{
@@ -529,6 +660,7 @@ public class GameData implements Runnable{
 			
 			//player.setNowStatus(nowStatus);
 			player.deployActor(0,100, 100, null);
+			player.setNowEXP(1909);
 		}
 		catch(Exception e)
 		{
@@ -539,6 +671,7 @@ public class GameData implements Runnable{
 	}
 	
 	/*******************************************************************/
+	//게임 타일 초기화
 	public void initGameTile()
 	{
 		int h = gameTile.length;
@@ -550,12 +683,14 @@ public class GameData implements Runnable{
 				gameTile[i][j] = -1;
 		}
 	}
+	
 	//setter getter
 	public void setKeyFlag(KeyFlags keyFlag) {
 		// TODO Auto-generated method stub
 		this.keyFlag = keyFlag;
 	}
 
+	//게임 상태 설정
 	public void setGameState(int gameState) {
 		// TODO Auto-generated method stub
 		this.gameState = gameState;
@@ -571,18 +706,20 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
-		//(new Font("AR BERKLE", Font.BOLD, menuInfo.getFontSize()
+		String utilPath = gamePath+"/UtilImage";
 		try 
 		{
-			titleScreen.setUtilImage(ImageIO.read(new File(gamePath+"/TITLE.png")));
-			logoScreen.setUtilImage(ImageIO.read(new File(gamePath+"/LOGO.png")));
-			cursorImage.setUtilImage(ImageIO.read(new File(gamePath+"/CURSOR.png")));
-			loadScreen.setUtilImage(ImageIO.read(new File(gamePath+"/LOADING.png")));
+			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"/TITLE.png")));
+			logoScreen.setUtilImage(ImageIO.read(new File(utilPath+"/LOGO.png")));
+			cursorImage.setUtilImage(ImageIO.read(new File(utilPath+"/CURSOR.png")));
+			loadScreen.setUtilImage(ImageIO.read(new File(utilPath+"/LOADING.png")));
+			gameOver.setUtilImage(ImageIO.read(new File(utilPath+"/GAMEOVER.png")));
+			levelUpImage.setUtilImage(ImageIO.read(new File(utilPath+"/LEVELUP.png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//만약에 타이틀을 불러오는데 실패해도 진행
 			JOptionPane.showMessageDialog
-			(gameWindow, "Error!! Can't find TITLE.png or LOGO.png or CURSOR.png");
+			(gameWindow, "Error!! Can't find TITLE.png or LOGO.png or CURSOR.png or SomthingElse");
 			System.exit(0);
 		}
 
@@ -765,11 +902,6 @@ public class GameData implements Runnable{
 	}
 
 
-	public void setDialogScreen(GameUtilityInformation dialogScreen) {
-		this.dialogScreen = dialogScreen;
-	}
-
-
 	public GameUtilityInformation getDialogScreen() {
 		return dialogScreen;
 	}
@@ -789,4 +921,35 @@ public class GameData implements Runnable{
 		this.animTimer = animTimer;
 	}
 
+
+	public GameUtilityInformation getGameOver() {
+		return gameOver;
+	}
+
+
+	public AI getGameRobot() {
+		return gameRobot;
+	}
+
+
+	public void setGameRobot(AI gameRobot) {
+		this.gameRobot = gameRobot;
+	}
+
+
+	public GameUtilityInformation getStatusScreen() {
+		return statusScreen;
+	}
+
+
+	public void setScreenHeight(int screenHeight) {
+		this.screenHeight = screenHeight;
+		statusScreen.setFont(new Font("굴림", Font.BOLD , screenHeight/20 ));
+		titleScreen.setFont(new Font("Courier New", Font.BOLD , screenHeight/15));
+	}
+
+
+	public GameUtilityInformation getLevelUpImage() {
+		return levelUpImage;
+	}
 }

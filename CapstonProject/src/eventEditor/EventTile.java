@@ -17,7 +17,6 @@ public class EventTile implements Serializable {
 	 *  - ACTOR_EVENT
 	 * */
 	private int objectType;
-	private int actorIndex;
 	private List<Event> eventList;
 	
 	
@@ -26,7 +25,7 @@ public class EventTile implements Serializable {
 		this.initRowLocation = rowLocation;
 		
 		objectType = EventEditorSystem.MAP_EVENT;
-		actorIndex = 0;;
+		
 
 		Event event = new Event();
 		eventList = new LinkedList<Event>();
@@ -44,8 +43,6 @@ public class EventTile implements Serializable {
 	public int getInitRowLocation()					{	return initRowLocation;				}
 	public void setInitRowLocation(int rowLocation)	{	this.initRowLocation = rowLocation;	}
 	public int getObjectType() 						{	return objectType;					}
-	public int getActorIndex() 						{	return actorIndex;					}
-	public void setActorIndex(int actorIndex) 		{	this.actorIndex = actorIndex;		}
 	public List<Event> getEventList()				{	return eventList;					}
 	
 	/**

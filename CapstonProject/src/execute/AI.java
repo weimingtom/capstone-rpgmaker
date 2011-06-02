@@ -2,6 +2,10 @@ package execute;
 
 import java.util.Vector;
 
+import characterEditor.Abilities;
+
+import animationEditor.Animations;
+
 import MapEditor.Map;
 import MapEditor.Tile;
 
@@ -97,32 +101,33 @@ public class AI {
 		
 		//두 지점사이의 거리가 사거리보다 적어야함
 		
-		int difX = Math.abs(attack.getxPosition() - defend.getxPosition());
-		int difY = Math.abs(attack.getyPosition() - defend.getyPosition());
+		int difX = Math.abs(attack.getxPosition() - defend.getxPosition())+ratio/2;
+		int difY = Math.abs(attack.getyPosition() - defend.getyPosition())+ratio/2;
 		
 		if(direction == GameCharacter.UP)
 		{
-			if(difY <= ratio+range && difX <= ratio && defend.getyPosition()<attack.getyPosition())
+			if(difY <= ratio+range && difX <= ratio*2 && defend.getyPosition()<=attack.getyPosition())
 				return true;
 		}
 		else if(direction == GameCharacter.DOWN)
 		{
-			if(difY <= ratio+range && difX <= ratio && defend.getyPosition()>attack.getyPosition())
+			if(difY <= ratio+range && difX <= ratio*2 && defend.getyPosition()>=attack.getyPosition())
 				return true;		
 		}
 		else if(direction == GameCharacter.LEFT)
 		{
-			if(difX <= ratio+range && difY <= ratio && defend.getxPosition()<attack.getxPosition())
+			if(difX <= ratio+range && difY <= ratio*2 && defend.getxPosition()<=attack.getxPosition())
 				return true;
 		}
 		else if(direction == GameCharacter.RIGHT)
 		{
-			if(difX <= ratio+range && difY <= ratio && defend.getxPosition()>attack.getxPosition())
+			if(difX <= ratio+range && difY <= ratio*2 && defend.getxPosition()>=attack.getxPosition())
 				return true;		
 		}	
 		return false;
 	}
 	
+
 	//시야내에 케릭터 잇는지 확인
 	public boolean canWatch(GameCharacter monster, GameCharacter player)
 	{
@@ -244,7 +249,8 @@ public class AI {
 	public void NPCAction(Vector<GameCharacter> alliances, GameCharacter player, Map gameMap, int[][] gameTile)
 	{
 		//캐릭터들이 없으면 그냥 리턴, 혹은 플레이어가 지금 이벤트 진행중이면 다른 애니메이션 안함
-		if(alliances == null || player.getActorState() == GameCharacter.EVENTSTATE)
+		if(alliances == null || player.getActorState() == GameCharacter.EVENTSTATE
+				|| GameCharacter.STATUSCALLED == player.getActorState())
 			return;
 		
 		/*************************************************************************/
@@ -323,23 +329,33 @@ public class AI {
 	//몬스터 액션 - 주인공한테 가까이 오고 너무 멀리 있음 움직이지 않음..
 	public void monsterAction(Vector<GameCharacter> monsters, GameCharacter player, Map gameMap, int[][] gameTile)
 	{
-		if(monsters == null || player.getActorState() == GameCharacter.EVENTSTATE)
+		if(monsters == null || player.getActorState() == GameCharacter.EVENTSTATE
+				|| GameCharacter.STATUSCALLED == player.getActorState())
 			return;
 		
-		
 		for(int i = 0 ; i < monsters.size(); i++)
-		{
+		{	
 			GameCharacter monster = monsters.elementAt(i);
 			int now = i;
 			
-			/****************************플레이어 액션시************************************/
+			/****************************플레이ㅇ어 액션시************************************/
 			if(gameData.isActionAnimFlag() == true)
 			{
 				if(canAttack(player, monster) == true)
 				{
-					monsters.remove(i);
-					i = now;
-					continue;
+					player.attack(player, monster);
+					if(monster.getNowStatus().getHP() <= 0)
+					{
+						monsters.remove(i);
+						i = now;
+						//경험치 업
+						player.setNowEXP((player.getNowEXP() + monster.getMaxStatus().getHP()/10));
+						if(player.getNowEXP() >= player.getMaxStatus().getEXP())
+						{
+							leverUp(player);
+						}
+						continue;
+					}
 				}
 			}
 			
@@ -370,6 +386,7 @@ public class AI {
 				{
 					//플레이어한테로 무브
 					monster.setActorState(GameCharacter.MOVESTATE);
+					monster.setActionType(GameCharacter.MOVESTRAIGHT);
 					moveToPlayer(monster, player, gameMap, gameTile);
 					//System.out.println("플레이어한테 움직임");
 				}
@@ -377,7 +394,7 @@ public class AI {
 				{
 					//System.out.println("대기 혹은 움직임");
 					monster.setActorState(GameCharacter.MOVESTATE);
-					
+					monster.setActionType(GameCharacter.MOVESTRAIGHT);
 					//대기 혹은 랜덤 무브
 					int p = (int)(Math.random()*100);
 					//System.out.println(p);
@@ -402,6 +419,36 @@ public class AI {
 		
 	}
 	
+	private void leverUp(GameCharacter player) {
+		//렙업할 수 잇다면
+		if(player.getLevel() != player.getCharacter().getMaxLevel())
+		{
+			player.setLevel(player.getLevel() + 1);
+			Abilities max = player.getMaxStatus();
+			Abilities curve = player.getCharacter().getGrowthCurve();
+			max.setAgility(max.getAgility() + curve.getAgility());
+			max.setEXP(0);
+			max.setHP((max.getHP() + curve.getHP()));
+			max.setIntelligence(max.getIntelligence() + curve.getIntelligence());
+			max.setKnowledge(max.getKnowledge() + curve.getKnowledge());
+			max.setMP(max.getMP() + curve.getMP());
+			max.setStrength(max.getStrength() + curve.getStrength());
+			max.setVitality(max.getVitality() + curve.getVitality());
+			Abilities nowStatus = player.getNowStatus();
+			nowStatus.setAgility(max.getAgility());
+			nowStatus.setEXP(max.getEXP());
+			nowStatus.setHP(max.getHP());
+			nowStatus.setIntelligence(max.getIntelligence());
+			nowStatus.setKnowledge(max.getKnowledge());
+			nowStatus.setMP(max.getMP());
+			nowStatus.setStrength(max.getStrength());
+			nowStatus.setVitality(max.getVitality());
+			player.setLevelUp(true);
+		}
+	}
+
+
+
 	public void setGameTile(int[][] gameTile) {
 		this.gameTile = gameTile;
 	}
