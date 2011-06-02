@@ -99,12 +99,18 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		// NORTH
 		toolBar = new JToolBar();
-		btnOpen = new EstyleButton(new ImageIcon(
-				"src\\resouce\\btnImg\\openBtn.gif"), iconSize, iconSize);
+		btnProjOpen = new EstyleButton(new ImageIcon(
+				"src\\resouce\\btnImg\\projOpenBtn.png"), iconSize, iconSize);
+		btnProjClose = new EstyleButton(new ImageIcon(
+		"src\\resouce\\btnImg\\projCloseBtn.png"), iconSize, iconSize);
 		btnSaveMap = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\saveBtn.gif"), iconSize, iconSize);
 		btnSaveProj = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\saveAllBtn.gif"), iconSize, iconSize);
+		btnExeProj = new EstyleButton(new ImageIcon(
+		"src\\resouce\\btnImg\\playBtn.png"), iconSize, iconSize);
+		btnHelp = new EstyleButton(new ImageIcon(
+		"src\\resouce\\btnImg\\helpBtn.png"), iconSize, iconSize);
 
 		// SOUTH
 		southPanel = new JPanel(new BorderLayout());
@@ -161,6 +167,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				"src\\resouce\\btnImg\\newMapBtn.png"), iconSize, iconSize);
 		btnNewTileSet = new EstyleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\newTileSetBtn.png"), iconSize, iconSize);
+		btnRefresh= new EstyleButton(new ImageIcon(
+		"src\\resouce\\btnImg\\refreshBtn.png"), iconSize, iconSize);
 
 		// MENU BAR
 		menuBar = new JMenuBar();
@@ -233,21 +241,35 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		 * 컴포넌트 셋팅
 		 */
 		// NORTH
-		btnOpen.setToolTipText("Open project");
+		btnProjOpen.setToolTipText("Open project");
+		btnProjClose.setToolTipText("Close project");
 		toolBar.setToolTipText("Save selected map");
-		toolBar.setFloatable(false);
 		btnSaveProj.setToolTipText("Save project");
+		btnExeProj.setToolTipText("Execute project");
+		btnHelp.setToolTipText("Help");
+		toolBar.setFloatable(false); 
 		toolBar.setRollover(true);
-		toolBar.add(btnOpen);
+		toolBar.add(btnProjOpen);
+		toolBar.add(btnProjClose);
 		toolBar.add(btnSaveMap);
 		toolBar.add(btnSaveProj);
-		getContentPane().add(toolBar, BorderLayout.PAGE_START);
-		btnSaveProj.setEnabled(false);
+		toolBar.addSeparator();
+		toolBar.add(btnExeProj);
+		toolBar.add(btnHelp);
+
 
 		btnSaveMap.addActionListener(this);
 		btnSaveProj.addActionListener(this);
-		btnOpen.addActionListener(this);
+		btnProjOpen.addActionListener(this);
+		btnProjClose.addActionListener(this);
+		btnExeProj.addActionListener(this);
+		btnHelp.addActionListener(this);
+		
+		btnSaveProj.setEnabled(false);
+		btnProjClose.setEnabled(false);
+		btnExeProj.setEnabled(false);
 
+		getContentPane().add(toolBar, BorderLayout.PAGE_START);
 		// SOUTH
 		subState.setHorizontalAlignment(SwingConstants.CENTER);
 		subState.setPreferredSize(new Dimension(150, 20));
@@ -328,8 +350,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		btnNewMap.setToolTipText("New map");
 		btnNewTileSet.setToolTipText("New tile set");
+		btnRefresh.setToolTipText("Refresh explorer");
 		btnNewMap.addActionListener(this);
 		btnNewTileSet.addActionListener(this);
+		btnRefresh.addActionListener(this);
 
 		westToolbar.setFloatable(false);
 		westToolbar.add(btnWestMin);
@@ -337,6 +361,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		westToolbar.addSeparator();
 		westToolbar.add(btnNewMap);
 		westToolbar.add(btnNewTileSet);
+		westToolbar.addSeparator();
+		westToolbar.add(btnRefresh);
 		westToolbar.setRollover(true);
 
 		explorerTab.setTabPlacement(JTabbedPane.TOP);
@@ -569,9 +595,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	 */
 	// TODO
 	// NORTH
-	private EstyleButton btnOpen;
+	private EstyleButton btnProjOpen;
+	private EstyleButton btnProjClose;
 	private EstyleButton btnSaveMap;
 	private EstyleButton btnSaveProj;
+	private EstyleButton btnExeProj;
+	private EstyleButton btnHelp;
 	private JToolBar toolBar;
 	// CENTER
 	private JPanel centerPanel;
@@ -608,6 +637,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private EstyleButton btnWestMax;
 	private EstyleButton btnNewMap;
 	private EstyleButton btnNewTileSet;
+	private EstyleButton btnRefresh;
 
 	// SOUTH
 	private JLabel mainState;
@@ -697,7 +727,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	 * 
 	 * Event
 	 */
-	// TODO
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// MENU BAR
@@ -797,8 +826,15 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			saveCurrentCanvas();
 		} else if (e.getSource() == btnSaveProj) {
 			saveAllCanvas();
-		} else if (e.getSource() == btnOpen) {
+		} else if (e.getSource() == btnProjOpen) {
 			new OpenProjectDlg(this);
+		} else if (e.getSource() == btnProjClose) {
+			new JOptionPane();
+			if (JOptionPane.showConfirmDialog(this,
+					"Really close the project?", "CLOSE",
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
+				closeProject();
+			}
 		}
 
 		// CENTER EAST TOOLBAR
@@ -833,6 +869,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			new NewMapDlg(this);
 		} else if (e.getSource() == btnNewTileSet) {
 			new TileSetChooserDlg(this);
+		} else if (e.getSource() == btnRefresh) {
+			getProjTree().refresh();
 		}
 
 		// CENTER CENTER TOOLBAR
@@ -1653,7 +1691,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		mainFrameThread.start();
 	}
 
-	// getter & setter
+	public void syncProjOpenCloseBtn(){
+		btnProjOpen.setEnabled(false);
+		btnProjClose.setEnabled(true);
+	}
 	public ProjectTree getProjTree() {
 		return projTree;
 	}

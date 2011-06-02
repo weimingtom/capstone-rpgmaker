@@ -261,6 +261,7 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 			MainFrame.OWNER.setTitle(MainFrame.OWNER.ProjectName);
 			MainFrame.OWNER.setNewProject();
 			MainFrame.OWNER.setAllUserTileSet();
+			MainFrame.OWNER.syncProjOpenCloseBtn();
 			dispose();
 
 		} else if (e.getSource() == btn_browser) {

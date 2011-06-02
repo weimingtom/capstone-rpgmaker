@@ -349,7 +349,8 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 				} 
 				MainFrame.OWNER.setNewProject();
 				MainFrame.OWNER.setDefaultTileSet();
-								//TODO
+				MainFrame.OWNER.syncProjOpenCloseBtn();
+				
 				dispose();
 				new NewMapDlg(MainFrame.OWNER);
 			} else {
