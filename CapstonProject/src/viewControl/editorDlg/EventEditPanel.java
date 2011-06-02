@@ -424,11 +424,13 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		for (int i = 0; i < event.getEventContentList().size(); i++) {
 			String strArray = "E" + (i+1) + ": ";
 			if(getEventContent(i).getContentType() == EventContent.CHANGE_BGM_EVNET)
-				strArray += "BGM Change Event (File Name: " + ((ChangeBGMEvent)getEventContent(i)).getFileName() + ")";
+				strArray += "BGM Change Event";
 			else if((getEventContent(i)).getContentType() == EventContent.CHANGE_MAP_EVNET)
-				strArray += "Map Change Event (Map Name: " + ((ChangeMapEvent)getEventContent(i)).getFileName() + ")";
+				strArray += "Map Change Event";
+			else if((getEventContent(i)).getContentType() == EventContent.CHANGE_FLAG_EVENT)
+				strArray += "Flag Change Event";
 			else if((getEventContent(i)).getContentType() == EventContent.DIALOG_EVNET)
-				strArray += "Dialog Event (Dialog Text: " + ((DialogEvent)getEventContent(i)).getText() + ")";
+				strArray += "Dialog Event";
 			else if((getEventContent(i)).getContentType() == EventContent.GAMEOVER_EVNET)
 				strArray += "Game Over Event";
 			else if((getEventContent(i)).getContentType() == EventContent.MOTION_EVNET)
@@ -688,7 +690,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		} else if(e.getSource() == btn_deleteEventContent) {
 			// 선택된 이벤트를 삭제한다.
 			int index = cb_selectedEventContent.getSelectedIndex();
-			if(index < lst_eventList.getComponentCount())
+			if(index < cb_selectedEventContent.getItemCount()-1)
 				event.getEventContentList().remove(index);
 			// JList 재출력
 			setJListEventContents();

@@ -11,12 +11,11 @@ public class ChangeMapEvent extends EventContent implements Serializable {
 	private int startColLocation;
 	private int startRowLocation;
 	
-	
-	public ChangeMapEvent() {
-		this.contentType = this.CHANGE_MAP_EVNET;
+	public ChangeMapEvent(String fileName, int startColLocation, int startRowLocation) {
+		this.contentType = CHANGE_MAP_EVNET;
 		this.fileName = "";
-		this.startColLocation = 0;
-		this.startRowLocation = 0;
+		this.startColLocation = startColLocation;
+		this.startRowLocation = startRowLocation;
 	}
 
 	public String getFileName()						{	return fileName;							}

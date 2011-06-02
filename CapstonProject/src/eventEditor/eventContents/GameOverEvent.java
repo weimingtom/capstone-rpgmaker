@@ -7,6 +7,6 @@ public class GameOverEvent extends EventContent implements Serializable {
 	private static final long serialVersionUID = 23775758650969622L;
 
 	public GameOverEvent() {
-		this.contentType = this.GAMEOVER_EVNET;
+		this.contentType = GAMEOVER_EVNET;
 	}
 }

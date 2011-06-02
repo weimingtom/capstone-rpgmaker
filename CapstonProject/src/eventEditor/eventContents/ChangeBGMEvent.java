@@ -11,17 +11,11 @@ public class ChangeBGMEvent extends EventContent implements Serializable {
 	private String fileName;
 	private int volumn;
 	
-	
-	public ChangeBGMEvent() {
-		contentType = this.CHANGE_BGM_EVNET;
-		this.fileName = "";
-		this.volumn = 70;
-	}
-	
 	public ChangeBGMEvent(String fileName, int volumn) {
 		if(volumn > 100)	volumn = 100;
 		else if(volumn < 0)	volumn = 0;
-		
+
+		this.contentType = CHANGE_BGM_EVNET;
 		this.fileName = fileName;
 		this.volumn = volumn;
 	}

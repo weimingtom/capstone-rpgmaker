@@ -1,7 +1,6 @@
 package eventEditor.eventContents;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
 public class SwitchDialogEvent extends EventContent implements Serializable {
@@ -12,10 +11,10 @@ public class SwitchDialogEvent extends EventContent implements Serializable {
 	private List<Switch> switchList;
 	
 	
-	public SwitchDialogEvent() {
-		this.contentType = this.SWITCH_DIALOG_EVNET;
-		this.question = "Question";
-		switchList = new LinkedList<Switch>();
+	public SwitchDialogEvent(String question, List<Switch> switchList) {
+		this.contentType = SWITCH_DIALOG_EVNET;
+		this.question = question;
+		this.switchList = switchList;
 	}
 
 

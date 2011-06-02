@@ -2,8 +2,6 @@ package eventEditor.eventContents;
 
 import java.io.Serializable;
 
-import eventEditor.FlagList;
-
 public class ChangeFlagEvent extends EventContent implements Serializable {
 
 	private static final long serialVersionUID = -5164341198757453241L;
@@ -11,10 +9,10 @@ public class ChangeFlagEvent extends EventContent implements Serializable {
 	private int indexFlag;	// 변경할 flag의 인덱스
 	private boolean state;	// flag를 어떻게 변환할 지 저장
 	
-	public ChangeFlagEvent() {
-		contentType = this.CHANGE_FLAG_EVENT;
-		indexFlag = 0;
-		state = true;
+	public ChangeFlagEvent(int indexFlag, boolean state) {
+		this.contentType = CHANGE_FLAG_EVENT;
+		this.indexFlag = indexFlag;
+		this.state = state;
 	}
 	
 //	/**
