@@ -286,10 +286,6 @@ public class GameDisplay implements Runnable{
 		//맵의 시작위치 설정
 		this.mapStartingPointX = (screenWidth - sizeW)/2;
 		this.mapStartingPointY = (screenHeight - sizeH)/2;
-		
-		Graphics2D imageG = (Graphics2D) gameMap.getGraphics();
-		displayForeground(imageG, false);
-		
 		//두가지 경우 
 		g.drawImage(gameMap, mapStartingPointX, mapStartingPointY, sizeW, sizeH, null);
 
@@ -309,8 +305,8 @@ public class GameDisplay implements Runnable{
 				{
 					if(mapTile[i][j].getIsUpper() == false)
 					{
-						g.drawImage(mapTile[i][j].getM_TileIcon(), (int)((j*DrawingTemplate.pixel)),
-								(int)((i*DrawingTemplate.pixel)),
+						g.drawImage(mapTile[i][j].getM_TileIcon(), mapStartingPointX+(int)((j*DrawingTemplate.pixel)*ratioX),
+								mapStartingPointY+(int)((i*DrawingTemplate.pixel)*ratioY),
 								(int)(mapTile[i][j].getM_TileIcon().getWidth() * ratioX)+1,
 								(int)(mapTile[i][j].getM_TileIcon().getHeight()* ratioY)+1,
 								null);
@@ -341,35 +337,6 @@ public class GameDisplay implements Runnable{
 	public void displayChangedForeground(Graphics2D g, boolean isUpper)
 	{
 		//정렬된 캐릭정보를 활용
-		Tile[][] mapTile = gameData.getGameMap().getM_ForegroundTile();
-		
-		
-		Vector<GameCharacter>actors = gameData.getSortedCharacters();
-		
-		for(int charIndex = 0 ; charIndex < actors.size(); charIndex++)
-		{
-			GameCharacter actor = actors.elementAt(charIndex);
-			
-			int charX = actor.getxPosition() / GameData.mapCharArrayRatio;
-			int charY = actor.getyPosition() / GameData.mapCharArrayRatio;
-			
-//			if(actor instanceof Alliance)
-//				System.out.println(""+charX + " : " + charY);
-			for(int i = -1 ; i < 3; i++)
-			{				
-				for(int j = -1 ; j < 3; j++)
-				{
-					Image tile = mapTile[charY+j][charX+i].getM_TileIcon();
-					if(mapTile[charY+j][charX+i].getIsUpper() == isUpper)
-					{
-						g.drawImage(tile, mapStartingPointX + (int)((charX+i)*DrawingTemplate.pixel*ratioX),
-								mapStartingPointY+ (int)((charY+j)*DrawingTemplate.pixel*ratioY),
-								(int)(tile.getWidth(null) * ratioX)+1,
-								(int)(tile.getHeight(null) * ratioX)+1, null);
-					}
-				}
-			}
-		}
 	}
 	
 	
@@ -727,17 +694,14 @@ public class GameDisplay implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 
-		gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
-		displayLogoImage(gameGraphics);
 		while (gameData.getGameState() != GameData.EXIT) 
 		{
 			try {
-				//gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
+				gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
 				int gameState = gameData.getGameState();
 				// 상태가 로고면
 				if (gameState == GameData.LOGOSCREEN) 
 				{
-					//gameGraphics = (Graphics2D) hwResource.getDrawGraphics();
 					TIMER = SLOWTIMER;
 					displayLogoImage(gameGraphics);
 				}
@@ -757,31 +721,24 @@ public class GameDisplay implements Runnable{
 				{
 					// 아직 미구현
 				}
-				else if(gameState == GameData.MAPLOADENDED)
-				{
-					//맵이 불렸다면 한번 풀로 출력
-					displayBackground(gameGraphics);
-					//displayForeground(gameGraphics, false);
-					displayForeground(gameGraphics, true);
-				}
 				// 상태가 플레이이면
 				else if (gameState == GameData.PLAY) 
 				{
+					BufferedImage tmpImage = new BufferedImage(screenWidth, screenWidth, BufferedImage.TYPE_4BYTE_ABGR);
+					Graphics2D g = (Graphics2D) tmpImage.getGraphics();
 					//캐릭터 밑의 배경 출력
-					displayBackground(gameGraphics);
-					//displayChangedForeground(gameGraphics, false);
+					displayBackground(g);
+					displayForeground(g, false);
 					//캐릭터 출력
-					displayActors(gameGraphics);
+					displayActors(g);
 					//캐릭터 전경 출력
-					///displayForeground(gameGraphics, false);
-					//displayForeground(gameGraphics, true);
-					//displayChangedForeground(gameGraphics, true);
-//					displayForeground(gameGraphics, false);
-					displayForeground(gameGraphics, true);
+					displayForeground(g, true);
+					
 					if(gameData.getPlayer().isLevelUp)
 					{
-						displayLevelUp(gameGraphics, gameData.getPlayer());
+						displayLevelUp(g, gameData.getPlayer());
 					}
+					gameGraphics.drawImage(tmpImage, 0, 0, null);
 				} 
 				else if (gameState == GameData.GAMEOVER)
 				{
@@ -804,8 +761,6 @@ public class GameDisplay implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			hwResource.show();
-			gameGraphics.dispose();
 
 		}// end while
 		
