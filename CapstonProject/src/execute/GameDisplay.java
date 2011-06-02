@@ -775,7 +775,7 @@ public class GameDisplay implements Runnable{
 					//캐릭터 전경 출력
 					///displayForeground(gameGraphics, false);
 					//displayForeground(gameGraphics, true);
-					displayChangedForeground(gameGraphics, true);
+					//displayChangedForeground(gameGraphics, true);
 //					displayForeground(gameGraphics, false);
 					displayForeground(gameGraphics, true);
 					if(gameData.getPlayer().isLevelUp)
