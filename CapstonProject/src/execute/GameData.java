@@ -227,11 +227,27 @@ public class GameData implements Runnable{
 
 		//부트스트랩 이벤트 실행
 		BootstrapInfo bs = Bootstrap.getBootstrap(gamePath);
-		Point startPoint = bs.getStartPoint();
 		//우선 맵 로드
-		loadMap(bs.getMapName());
+		try{
+		
+			loadMap(bs.getMapName());
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(null, "맵을 찾을 수가 없습니다.");
+			System.exit(0);
+		}
 		//플레이어 로드
-		loadPlayer(0 , startPoint);
+		try {
+			Point startPoint = bs.getStartPoint();
+			int charIndex = bs.getCharIndex();
+			loadPlayer(charIndex, startPoint);
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(null, "캐릭터를 찾을 수가 없습니다.");
+			System.exit(0);
+		}
 		//loadAlliances();
 		loadMonsters();
 		//startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
@@ -758,7 +774,7 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
-		String utilPath = gamePath+"src\\resource\\utilImg";
+		String utilPath = gamePath+"\\.UtillImages";
 		try 
 		{
 			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\TITLE.png")));
@@ -781,8 +797,8 @@ public class GameData implements Runnable{
 	public void setGameWindow(GameWindow gameWindow) 
 	{
 		this.gameWindow = gameWindow;
-		this.screenHeight = gameWindow.getHeight();
-		setScreenHeight(screenHeight);
+		statusScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/30 ));
+		titleScreen.setFont(new Font("Courier New", Font.BOLD , gameWindow.getWidth()/20));
 	}
 
 	public GameWindow getGameWindow() {
@@ -953,12 +969,6 @@ public class GameData implements Runnable{
 		return statusScreen;
 	}
 
-
-	public void setScreenHeight(int screenHeight) {
-		this.screenHeight = screenHeight;
-		statusScreen.setFont(new Font("굴림", Font.BOLD , screenHeight/20 ));
-		titleScreen.setFont(new Font("Courier New", Font.BOLD , screenHeight/15));
-	}
 
 
 	public GameUtilityInformation getLevelUpImage() {
