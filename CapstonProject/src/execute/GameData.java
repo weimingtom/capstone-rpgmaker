@@ -155,6 +155,7 @@ public class GameData implements Runnable{
 		gameOver = new GameUtilityInformation();
 		//다이얼로그 설정(대화)
 		dialogScreen = new GameUtilityInformation();
+		dialogScreen.setText(null);
 		//상태창
 		statusScreen = new GameUtilityInformation();
 		//레벨업
@@ -394,6 +395,19 @@ public class GameData implements Runnable{
 			}
 			runEvent();
 		}
+		else if(player.getActorState() == GameCharacter.EVENTSTATE)
+		{
+			this.animTimer++;
+			
+			//한꺼번에 배열에 움직임 작성
+			this.computeGameTile();
+			//실행중인 이벤트가 없다면
+			if(eventStart == false)
+			{
+				computeNowEvent();
+			}
+			runEvent();
+		}
 		
 		//캐릭터 체력 채워줌
 		if(player.getNowStatus().getHP() < player.getMaxStatus().getHP() && player.getNowStatus().getHP() > 0 )
@@ -437,6 +451,7 @@ public class GameData implements Runnable{
 			nowEventList = null;
 			eventContentListIndex = 0;
 			this.eventStart = false;
+			nowEvent = null;
 			return;
 		}
 		else
@@ -448,9 +463,11 @@ public class GameData implements Runnable{
 		}
 	}
 	
-	
+	//현재 선택된 이벤트 실행
 	private void runEvent()
 	{
+		if(nowEvent == null)
+			return;
 		int type = nowEvent.getContentType();
 		//지금 이벤트가 뭔지 확인
 		if(type == EventContent.CHANGE_BGM_EVNET)
@@ -462,19 +479,32 @@ public class GameData implements Runnable{
 		}
 		else if(type == EventContent.DIALOG_EVNET)
 		{
-//			//캐릭터 상태 이벤트로 설정
-//			player.setActionType(GameCharacter.EVENTSTATE);
-//			//대화창 시작
-//			DialogEvent dialog = (DialogEvent)nowEvent;
-//			dialogScreen.setText(dialog.getText());
-//			//엔터키나 액션 키가 눌리면
-//			if(keyFlag.isAction() || keyFlag.isEnter())
-//			{
-//				
-//			}
+			startDialogEvent();
 		}
 	}
 	
+	
+	//다이얼로그 이벤트
+	private void startDialogEvent()
+	{
+		//캐릭터 상태 이벤트로 설정
+		player.setActorState(GameCharacter.EVENTSTATE);
+		//대화창 시작
+		DialogEvent dialog = (DialogEvent)nowEvent;
+//		System.out.println("다이얼1");
+		dialogScreen.setText(dialog.getText());
+//		System.out.println("다이얼2");
+		//엔터키나 액션 키가 눌리면
+		if(keyFlag.isAction() || keyFlag.isEnter())
+		{
+//			System.out.println("다이얼3");
+			dialogScreen.setText(null);
+			eventContentListIndex++;
+			this.eventStart = false;
+			player.setActorState(GameCharacter.MOVESTATE);
+			return;
+		}
+	}
 	
 	//실행중 스테이터스 화면일때
 	private void runAtStatus()
@@ -912,6 +942,7 @@ public class GameData implements Runnable{
 		this.gameWindow = gameWindow;
 		statusScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/35 ));
 		titleScreen.setFont(new Font("Courier New", Font.BOLD , gameWindow.getWidth()/25));
+		dialogScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/50));
 	}
 
 	public GameWindow getGameWindow() {
