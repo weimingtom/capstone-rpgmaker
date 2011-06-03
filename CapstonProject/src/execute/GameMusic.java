@@ -107,6 +107,10 @@ public class GameMusic implements Runnable{
 			{
 				playMusic(gameData.getMusicFile());
 			}
+			else
+			{
+				close();
+			}
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
