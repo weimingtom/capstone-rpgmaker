@@ -212,11 +212,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void createMap(String mapName, int mapWidth, int mapHeight) {
 		try {
 			mapSys.newMap(mapName, mapWidth, mapHeight);
-			// eventEditorSystem = new EventEditorSystem(
-			// MainFrame.OWNER.projectPath, mapSys.getMapInfo()
-			// .getM_MapName());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		background = mapSys.drawBackground(0, 0);
@@ -304,12 +300,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void load(String fileName) {
 		try {
 			mapSys.load(fileName);
-			// eventEditorSystem = new EventEditorSystem(
-			// MainFrame.OWNER.projectPath, mapSys.getMapInfo()
-			// .getM_MapName());
-			// eventEditorSystem.load(MainFrame.OWNER.ProjectFullPath
-			// + File.separator + "Event" + File.separator
-			// + mapSys.getMapInfo().getM_MapName() + ".event");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -615,13 +605,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 						+ File.separator + "Event" + File.separator
 						+ mapSys.getMapInfo().getM_MapName() + ".event";
 
-				// if (mapSys.getEventEditSys().hasEventOnTile(col, row)) {
-				// new EventDlg(MainFrame.OWNER, new Point(row,col), new
-				// Point(row,col), false, mapSys.getEventEditSys());
-				// } else {
-				new EventDlg(MainFrame.OWNER, new Point(row, col), new Point(
-						row, col), mapSys.getEventEditSys());
-				// }
+				new EventDlg(MainFrame.OWNER, new Point(row, col), new Point(row, col), mapSys.getEventEditSys());
 			}
 		} else {
 
