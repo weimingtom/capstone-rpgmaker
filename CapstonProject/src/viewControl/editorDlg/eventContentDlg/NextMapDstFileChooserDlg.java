@@ -20,10 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 import viewControl.MainFrame;
 import explorer.tree.FileTree;
 
-/**
- * 
- * 장은수 만듬 익스플로러 기능 다만 폴더만 보입니다. 폴더명 = 경로로 지정 후에 경로는 따로 출력해주고 폴더명만 보이게 하도록함.
- */
+
 
 public class NextMapDstFileChooserDlg extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -64,7 +61,18 @@ public class NextMapDstFileChooserDlg extends JDialog implements ActionListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btn_ok) {
-
+			String s = tree.getSelectedFile().getName();
+			for(int i =0; i<owner.mapList.getItemCount(); i++){
+				if(s.equals(owner.mapList.getItemAt(i))){
+					owner.mapList.setSelectedIndex(i);
+					break;
+				}
+			}
+			owner.btnBrower.setEnabled(true);
+			dispose();			
+		} else if (e.getSource() == btn_Cancel) {
+			owner.btnBrower.setEnabled(true);
+			dispose();
 		}
 	}
 
