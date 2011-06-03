@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import characterEditor.CharacterEditorSystem;
 import characterEditor.MonsterEditorSystem;
+import characterEditor.NPCEditorSystem;
 
 import animationEditor.Animations;
 
@@ -404,7 +405,7 @@ public class GameDisplay implements Runnable{
 	public void displayAlliance(Graphics2D g,GameCharacter alliance)
 	{
 		// 애니메이션 정보 얻기
-		CharacterEditorSystem allianceAnim = (CharacterEditorSystem) alliance
+		NPCEditorSystem allianceAnim = (NPCEditorSystem) alliance
 				.getCharacter();
 		// 경우에 따른 애니메이션 출력, 움직임이냐 전투냐
 		if (alliance.getActorState() == GameCharacter.MOVESTATE) {
@@ -454,7 +455,7 @@ public class GameDisplay implements Runnable{
 	public void displayPlayer(Graphics2D g)
 	{
 		//캐릭정보
-		Alliance player = (Alliance) gameData.getPlayer();
+		PlayerCharacter player = (PlayerCharacter) gameData.getPlayer();
 		//캐릭터 애니메이션 정보
 		CharacterEditorSystem playerAnim = (CharacterEditorSystem) gameData.getPlayer().getCharacter();
 		/********플레이어 출력****************************************************************/
@@ -696,11 +697,11 @@ public class GameDisplay implements Runnable{
 				// 상태가 플레이이면
 				else if (gameState == GameData.PLAY) 
 				{
-					BufferedImage gameImage = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_4BYTE_ABGR);
+					BufferedImage gameImage = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_3BYTE_BGR);
 					Graphics2D g = gameImage.createGraphics();
 					//캐릭터 밑의 배경 출력
 					displayBackground(g);
-					displayForeground(g, false);
+					//displayForeground(g, false);
 					//캐릭터 출력
 					displayActors(g);
 					//캐릭터 전경 출력
@@ -710,6 +711,7 @@ public class GameDisplay implements Runnable{
 					{
 						displayLevelUp(g, gameData.getPlayer());
 					}
+					g.dispose();
 					gameGraphics.drawImage(gameImage,0,0,null);
 				} 
 				else if (gameState == GameData.GAMEOVER)

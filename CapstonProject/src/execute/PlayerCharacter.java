@@ -8,14 +8,14 @@ import characterEditor.CharacterEditorSystem;
 import characterEditor.NPCEditorSystem;
 import eventEditor.EventTile;
 
-public class Alliance extends GameCharacter {
+public class PlayerCharacter extends GameCharacter {
 
-	private NPCEditorSystem actor;
+	private CharacterEditorSystem actor;
 	
 	//»ý¼ºÀÚ
-	public Alliance(String gamePath)
+	public PlayerCharacter(String gamePath)
 	{
-		actor = new NPCEditorSystem(gamePath);
+		actor = new CharacterEditorSystem(gamePath);
 		maxStatus = actor.getInitAbility();
 		nowStatus = new Abilities();
 		nowStatus.setAgility(maxStatus.getAgility());
@@ -59,4 +59,5 @@ public class Alliance extends GameCharacter {
 		// TODO Auto-generated method stub
 		return actor;
 	}
+
 }

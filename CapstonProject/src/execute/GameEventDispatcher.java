@@ -1,24 +1,34 @@
 package execute;
 
+
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import MapEditor.Map;
+
+import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.EventTile;
 
 public class GameEventDispatcher {
 
 	private EventEditorSystem eventLoader;
-	private EventTile[][] mapEvents;
-	private List<EventTile> charEvents;
-
+	private boolean[][] mapEventChecker;
+	private List<Event> autoEvents;
+	
+	private GameData gameData;
+	
 	public GameEventDispatcher() {
 		eventLoader = null;
+		//자동 실행 이벤트 생성
+		setAutoEvents(new LinkedList<Event>());
 	}
 
-	public void setEventLoader(EventEditorSystem eventLoader) 
+	public void setEventLoader(EventEditorSystem eventLoader, GameData gameData) 
 	{
+		this.gameData = gameData;
 		if(eventLoader == null)
 		{
 			JOptionPane.showMessageDialog(null, "이벤트 로더가 널임");
@@ -27,64 +37,91 @@ public class GameEventDispatcher {
 		this.eventLoader = eventLoader;
 	}
 
-	// 맵 이벤트 생성
-	public void loadMapEvent(int width, int height) 
+	public void makeMapEvent(int width, int height)
 	{
-		try 
+		//맵이벤트 체커 생성
+		mapEventChecker = new boolean[height][];
+		for(int i = 0 ; i < width; i++)
+			mapEventChecker[i] = new boolean[width];
+		
+		for(int y = 0 ; y < height; y++)
 		{
-			this.mapEvents = new EventTile[height][];
-			
-			for(int i = 0; i < height; i++)
+			for(int x = 0 ; x < width; x++)
 			{
-				for(int j = 0 ; j < width; j++)
+				if(eventLoader.hasEventOnTile(y, x) == true)
 				{
-					if(eventLoader.getEventTile(i, j)==null)
-						continue;
-					//타일 종류가 맵이벤트이면
-					if(eventLoader.getEventTile(j,i).getObjectType() == EventEditorSystem.MAP_EVENT)
+					mapEventChecker[y][x] = true;
+				}
+				else
+				{
+					mapEventChecker[y][x] = false;
+				}
+			}
+		}
+		
+		//자동 실행 이벤트 생성
+		makeAutoEvent();
+	}
+
+	public boolean hasMapEvent(int width, int height)
+	{
+		return this.mapEventChecker[height][width];
+	}
+
+	//이벤트 타일 겟
+	public EventTile getEventTile(int width, int height)
+	{
+		return eventLoader.getEventTile(height, width);
+	}
+	
+	//자동 실행 이벤트 생성
+	public void makeAutoEvent()
+	{
+		//자동 실행이 있는지 확인
+		EventTile mapEventTile = null;
+		List<Event> eventList = null;
+		Event eventContentsList = null;
+
+		//맵 정보를 받아서
+		Map gameMap = gameData.getGameMap();
+		
+		for(int height = 0 ; height < gameMap.getM_Width(); height++)
+		{
+			for(int width = 0 ; width < gameMap.getM_Width(); width++)
+			{
+				//맵에 이벤트가 있다면
+				if(this.hasMapEvent(width, height))
+				{
+					mapEventTile = this.getEventTile(width, height);
+					eventList = mapEventTile.getEventList();
+					//자동이벤트가 있는지 확인
+					for(int length = 0 ; length < eventList.size(); length++)
 					{
-						System.out.println("널 아님");
-						mapEvents = new EventTile[i][j];
-						mapEvents[i][j] = eventLoader.getEventTile(j, i);
-					}
-					else 
-					{
-						System.out.println("널 이여");
-						mapEvents[i][j] = null;
+						eventContentsList = eventList.get(length);
+						//자동 이벤트가 있다면, 그리고 실행조건 확인
+						if(eventContentsList.getStartType() == EventEditorSystem.AUTO_START)
+						{
+							autoEvents.add(eventContentsList);
+						}				
 					}
 				}
 			}
-			
-		}catch (Exception e) 
-		{
-			JOptionPane.showMessageDialog(null, "게임디스패처, loadMapEvent() 오류");
-			System.exit(0);
 		}
 	}
-
+	
+	
 	public void loadChars()
 	{
-		try 
-		{
-			this.charEvents = eventLoader.getActorEventTiles();
-			//charEvents.get(9).getObjectType()
-			
-		}catch (Exception e) 
-		{
-			JOptionPane.showMessageDialog(null, "게임디스패처, loadCharLoad() 오류");
-			System.exit(0);
-		}
-	}
-	
-	
-	
-	//맵 이벤트 셋
-	public void setMapEvents(EventTile[][] mapEvents) {
-		this.mapEvents = mapEvents;
+	 	
 	}
 
-	public EventTile[][] getMapEvents() {
-		return mapEvents;
+	public void setAutoEvents(List<Event> autoEvents) {
+		this.autoEvents = autoEvents;
 	}
+
+	public List<Event> getAutoEvents() {
+		return autoEvents;
+	}
+
 	
 }
