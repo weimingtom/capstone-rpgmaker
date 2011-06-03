@@ -196,7 +196,6 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		List<Event> tmpEvents = events.getEventList();
 		for (int i = 0; i < tmpEvents.size(); i++) {
 			EventEditPanel addPanel = new EventEditPanel(owner, tmpEvents.get(i), cb_objectType.getSelectedIndex());
-			addPanel.setInitDataInPanel();
 			eventTabPanelList.add(addPanel);
 		}
 	}
@@ -289,6 +288,8 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 							getEventInTapPanel(k).setPreconditionFlag(0, getTapPanel(k).getCondition1());
 							getEventInTapPanel(k).setPreconditionFlag(1, getTapPanel(k).getCondition2());
 							getEventInTapPanel(k).setPreconditionFlag(2, getTapPanel(k).getCondition3());
+							getEventInTapPanel(k).setDieChangeConditionIndex(getTapPanel(k).getDieConditionIndex());
+							getEventInTapPanel(k).setDieChangeComditionState(getTapPanel(k).getDieConditionState());
 						} catch (NotExistType e1) {
 							e1.printStackTrace();
 						}

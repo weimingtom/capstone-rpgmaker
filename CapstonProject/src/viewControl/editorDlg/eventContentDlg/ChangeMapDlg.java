@@ -34,14 +34,16 @@ public class ChangeMapDlg extends JDialog implements ActionListener, MouseListen
 
 	private MainFrame owner;
 	private Event event;
-	private int insetIndex;
+	private boolean isNew;
+	private int index;
 	
-	public ChangeMapDlg(MainFrame parent, Event event, int insetIndex) {
+	public ChangeMapDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change Map Event");
 		
 		this.owner = parent;
 		this.event = event;
-		this.insetIndex = insetIndex;
+		this.isNew = isNew;
+		this.index = index;
 		
 		setResizable(false);
 		setModal(true);
@@ -63,6 +65,9 @@ public class ChangeMapDlg extends JDialog implements ActionListener, MouseListen
 		// 액션 이벤트
 		btn_OK.addActionListener(this);
 		btn_cancel.addActionListener(this);
+		
+		// isNew가 false면 event의 index번 데이터로 초기화
+		
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 

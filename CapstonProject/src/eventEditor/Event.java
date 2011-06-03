@@ -16,6 +16,9 @@ public class Event implements Serializable {
 	private int actionType;
 	private int actorIndex;
 	
+	private int dieChangeConditionIndex;
+	private boolean dieChangeComditionState;
+	
 	private int[] preconditionFlagArray;
 //	private int[] postconditionFlagArray;
 	private List<EventContent> eventContentList;
@@ -25,6 +28,9 @@ public class Event implements Serializable {
 		this.startType = EventEditorSystem.PRESS_BUTTON;
 		this.actionType = EventEditorSystem.NOT_MOTION;
 		this.actorIndex = 0;
+		
+		dieChangeConditionIndex = -1;
+		dieChangeComditionState = true;
 		
 		lengthConditionArray = 3;
 		preconditionFlagArray = new int[lengthConditionArray];
@@ -45,7 +51,13 @@ public class Event implements Serializable {
 	public EventContent getEventContent(int index)	{	return eventContentList.get(index);		}
 	public int getActorIndex() 						{	return actorIndex;						}
 	public void setActorIndex(int actorIndex) 		{	this.actorIndex = actorIndex;			}
-	
+	public int getDieChangeConditionIndex()									{	return dieChangeConditionIndex;							}
+	public void setDieChangeConditionIndex(int dieChangeConditionIndex)		{	this.dieChangeConditionIndex = dieChangeConditionIndex;	}
+	public boolean getDieChangeComditionState()								{	return dieChangeComditionState;							}
+	public void setDieChangeComditionState(boolean dieChangeComditionState)	{	this.dieChangeComditionState = dieChangeComditionState;	}
+
+
+
 	/*
 	 * -1은 비활성화 상태
 	 */

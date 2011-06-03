@@ -29,6 +29,7 @@ import viewControl.MainFrame;
 import viewControl.editorDlg.eventContentDlg.ChangeBGMDlg;
 import viewControl.editorDlg.eventContentDlg.ChangeFlagDlg;
 import viewControl.editorDlg.eventContentDlg.ChangeMapDlg;
+import viewControl.editorDlg.eventContentDlg.DialogEventDlg;
 import viewControl.editorDlg.eventContentDlg.EventContentDlg;
 import viewControl.editorDlg.eventContentDlg.MotionEventDlg;
 import viewControl.editorDlg.eventContentDlg.SwitchDialogDlg;
@@ -38,11 +39,7 @@ import characterEditor.NPCEditorSystem;
 import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.FlagList;
-import eventEditor.eventContents.ChangeBGMEvent;
-import eventEditor.eventContents.ChangeMapEvent;
-import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
-import eventEditor.eventContents.GameOverEvent;
 
 public class EventEditPanel extends JPanel implements ActionListener, MouseListener {
 	
@@ -65,11 +62,15 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	private JCheckBox ckb_condition1;
 	private JCheckBox ckb_condition2;
 	private JCheckBox ckb_condition3;
+	private JCheckBox ckb_ifDie;
+	private JComboBox cb_dieCondition;
+	private JComboBox cb_dieConditionState;
 	private JComboBox cb_selectedEventContent;
 	private JLabel jLabel1;
 	private JLabel jLabel2;
 	private JLabel jLabel3;
 	private JLabel jLabel4;
+	private JLabel jLabel5;
 	private JScrollPane sp_eventListPanel;
 	private JList lst_eventList;
 	private JPanel p_activeCondition;
@@ -109,6 +110,9 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		ckb_condition1 = new JCheckBox("Condition1");
 		ckb_condition2 = new JCheckBox("Condition2");
 		ckb_condition3 = new JCheckBox("Condition3");
+		ckb_ifDie = new JCheckBox("If Die");
+		cb_dieCondition = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+		cb_dieConditionState = new JComboBox(new DefaultComboBoxModel(new String[] { "True", "False" }));
 		cb_actorIndex = new JComboBox(new DefaultComboBoxModel(new String[] { "None" }));
 		cb_actorMotionType = new JComboBox(new DefaultComboBoxModel(new String[] { "Not Motion", "Random Motion", "Come to Player", "Attack Player", "Attack Enemy" }));
 		sp_eventListPanel = new JScrollPane();
@@ -119,6 +123,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		jLabel2 = new JLabel("Actor Index");
 		jLabel3 = new JLabel("Actor Motion Type");
 		jLabel4 = new JLabel("Event Contents");
+		jLabel5 = new JLabel("= ");
 		renewConditionComboBox();	// cb_condition#에 최신 Flag Name으로 갱신
 		renewSelectedListComboBox();// cb_selectedEventContent에 최신 리스트 목록으로 갱신
 		
@@ -138,6 +143,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		ckb_condition1.addActionListener(this);
 		ckb_condition2.addActionListener(this);
 		ckb_condition3.addActionListener(this);
+		ckb_ifDie.addActionListener(this);
 		cb_actorIndex.addActionListener(this);
 		btn_insertEventContest.addActionListener(this);
 		btn_deleteEventContent.addActionListener(this);
@@ -146,6 +152,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		ckb_condition1.addMouseListener(this);
 		ckb_condition2.addMouseListener(this);
 		ckb_condition3.addMouseListener(this);
+		ckb_ifDie.addActionListener(this);
 		cb_actorIndex.addMouseListener(this);
 		
 		// JList의 마우스 이벤트 정의
@@ -180,11 +187,23 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		int tmpObjectType = objectType;
 		objectType = -1;
 		renewActorMenu(tmpObjectType);
-		setSelectedIndexActorMenu();
+//		setSelectedIndexActorMenu();
 		setEventStartType();
+		
+		if(event.getDieChangeConditionIndex() != -1)
+			ckb_ifDie.setSelected(true);
+		else
+			ckb_ifDie.setSelected(false);
+		renewDieCondition();
+		
+		if(event.getDieChangeConditionIndex() != -1) {
+			cb_dieCondition.setSelectedIndex(event.getDieChangeConditionIndex());
+			cb_dieConditionState.setSelectedIndex(event.getDieChangeComditionState()?0:1);
+		}
 		
 		// Event Content의 JList 구성
 		setJListEventContents();
+		renewSelectedListComboBox();
 		
 		// 레이아웃 구성
 		GroupLayout p_activeConditionLayout = new GroupLayout(p_activeCondition);
@@ -226,6 +245,11 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 
+		p_actor.setBorder(BorderFactory.createTitledBorder("Actor"));
+
+		p_actorImg.setBackground(new java.awt.Color(255, 255, 255));
+		p_actorImg.setBorder(BorderFactory.createEtchedBorder());
+
 		GroupLayout p_actorImgLayout = new GroupLayout(p_actorImg);
 		p_actorImg.setLayout(p_actorImgLayout);
 		p_actorImgLayout.setHorizontalGroup(
@@ -249,7 +273,15 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 					.addComponent(jLabel2, GroupLayout.Alignment.LEADING)
 					.addComponent(cb_actorIndex, 0, 155, Short.MAX_VALUE)
 					.addComponent(jLabel3, GroupLayout.Alignment.LEADING)
-					.addComponent(cb_actorMotionType, 0, 155, Short.MAX_VALUE))
+					.addComponent(cb_actorMotionType, 0, 155, Short.MAX_VALUE)
+					.addGroup(GroupLayout.Alignment.LEADING, p_actorLayout.createSequentialGroup()
+						.addComponent(ckb_ifDie)
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(cb_dieCondition, 0, 99, Short.MAX_VALUE))
+					.addGroup(p_actorLayout.createSequentialGroup()
+						.addComponent(jLabel5)
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(cb_dieConditionState, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 				.addContainerGap())
 		);
 		p_actorLayout.setVerticalGroup(
@@ -260,10 +292,18 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 						.addComponent(jLabel2)
 						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 						.addComponent(cb_actorIndex, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addGap(26, 26, 26)
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 						.addComponent(jLabel3)
 						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(cb_actorMotionType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(cb_actorMotionType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addGap(18, 18, 18)
+						.addGroup(p_actorLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(ckb_ifDie)
+							.addComponent(cb_dieCondition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(p_actorLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(cb_dieConditionState, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(jLabel5)))
 					.addComponent(p_actorImg, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap())
 		);
@@ -580,7 +620,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 			if(objectType == EventEditorSystem.NPC_EVENT)
 				actor = new NPCEditorSystem(MainFrame.OWNER.ProjectFullPath);
 			else if(objectType == EventEditorSystem.MONSTER_EVENT)
-				actor = new MonsterEditorSystem(MainFrame.OWNER.projectPath);
+				actor = new MonsterEditorSystem(MainFrame.OWNER.ProjectFullPath);
 	
 			try {
 				actor.load(getActorIndex());
@@ -621,6 +661,14 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return cb_actorMotionType.getSelectedIndex();
 	}
 	
+	public int getDieConditionIndex() {
+		return cb_dieCondition.getSelectedIndex();
+	}
+	
+	public boolean getDieConditionState() {
+		return cb_dieConditionState.getSelectedIndex()==0?true:false;
+	}
+	
 	// 설정된 objectType에 따라 actorIndex의 ComboBox를 정의한다.
 	public int getActorIndex() {
 		if(objectType != EventEditorSystem.MAP_EVENT) {
@@ -646,26 +694,41 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return 0;
 	}
 	
-	public void setInitDataInPanel() {
-		
-	}
-	
 	private void createEditEventContentDlg(Event event, int insetIndex) {
 		// 선택된 내용이 있으면 편집.
 		if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_MAP_EVNET) {
-			new ChangeMapDlg(owner, event, insetIndex);
+			new ChangeMapDlg(owner, event, false, insetIndex);
 		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_FLAG_EVENT) {
-			new ChangeFlagDlg(owner, event, insetIndex);
+			new ChangeFlagDlg(owner, event, false, insetIndex);
 		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_BGM_EVNET) {
-			new ChangeBGMDlg(owner, event, insetIndex);
+			new ChangeBGMDlg(owner, event, false, insetIndex);
 		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.DIALOG_EVNET) {
-//			new DialogEventDlg(owner, event, insetIndex);
+			new DialogEventDlg(owner, event, false, insetIndex);
 		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.GAMEOVER_EVNET) {
 			JOptionPane.showMessageDialog(null, "You can't modify Gameover Event!");
 		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.MOTION_EVNET) {
-			new MotionEventDlg(owner, event, insetIndex);
+			new MotionEventDlg(owner, event, false, insetIndex);
 		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.SWITCH_DIALOG_EVNET) {
-			new SwitchDialogDlg(owner, event, insetIndex);
+			new SwitchDialogDlg(owner, event, false, insetIndex);
+		}
+	}
+	
+	private void renewDieCondition() {
+		if(cb_dieCondition == null)
+			cb_dieCondition = new JComboBox(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+		
+		int selectedIndex = 0;
+		if(cb_dieCondition.getSelectedIndex() != -1)
+			selectedIndex = cb_dieCondition.getSelectedIndex();
+		
+		if(ckb_ifDie.isSelected()) {
+			cb_dieCondition.setEnabled(true);
+			cb_dieConditionState.setEnabled(true);
+			cb_dieCondition.setSelectedIndex(selectedIndex);
+			cb_dieConditionState.setSelectedIndex(event.getDieChangeComditionState()?0:1);
+		} else {
+			cb_dieCondition.setEnabled(false);
+			cb_dieConditionState.setEnabled(false);
 		}
 	}
 	
@@ -695,6 +758,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 			// JList 재출력
 			setJListEventContents();
 			renewSelectedListComboBox();
+		} else if(e.getSource() == ckb_ifDie) {
+			renewDieCondition();
 		}
 	}
 	
@@ -714,6 +779,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		} else if(e.getSource() == cb_actorIndex) {
 			// 해당 actor를 불러와서 패널에 출력해준다.
 			setAniImgPanel();
+		} else if(e.getSource() == ckb_ifDie) {
+			renewDieCondition();
 		}
 	}
 }

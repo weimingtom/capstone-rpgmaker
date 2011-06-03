@@ -26,6 +26,7 @@ import javax.swing.JSeparator;
 import palette.PalettePanel;
 import viewControl.MainFrame;
 import viewControl.editorDlg.EventDlg;
+import viewControl.editorDlg.SetCharStartPointDlg;
 import viewControl.esComponent.EstyleCheckBoxItem;
 import viewControl.esComponent.EstyleCheckBoxItemGroup;
 
@@ -733,7 +734,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		} else if (e.getSource() == popupPasteEvent) {
 			pasteEvent();
 		} else if (e.getSource() == popupSetStartingPointEvent) {
-			setCharactorStartingPoint();
+			int mapCol = startEventPoint.y / DrawingTemplate.pixel;
+			int mapRow = startEventPoint.x / DrawingTemplate.pixel;
+			
+			new SetCharStartPointDlg(MainFrame.OWNER, mapSys.getMapInfo().getM_MapName(), new Point(mapRow, mapCol));
 		}else if (e.getSource() == popupCanvasMode) {
 			MainFrame.OWNER.setCanvasEventMode(false);
 		}

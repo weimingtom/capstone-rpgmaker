@@ -15,6 +15,8 @@ import javax.swing.WindowConstants;
 import viewControl.MainFrame;
 import eventEditor.Event;
 import eventEditor.FlagList;
+import eventEditor.eventContents.ChangeBGMEvent;
+import eventEditor.eventContents.ChangeFlagEvent;
 
 public class ChangeFlagDlg extends JDialog implements ActionListener {
 
@@ -32,14 +34,16 @@ public class ChangeFlagDlg extends JDialog implements ActionListener {
 	
 	private MainFrame owner;
 	private Event event;
-	private int insetIndex;
+	private boolean isNew;
+	private int index;
 	
-	public ChangeFlagDlg(MainFrame parent, Event event, int insetIndex) {
+	public ChangeFlagDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change Flag Event");
 
 		this.owner = parent;
 		this.event = event;
-		this.insetIndex = insetIndex;
+		this.isNew = isNew;
+		this.index = index;
 		
 		setResizable(false);
 		setModal(true);
@@ -60,9 +64,16 @@ public class ChangeFlagDlg extends JDialog implements ActionListener {
 		// 액션 이벤트
 		btn_OK.addActionListener(this);
 		btn_cancel.addActionListener(this);
-
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		
 		renewFlagNameComboBox();
+
+		// isNew가 false면 event의 index번 데이터로 초기화
+		if(!isNew) {
+			cb_flagName.setSelectedIndex(((ChangeFlagEvent)(event.getEventContent(index))).getIndexFlag());
+			cb_value.setSelectedIndex(((ChangeFlagEvent)(event.getEventContent(index))).isState() ? 0:1);
+		}
+		
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		// 레이아웃 구성
 		GroupLayout layout = new GroupLayout(getContentPane());
@@ -133,8 +144,19 @@ public class ChangeFlagDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
+			int indexFlag = cb_flagName.getSelectedIndex();
+			boolean state = cb_value.getSelectedIndex()==0 ? true:false;
+			
+			// EventContent를 event에 삽입한다.
+			if(isNew)
+				event.getEventContentList().add(index, new ChangeFlagEvent(indexFlag, state));
+			else {
+				event.getEventContentList().remove(index);
+				event.getEventContentList().add(index, new ChangeFlagEvent(indexFlag, state));
+			}
+			
 			this.dispose();
-		} else if(e.getSource() == btn_OK) {
+		} else if(e.getSource() == btn_cancel) {
 			this.dispose();
 		}
 	}
