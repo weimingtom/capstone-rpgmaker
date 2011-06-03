@@ -93,6 +93,7 @@ public class GameDisplay implements Runnable{
 		}
 
 	}
+	
 	//메뉴 출력
 	public void displayTitleMenu(Graphics2D g)
 	{
@@ -235,10 +236,10 @@ public class GameDisplay implements Runnable{
 		Image cursorImage = cursor.getUtilImage();
 //		g.drawString("아이템", screenWidth/10 + 2*cursorImage.getWidth(null), status.getFontSize()+screenHeight/10);
 //		g.drawString("장   비", screenWidth/10+ 2*cursorImage.getWidth(null), status.getFontSize()*3+screenHeight/10);
-		g.drawString("상    태", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*1+screenHeight/10);
-		g.drawString("저    장", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*3+screenHeight/10);
-		g.drawString("게임으로", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*5+screenHeight/10);
-		g.drawString("종    료", screenWidth/10+ 2*cursorImage.getWidth(null)- status.getFontSize()/2, status.getFontSize()*7+screenHeight/10);
+		g.drawString("상    태", (int)(screenWidth/10+ cursorImage.getWidth(null)*ratioX), status.getFontSize()*1+screenHeight/10);
+		g.drawString("저    장", (int)(screenWidth/10+ cursorImage.getWidth(null)*ratioX), status.getFontSize()*3+screenHeight/10);
+		g.drawString("게임으로", (int)(screenWidth/10+ cursorImage.getWidth(null)*ratioX), status.getFontSize()*5+screenHeight/10);
+		g.drawString("종    료", (int)(screenWidth/10+ cursorImage.getWidth(null)*ratioX), status.getFontSize()*7+screenHeight/10);
 		//첫번째에 위치
 		if(cursor.getPosition() == 0)
 		{
@@ -408,7 +409,8 @@ public class GameDisplay implements Runnable{
 		NPCEditorSystem allianceAnim = (NPCEditorSystem) alliance
 				.getCharacter();
 		// 경우에 따른 애니메이션 출력, 움직임이냐 전투냐
-		if (alliance.getActorState() == GameCharacter.MOVESTATE) {
+		if (gameData.getPlayer().getActorState() == GameCharacter.MOVESTATE ||
+				gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE) {
 			// 정지 애니메이션 출력
 			if (alliance.getActionType() == GameCharacter.STOP
 					|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
@@ -460,7 +462,7 @@ public class GameDisplay implements Runnable{
 		CharacterEditorSystem playerAnim = (CharacterEditorSystem) gameData.getPlayer().getCharacter();
 		/********플레이어 출력****************************************************************/
 		//세팅정보 필요
-		if(player.getActorState() == GameCharacter.MOVESTATE)
+		if(player.getActorState() == GameCharacter.MOVESTATE || player.getActorState() == GameCharacter.EVENTSTATE)
 		{
 			//이동 상태일때
 			if(keyFlag.isUp() == true)
@@ -663,6 +665,37 @@ public class GameDisplay implements Runnable{
 		}
 	}
 	
+	//다이얼로그 출력
+	public void displayDialog(Graphics2D g)
+	{
+		GameUtilityInformation dialog = gameData.getDialogScreen();
+		if(dialog.getText() == null)
+			return;
+		
+		if(gameData.getPlayer().getyPosition() < gameData.getGameMap().getM_Height()*GameData.mapCharArrayRatio)
+		{
+			g.setFont(dialog.getFont());
+			g.setColor(Color.WHITE);
+			g.fillRect((int)(screenWidth/10), (int)(screenHeight*(7.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
+			g.setColor(new Color(60,190,50,230));
+			g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
+			g.setColor(Color.BLACK);
+			g.drawString(dialog.getText(), (int)(screenWidth/10)+20, (int)(screenHeight*(8.0/10))-dialog.getFontSize());
+		}
+		else
+		{
+			//플레이어가 아래에 있다면
+			g.setFont(dialog.getFont());
+			g.setColor(Color.WHITE);
+			g.fillRect((int)(screenWidth/10), (int)(screenHeight*(1.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
+			g.setColor(new Color(50,200,50,190));
+			g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(1.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
+			g.setColor(Color.white);
+			g.drawString(dialog.getText(), (int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10))-dialog.getFontSize());
+		}
+	}
+	
+	
 	//GameRunning!!!!!!!
 	@Override
 	public void run() {
@@ -713,6 +746,8 @@ public class GameDisplay implements Runnable{
 					}
 					g.dispose();
 					gameGraphics.drawImage(gameImage,0,0,null);
+					
+					displayDialog(gameGraphics);
 				} 
 				else if (gameState == GameData.GAMEOVER)
 				{
