@@ -28,6 +28,7 @@ import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.EventTile;
 import eventEditor.eventContents.ChangeBGMEvent;
+import eventEditor.eventContents.ChangeMapEvent;
 import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
 
@@ -481,6 +482,14 @@ public class GameData implements Runnable{
 		{
 			startDialogEvent();
 		}
+		else if(type == EventContent.CHANGE_MAP_EVNET)
+		{
+			eventContentListIndex++;
+			this.eventStart = false;
+			ChangeMapEvent mapChange = (ChangeMapEvent) nowEvent;
+			startMusic(null);
+			loadMap(mapChange.getMapName());
+		}
 	}
 	
 	
@@ -802,8 +811,8 @@ public class GameData implements Runnable{
 		try{
 			//현재 맵에 정의된 npc들 출력
 			alliances = new Vector<GameCharacter>();
-			alliances.add(new Alliance(gamePath));
-			alliances.elementAt(0).deployActor(0, 20, 20, null);
+//			alliances.add(new Alliance(gamePath));
+//			alliances.elementAt(0).deployActor(0, 20, 20, null);
 		}
 		catch(Exception e)
 		{
@@ -855,9 +864,12 @@ public class GameData implements Runnable{
 		g.dispose();
 		
 		//이벤트 타일 생성
+		eventDispatcher.refrash();
 		eventDispatcher.setEventLoader(gameMap.getEventEditSys(), this);
 		eventDispatcher.makeMapEvent(gameMap.getM_Width(), gameMap.getM_Height());
 		computeMapAutoEvent();
+		eventContentListIndex = 0;
+		eventStart = false;
 	}
 
 	//플레이어로드

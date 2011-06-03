@@ -123,5 +123,11 @@ public class GameEventDispatcher {
 		return autoEvents;
 	}
 
-	
+	public void refrash()
+	{
+		eventLoader = null;
+		//자동 실행 이벤트 생성
+		setAutoEvents(new LinkedList<Event>());
+		mapEventChecker = null;
+	}
 }
