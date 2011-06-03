@@ -600,13 +600,13 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		if (EVENTMODE_FLAG) {
 			if (e.getClickCount() >= 2) {
 
-				int col = e.getY() / DrawingTemplate.pixel;
-				int row = e.getX() / DrawingTemplate.pixel;
+				int col = startEventPoint.y / DrawingTemplate.pixel;
+				int row = startEventPoint.x / DrawingTemplate.pixel;
 				String filePath = MainFrame.OWNER.ProjectFullPath
 						+ File.separator + "Event" + File.separator
 						+ mapSys.getMapInfo().getM_MapName() + ".event";
 
-				new EventDlg(MainFrame.OWNER, new Point(row, col), new Point(row, col), mapSys.getEventEditSys());
+				new EventDlg(MainFrame.OWNER, new Point(row,col), new Point(row,col), mapSys.getEventEditSys());
 			}
 		} else {
 
@@ -758,8 +758,12 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	}
 
 	public void startEventDlg() {
-		new EventDlg(MainFrame.OWNER, startEventPoint, endEventPoint, mapSys
-				.getEventEditSys());
+		int startRow = startEventPoint.x / DrawingTemplate.pixel;
+		int startCol = startEventPoint.y / DrawingTemplate.pixel;
+		int endRow = endEventPoint.x / DrawingTemplate.pixel;
+		int endCol = endEventPoint.y / DrawingTemplate.pixel;
+		
+		new EventDlg(MainFrame.OWNER, new Point(startRow,startCol), new Point(endRow,endCol), mapSys.getEventEditSys());
 	}
 
 	public void deleteEvent() {
@@ -776,12 +780,20 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	}
 	
 	public void copyEvent() {
-		mapSys.getEventEditSys().copyEvents(startEventPoint, endEventPoint);
+		int startRow = startEventPoint.x / DrawingTemplate.pixel;
+		int startCol = startEventPoint.y / DrawingTemplate.pixel;
+		int endRow = endEventPoint.x / DrawingTemplate.pixel;
+		int endCol = endEventPoint.y / DrawingTemplate.pixel;
+		
+		mapSys.getEventEditSys().copyEvents(new Point(startRow,startCol), new Point(endRow,endCol));
 		MainFrame.OWNER.getEventItem_paste().setEnabled(syncEventPasteBtn());
 	}
 
 	public void pasteEvent() {
-		mapSys.getEventEditSys().pasteEvents(startEventPoint, endEventPoint);
+		int startRow = startEventPoint.x / DrawingTemplate.pixel;
+		int startCol = startEventPoint.y / DrawingTemplate.pixel;
+		
+		mapSys.getEventEditSys().pasteEvents(new Point(startRow,startCol));
 	}
 
 	// 이벤트 붙여 넣기 버튼에 불을 넣거나 빼고

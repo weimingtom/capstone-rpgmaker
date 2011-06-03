@@ -82,7 +82,7 @@ public class Map implements Serializable {
 			}
 		}
 		
-		eventEditSys = new EventEditorSystem(MainFrame.OWNER.projectPath, m_MapName);
+		eventEditSys = new EventEditorSystem(MainFrame.OWNER.projectPath, m_MapName, this.m_Width, this.m_Height);
 	}
 
 	public String getM_MapName() {

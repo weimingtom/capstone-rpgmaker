@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import userData.DeepCopier;
 import viewControl.MainFrame;
 import editor.ObjectEditorSystem;
 
@@ -41,12 +42,19 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	
 	private String projectPath;
 	private List<EventTile> eventTileList;
-	private Point copyStartPoint;
-	private Point copyEndPoint;
 	
-	public EventEditorSystem(String projectPath, String mapName) {
+	private Point startPointToPaste;
+	private Point endPointToPaste;
+	private List<EventTile> eventTilesToPaste;
+	private int width;
+	private int height;
+	
+	public EventEditorSystem(String projectPath, String mapName, int width, int height) {
 		super(projectPath, "Event");
 		extension = "event";
+		
+		this.width = width;
+		this.height = height;
 		
 		if(mapName.lastIndexOf(".") == -1)
 			this.name = mapName;
@@ -205,33 +213,88 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	}
 	
 	public boolean addEventTile(EventTile newTile) {
-		EventTile existedTile;
-		
-		for (int i = 0; i < eventTileList.size(); i++) {
-			existedTile = eventTileList.get(i);
-			if(existedTile.getInitColLocation() == newTile.getInitColLocation() && existedTile.getInitRowLocation() == newTile.getInitRowLocation())
-				eventTileList.remove(i);
+		if(newTile.getInitRowLocation() >= 0 &&
+				newTile.getInitRowLocation() < width &&
+				newTile.getInitColLocation() >= 0 &&
+				newTile.getInitColLocation() < height) {
+			EventTile existedTile;
+			
+			for (int i = 0; i < eventTileList.size(); i++) {
+				existedTile = eventTileList.get(i);
+				if(existedTile.getInitColLocation() == newTile.getInitColLocation() && existedTile.getInitRowLocation() == newTile.getInitRowLocation())
+					eventTileList.remove(i);
+			}
+			
+			eventTileList.add(newTile);
+			
+			return true;
+		} else {
+			return false;
 		}
-		
-		eventTileList.add(newTile);
-		
-		return true;
 	}
 	
 	public void copyEvents(Point startPointCopy, Point endPointCopy) {
-		copyStartPoint = startPointCopy;
-		copyEndPoint = endPointCopy;
+		startPointToPaste = startPointCopy;
+		endPointToPaste = endPointCopy;
+		eventTilesToPaste = new LinkedList<EventTile>();
+		
+		for(int i = 0; i < eventTileList.size(); i++) {
+			// 해당하는 좌표의 EventTile 객체를 임시 리스트에 넣는다.
+			if(eventTileList.get(i).getInitRowLocation() >= startPointCopy.x &&
+					eventTileList.get(i).getInitRowLocation() <= endPointCopy.x &&
+					eventTileList.get(i).getInitColLocation() >= startPointCopy.y &&
+					eventTileList.get(i).getInitColLocation() <= endPointCopy.y) {
+				try {
+					eventTilesToPaste.add((EventTile) DeepCopier.deepCopy(eventTileList.get(i)));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
-	public void pasteEvents(Point startPointTarget, Point endPointTarget) {
+	public void cutEvents(Point startPointCopy, Point endPointCopy) {
+		startPointToPaste = startPointCopy;
+		endPointToPaste = endPointCopy;
+		eventTilesToPaste = new LinkedList<EventTile>();
 		
+		for(int i = 0; i < eventTileList.size(); i++) {
+			// 해당하는 좌표의 EventTile 객체를 임시 리스트에 넣는다.
+			if(eventTileList.get(i).getInitRowLocation() >= startPointCopy.x &&
+					eventTileList.get(i).getInitRowLocation() <= endPointCopy.x &&
+					eventTileList.get(i).getInitColLocation() >= startPointCopy.y &&
+					eventTileList.get(i).getInitColLocation() <= endPointCopy.y) {
+				eventTilesToPaste.add(eventTileList.get(i));
+			}
+		}
+	}
+	
+	public void pasteEvents(Point startPointTarget) {
+		if(startPointToPaste.x != startPointTarget.x || startPointToPaste.y != startPointTarget.y) {
+			// 좌표를 보정한다.
+			int diffX = startPointTarget.x - startPointToPaste.x;
+			int diffY = startPointTarget.y - startPointToPaste.y;
+			for (int i = 0; i < eventTilesToPaste.size(); i++) {
+				eventTilesToPaste.get(i).setInitRowLocation(eventTilesToPaste.get(i).getInitRowLocation() + diffX);
+				eventTilesToPaste.get(i).setInitColLocation(eventTilesToPaste.get(i).getInitColLocation() + diffY);
+			}
+			
+			// 임시 리스트에 있는 EventTile 객체의 좌표를 수정하여 하나씩 삽입한다.
+			for (int i = 0; i < eventTilesToPaste.size(); i++) {
+				this.addEventTile(eventTilesToPaste.get(i));
+			}
+		}
 	}
 	
 	public boolean canPaste() {
-		if(copyStartPoint != null && copyEndPoint != null)
+		if(startPointToPaste != null && endPointToPaste != null) {
 			return true;
-		else
+		} else {
+			startPointToPaste = null;
+			endPointToPaste = null;
+			eventTilesToPaste = null;
 			return false;
+		}
 	}
 	
 	public void deleteEvents(Point startPoint, Point endPoint) {
@@ -241,4 +304,9 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	public List<Event> getEventList(int col, int row) {
 		return getEventTile(col, row)!=null ? getEventTile(col, row).getEventList() : null;
 	}
+
+	public void setWidth(int width)		{
+		this.width = width;		}
+	public void setHeight(int height)	{
+		this.height = height;	}
 }
