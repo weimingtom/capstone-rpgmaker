@@ -16,16 +16,18 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import bootstrap.Bootstrap;
+import bootstrap.BootstrapInfo;
+
 import MapEditor.DrawingTemplate;
 import MapEditor.Map;
 import MapEditor.Tile;
-import bootstrap.Bootstrap;
-import bootstrap.BootstrapInfo;
 
 public class GameData implements Runnable{
 	
@@ -34,6 +36,7 @@ public class GameData implements Runnable{
 	//이펙트 타이머
 	private int fadeTimer = 0;
 
+	private String utilPath =null;
 	/*******게임 상태 플래그들****************************/
 	public static final int LOGOSCREEN = 0;
 	//public static final int EPILOGUE = 1;
@@ -55,7 +58,7 @@ public class GameData implements Runnable{
 	public static final int STATUSCALLED = 18;
 	/**************************************************/
 	//이 쓰레드의 클럭 타이머
-	public static int TIMER = 100;
+	public static int TIMER = 60;
 	private static int FASTTIMER = 60;
 	private static int SLOWTIMER = 100;
 	
@@ -85,6 +88,7 @@ public class GameData implements Runnable{
 	//게임의 타일
 
 	private int[][] gameTile;
+	private GameEventDispatcher eventDispatcher;
 	/****************************************************/
 	
 	//게임 패스
@@ -141,6 +145,8 @@ public class GameData implements Runnable{
 		gameWindow = null;
 		gameDisplay = null;
 		gameRobot = new AI(this);
+		
+		eventDispatcher = new GameEventDispatcher();
 	}
 	
 	
@@ -206,7 +212,7 @@ public class GameData implements Runnable{
 			}
 			
 			try {
-				Thread.sleep(GameData.TIMER);
+				Thread.sleep(TIMER);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -220,12 +226,18 @@ public class GameData implements Runnable{
 	{
 		exGameState = GameData.NEWSTART;
 		//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
-		/*****************************************************************/
 		gameState = GameData.LOADING;
-		/****************************************************/
-
 		//부트스트랩 이벤트 실행
-		BootstrapInfo bs = Bootstrap.getBootstrap(gamePath);
+		BootstrapInfo bs = null;
+		try
+		{
+			bs = Bootstrap.getBootstrap(gamePath);
+		}
+		catch(NullPointerException e)
+		{
+			JOptionPane.showMessageDialog(null, "플레이어 초기 위치 지정 오류");
+			System.exit(0);
+		}
 		//우선 맵 로드
 		try{
 		
@@ -631,20 +643,9 @@ public class GameData implements Runnable{
 		try{
 			//현재 맵에 정의된 npc들 출력
 			monsters = new Vector<GameCharacter>();
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(0).deployActor(2, 60, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(1).deployActor(2, 10, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(2).deployActor(2, 20, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(3).deployActor(2, 30, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(4).deployActor(2, 40, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(5).deployActor(2, 50, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(6).deployActor(2, 70, 60, null);}
+//			monsters.add(new Monster(gamePath));
+//			monsters.elementAt(0).deployActor(0, 60, 60, null);
+		}
 		catch(Exception e)
 		{
 			//몬스터가 없을 경우에
@@ -687,7 +688,8 @@ public class GameData implements Runnable{
 	{
 
 		GameMapLoader mapLoader = new GameMapLoader();
-		this.setGameMap(mapLoader.loadMap(this.gamePath+"/Map/"+mapName));
+		mapLoader.setMapFile(this.gamePath+"/Map/"+mapName);
+		this.setGameMap(mapLoader.getMap());
 		//맵의 크기에 따라 게임 배열 설정
 		try 
 		{
@@ -696,7 +698,7 @@ public class GameData implements Runnable{
 			{
 				gameTile[i] = new int[gameMap.getM_Width() * GameData.mapCharArrayRatio];
 			}
-		} 
+		}
 		catch (Exception e) 
 		{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMap()\nCan't allocate gameTile");
@@ -705,15 +707,19 @@ public class GameData implements Runnable{
 		//맵 이미지 설정
 		//백그라운드 설정
 		background = gameMap.getM_Background();
-		
+		Graphics2D g = background.createGraphics();
 		foreBackImage = new BufferedImage(gameWindow.getWidth(), gameWindow.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-		Graphics2D g = foreBackImage.createGraphics();	
+		
 		displayForeground(g, false);
 		g.dispose();
 		foreForeImage = new BufferedImage(gameWindow.getWidth(), gameWindow.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		g = foreForeImage.createGraphics();
 		displayForeground(g, true);
 		g.dispose();
+		
+		//이벤트 타일 생성
+//		eventDispatcher.setEventLoader(gameMap.getEventEditSys());
+//		eventDispatcher.loadMapEvent(gameMap.getM_Width(), gameMap.getM_Height());
 	}
 
 	//플레이어로드
@@ -725,7 +731,7 @@ public class GameData implements Runnable{
 			int startX = startPoint.x*mapCharArrayRatio-mapCharArrayRatio/2;
 			int startY = startPoint.y*mapCharArrayRatio-mapCharArrayRatio/2;
 			
-			player.deployActor(charIndex, startX, startY, null);
+			player.deployActor(charIndex, startX+5, startY+5, null);
 			player.setNowEXP(1909);
 			player.getMaxStatus().setEXP(10);
 		}
@@ -773,7 +779,7 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
-		String utilPath = gamePath+"\\.UtillImages";
+		utilPath = gamePath+"\\.DefaultData\\UtillImages";
 		try 
 		{
 			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\TITLE.png")));
@@ -796,8 +802,8 @@ public class GameData implements Runnable{
 	public void setGameWindow(GameWindow gameWindow) 
 	{
 		this.gameWindow = gameWindow;
-		statusScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/30 ));
-		titleScreen.setFont(new Font("Courier New", Font.BOLD , gameWindow.getWidth()/20));
+		statusScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/35 ));
+		titleScreen.setFont(new Font("Courier New", Font.BOLD , gameWindow.getWidth()/25));
 	}
 
 	public GameWindow getGameWindow() {
@@ -1024,6 +1030,7 @@ public class GameData implements Runnable{
 			}
 		}
 	}
+
 	
 	
 }
