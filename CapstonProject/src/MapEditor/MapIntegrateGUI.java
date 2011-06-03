@@ -62,7 +62,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	
 	
 	// 처음에 시작 마우스 위치
-	public static final int STARTING_POINT = 10000000;
+	public static final int STARTING_POINT = 4;
 
 	private int outputFlag = 4;
 	// 마우스의 위치 확인
