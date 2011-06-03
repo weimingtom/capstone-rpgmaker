@@ -390,6 +390,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
+		
+		Color tmp = g2d.getColor();
+		g.setColor(Color.white);
+		g.fillRect(0,0,background.getWidth(), background.getHeight());
 
 		if (this.outputFlag == MapIntegrateGUI.BACKGROUND_ONLY) {
 			if (background != null)
@@ -400,7 +404,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		} else if (outputFlag == MapIntegrateGUI.SEMITRANSPARENT) {
 			if (background != null)
 				g2d.drawImage(background, xAxis, yAxis, null);
-			Color tmp = g2d.getColor();
 			g2d.setColor(new Color(10, 10, 10, 100));
 			g2d.fillRect(0, 0, foreground.getWidth(), foreground.getHeight());
 			g2d.setColor(tmp);
@@ -415,7 +418,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 		// 이벤트 모드
 		if (MapIntegrateGUI.EVENTMODE_FLAG) {
-			Color tmp = g2d.getColor();
+			tmp = g2d.getColor();
 
 			// 반투명 페널 삽입
 			g2d.setColor(new Color(80, 150, 80, 100));
