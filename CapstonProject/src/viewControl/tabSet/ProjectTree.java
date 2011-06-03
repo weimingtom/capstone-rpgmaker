@@ -305,7 +305,7 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		scrollPathToVisible(new TreePath(((DefaultMutableTreeNode) childNode)
 				.getPath()));
 		
-		setSelectionRow(getRowForPath(new TreePath(childNode.getPath())));
+		selectNode(childNode);
 		return childNode;
 	}
 
@@ -646,5 +646,14 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 
 	public DefaultMutableTreeNode getRoot() {
 		return root;
+	}
+	
+	public void selectNode(DefaultMutableTreeNode node){
+		setSelectionRow(getRowForPath(new TreePath(node.getPath())));
+	}
+	
+	public void selectNode(File fnode){
+		DefaultMutableTreeNode n = searchTreeNode(root, fnode);
+		setSelectionRow(getRowForPath(new TreePath(n.getPath())));
 	}
 }

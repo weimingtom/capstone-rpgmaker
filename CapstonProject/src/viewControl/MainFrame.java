@@ -1459,8 +1459,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		if ((getProjTree().searchTreeNode(getProjTree().getRoot(), f) == null))
 			getProjTree().addObject(f);
 		else {
-			getProjTree().removeObject(f);
-			getProjTree().addObject(f);
+			getProjTree().selectNode(f);
 		}
 	}
 
@@ -1769,6 +1768,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	public void syncProjOpenCloseBtn() {
+		fileItem_open.setEnabled(false);
+		fileItem_projectClose.setEnabled(true);
 		btnProjOpen.setEnabled(false);
 		btnProjClose.setEnabled(true);
 	}
