@@ -30,6 +30,7 @@ import viewControl.MainFrame;
 import MapEditor.DrawingTemplate;
 import MapEditor.MapEditorSystem;
 import MapEditor.MapIntegrateGUI;
+import MapEditor.MouseDrawUtility;
 
 public class NextMapDstDlg extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -268,6 +269,8 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if (!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapsys))
+				return;
 			p.setLocation(e.getPoint());
 			repaint();
 			int row = p.x / DrawingTemplate.pixel;

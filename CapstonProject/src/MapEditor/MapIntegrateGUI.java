@@ -485,6 +485,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
+			return;
+		
 		if (EVENTMODE_FLAG) {
 			if (isDragEvent) {
 				endEventPoint = e.getPoint();
@@ -571,6 +574,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
+			return;
+		
 		if (EVENTMODE_FLAG) {
 			if (isDragEvent) {
 				endEventPoint = e.getPoint();
@@ -593,6 +599,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
+			return;
+		
 		if (EVENTMODE_FLAG) {
 			if (e.getClickCount() >= 2) {
 
@@ -626,6 +635,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
+			return;
+		
 		if (EVENTMODE_FLAG) {
 			if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {// ¿ÞÂÊ
 				isDragEvent = true;
@@ -657,6 +669,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
 				isDragEvent = false;
 			} else { // ¿À¸¥ÂÊ
+				if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
+					return;
 				if (e.isPopupTrigger()) {
 					popupmenuEvent.show(e.getComponent(), e.getX() + 10, e
 							.getY() + 10);
@@ -787,4 +801,5 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupPasteEvent.setEnabled(b);
 		return b;
 	}
+	
 }

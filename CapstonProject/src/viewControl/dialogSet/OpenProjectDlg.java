@@ -203,10 +203,9 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 			cb_workspace.setModel(new DefaultComboBoxModel(pathStr));
 		}  catch (Exception e) {
 			e.printStackTrace();
-			pathStr = new String[1];
+			pathStr = new String[]{""};
 		}
 
-		
 		btn_browser.addActionListener(this);
 		btn_cancel.addActionListener(this);
 		btn_ok.addActionListener(this);
