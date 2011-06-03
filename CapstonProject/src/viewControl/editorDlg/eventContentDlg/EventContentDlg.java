@@ -39,14 +39,14 @@ public class EventContentDlg extends JDialog implements ActionListener {
 	
 	private MainFrame owner;
 	private Event event;
-	private int insetIndex;
+	private int index;
 	
-	public EventContentDlg(MainFrame parent, Event event, int insetIndex) {
+	public EventContentDlg(MainFrame parent, Event event, int index) {
 		super(parent, "Select Event Content");
 		
 		this.owner = parent;
 		this.event = event;
-		this.insetIndex = insetIndex;
+		this.index = index;
 		
 		setResizable(false);
 		setModal(true);
@@ -162,19 +162,20 @@ public class EventContentDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_changeMap) {
-			new ChangeMapDlg(owner, event, true, insetIndex);
+			new NextMapDstDlg(owner, event, true, index);
+//			new ChangeMapDlg(owner, event, true, insetIndex);
 		} else if(e.getSource() == btn_changeBGM) {
-			new ChangeBGMDlg(owner, event, true, insetIndex);
+			new ChangeBGMDlg(owner, event, true, index);
 		} else if(e.getSource() == btn_changeFlag) {
-			new ChangeFlagDlg(owner, event, true, insetIndex);
+			new ChangeFlagDlg(owner, event, true, index);
 		} else if(e.getSource() == btn_dialogEvent) {
-			new DialogEventDlg(owner, event, true, insetIndex);
+			new DialogEventDlg(owner, event, true, index);
 		} else if(e.getSource() == btn_motionEvent) {
-			new MotionEventDlg(owner, event, true, insetIndex);
+			new MotionEventDlg(owner, event, true, index);
 		} else if(e.getSource() == btn_switchDialog) {
-			new SwitchDialogDlg(owner, event, true, insetIndex);
+			new SwitchDialogDlg(owner, event, true, index);
 		} else if(e.getSource() == btn_gameOver) {
-			getEventContentList().add(insetIndex, new GameOverEvent());
+			getEventContentList().add(index, new GameOverEvent());
 		}
 		this.dispose();
 	}

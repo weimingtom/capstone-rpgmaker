@@ -26,6 +26,11 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 
+import eventEditor.Event;
+import eventEditor.eventContents.ChangeBGMEvent;
+import eventEditor.eventContents.ChangeMapEvent;
+import eventEditor.eventContents.DialogEvent;
+
 import viewControl.MainFrame;
 import MapEditor.DrawingTemplate;
 import MapEditor.MapEditorSystem;
@@ -33,46 +38,92 @@ import MapEditor.MapIntegrateGUI;
 import MapEditor.MouseDrawUtility;
 
 public class NextMapDstDlg extends JDialog implements ActionListener {
-	private static final long serialVersionUID = 1L;
 
-	public NextMapDstDlg(Frame parent) {
-		super(parent, true);
+	private static final long serialVersionUID = 1L;
+	
+	// Variables declaration - do not modify
+	public JButton btnBrower;
+	private JButton btnCancel;
+	private JButton btnOk;
+	private JPanel centerP;
+	private JPanel eastP;
+	public JComboBox mapList;
+	private Canvas canvas;
+	private JLabel l_x;
+	private JLabel l_xpoint;
+	private JLabel l_y;
+	private JLabel l_ypoint;
+	private JPanel topP;
+	private MapEditorSystem mapsys;
+	private String mapFolderPath;
+	// End of variables declaration
+
+	private MainFrame owner;
+	private Event event;
+	private boolean isNew;
+	private int index;
+	private Point p;
+
+	public NextMapDstDlg(MainFrame parent, Event event, boolean isNew, int index) {
+		super(parent, "Change Map Event");
+		
+		this.owner = parent;
+		this.event = event;
+		this.isNew = isNew;
+		this.index = index;
+		p = new Point(MapIntegrateGUI.STARTING_POINT, MapIntegrateGUI.STARTING_POINT);
+		
 		setPreferredSize(new Dimension(800, 640));
+		setModal(true);
 		initComponents();
 		setTitle("Where is the destination?");
 		setVisible(true);
 	}
 
 	private void initComponents() {
-
-		topP = new JPanel();
-		mapList = new JComboBox();
+		// 컨포넌트 정의
+		btnOk = new JButton("O K");
+		btnCancel = new JButton("Cancel");
 		btnBrower = new JButton("Browser");
+		mapList = new JComboBox();
+		topP = new JPanel();
 		centerP = new JPanel();
 		eastP = new JPanel();
 		l_x = new JLabel("X :");
 		l_y = new JLabel("Y :");
 		l_xpoint = new JLabel("??");
 		l_ypoint = new JLabel("??");
-		btnOk = new JButton("O K");
-		btnCancel = new JButton("Cancel");
 		canvas = new Canvas();
-		mapFolderPath = MainFrame.OWNER.ProjectFullPath + File.separator
-				+ "Map" + File.separator;
+		mapFolderPath = MainFrame.OWNER.ProjectFullPath + File.separator + "Map" + File.separator;
+		JLabel l_state = new JLabel("  Please, choose destination of the character.");
+		
+		// 맵을 읽어오기 위한 변수
 		try {
 			mapsys = new MapEditorSystem();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		
+		// isNew가 false면 event의 index번 데이터로 초기화
+		if(!isNew) {//event.getEventContent(index)
+			int loadIndex = 0;
+			for (int i = 0; i < mapList.getItemCount(); i++) {
+				if(((String)(mapList.getItemAt(i))).equals(((ChangeMapEvent)(event.getEventContent(index))).getMapName())) {
+					mapList.setSelectedIndex(i);
+					break;
+				}
+			}
+			p = ((ChangeMapEvent)(event.getEventContent(index))).getStartPoint();
+			
+			l_xpoint.setText(new String(""+p.x));
+			l_ypoint.setText(new String(""+p.y));
+		}
+		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(400, 400));
-		JLabel l_state = new JLabel(
-				"  Please, choose destination of the character.");
 
 		topP.setLayout(new BorderLayout());
-
 		topP.add(mapList, BorderLayout.CENTER);
-
 		topP.add(btnBrower, BorderLayout.LINE_END);
 
 		getContentPane().add(topP, BorderLayout.NORTH);
@@ -154,21 +205,7 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 
 	}
 
-	public JButton btnBrower;
-	private JButton btnCancel;
-	private JButton btnOk;
-	private JPanel centerP;
-	private JPanel eastP;
-	public JComboBox mapList;
-	private Canvas canvas;
-	private JLabel l_x;
-	private JLabel l_xpoint;
-	private JLabel l_y;
-	private JLabel l_ypoint;
-	private JPanel topP;
-	private MapEditorSystem mapsys;
-	private String mapFolderPath;
-
+	
 	void setCanvas(String filePath) {
 		try {
 			mapsys.load(mapFolderPath + filePath);
@@ -188,7 +225,15 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 			btnBrower.setEnabled(false);
 			new NextMapDstFileChooserDlg(this);
 		} else if (e.getSource() == btnOk) {
-
+			// EventContent를 event에 삽입한다.
+			if(isNew)
+				event.getEventContentList().add(index, new ChangeMapEvent((String)(mapList.getSelectedItem()), new Point(p.x, p.y)));
+			else {
+				event.getEventContentList().remove(index);
+				event.getEventContentList().add(index, new ChangeMapEvent((String)(mapList.getSelectedItem()), new Point(p.x, p.y)));
+			}
+			
+			dispose();
 		} else if (e.getSource() == btnCancel) {
 			dispose();
 		}
@@ -198,8 +243,6 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 
 		private static final long serialVersionUID = 1L;
 		private Image backImg = null;
-		private Point p = new Point(MapIntegrateGUI.STARTING_POINT,
-				MapIntegrateGUI.STARTING_POINT);
 
 		public Image getBackImg() {
 			return backImg;
