@@ -230,9 +230,7 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	}
 	
 	public boolean canPaste() {
-		if(copyStartPoint != null && copyEndPoint != null
-				&& copyStartPoint.x != MapIntegrateGUI.STARTING_POINT && copyStartPoint.y != MapIntegrateGUI.STARTING_POINT
-				&& copyEndPoint.x != MapIntegrateGUI.STARTING_POINT && copyEndPoint.y!= MapIntegrateGUI.STARTING_POINT)
+		if(copyStartPoint != null && copyEndPoint != null)
 			return true;
 		else
 			return false;

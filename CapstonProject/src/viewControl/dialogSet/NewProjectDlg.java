@@ -31,16 +31,15 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import viewControl.MainFrame;
+import viewControl.esComponent.EstyleProgressbar;
 
 /**
  * 
- * 장은수 새 프로젝트 다이얼로그
- * setDefaultProject()에서 기본적인 폴더 생성을 하고 있습니다.
- * 역시 레이아웃은 절대 건들이지 마세요
- * owner 객체 == MainFrame
+ * 장은수 새 프로젝트 다이얼로그 setDefaultProject()에서 기본적인 폴더 생성을 하고 있습니다. 역시 레이아웃은 절대 건들이지
+ * 마세요 owner 객체 == MainFrame
  */
 
-public class NewProjectDlg extends JDialog implements ActionListener {
+public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 	private static final long serialVersionUID = -5765059752651636908L;
 
 	public NewProjectDlg(MainFrame parent) {
@@ -48,15 +47,21 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		setPreferredSize(new Dimension(580, 290));
 		setResizable(false);
 		setModalityType(ModalityType.APPLICATION_MODAL);
+		
 		initComponents();
+		
+		Thread t = new Thread(this);
+		t.start();
 		setVisible(true);
+		
 	}
 
 	private void initComponents() {
 		// NORTH
 		textPanel = new JPanel();
 		l_greet = new JLabel("Make new project!");
-		l_usage = new JLabel("Enter your project name and choose  a workspace folder to use");
+		l_usage = new JLabel(
+				"Enter your project name and choose  a workspace folder to use");
 		separator = new JSeparator();
 
 		// CENTER
@@ -70,6 +75,7 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		btn_browser = new JButton("Browser");
 		btn_ok = new JButton("O K");
 		btn_cancel = new JButton("Cancel");
+		progress = new EstyleProgressbar();
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -77,7 +83,7 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		btn_browser.addActionListener(this);
 		btn_ok.addActionListener(this);
 		btn_cancel.addActionListener(this);
-		
+
 		/** 레이아웃 설정 */
 		// NORTH
 		GroupLayout textPanelLayout = new GroupLayout(textPanel);
@@ -256,8 +262,8 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 																				28,
 																				GroupLayout.PREFERRED_SIZE)))));
 
-		getContentPane().add(inputPanel, BorderLayout.CENTER);
-
+		add(inputPanel, BorderLayout.CENTER);
+		add(progress, BorderLayout.SOUTH);
 		pack();
 		setLocationRelativeTo(null);
 	}
@@ -277,6 +283,8 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 	private JTextField tf_workspace;
 	private String ProjectName;
 	private String projectPath;
+	private EstyleProgressbar progress;
+	private int percent;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -296,16 +304,17 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 				l_state.setText("Fill the blank!");
 			} else if (!projectDir.isDirectory()) {
 				l_state.setText("Path is wrong!");
-			} 	// 프로젝트 디렉토리 만듬
+			} // 프로젝트 디렉토리 만듬
 			else if (projectNameDir.mkdir()) {
 				MainFrame.OWNER.projectPath = projectPath;
 				MainFrame.OWNER.ProjectName = ProjectName;
-				
+
 				setDefaultProject(fullPath);
-				
+
 				MainFrame.OWNER.setSubState(ProjectName + " is made");
 				MainFrame.OWNER.setMainState(projectPath);
 				MainFrame.OWNER.setTitle(ProjectName);
+
 
 
 				// 최신 프로젝트 생성 정보 저장
@@ -317,20 +326,22 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 					BufferedReader in = new BufferedReader(fr);
 					StringTokenizer tk = new StringTokenizer(in.readLine(), "$");
 					ArrayList<String> projpaths = new ArrayList<String>();
-					while(tk.hasMoreTokens()){
+					while (tk.hasMoreTokens()) {
 						projpaths.add(tk.nextToken());
 					}
-					if (projpaths.size()>=6){
+					if (projpaths.size() >= 6) {
 						projpaths.remove(0);
-						projpaths.add(projectPath + "\\"+ ProjectName);
+						projpaths.add(projectPath + "\\" + ProjectName);
 					} else {
-						projpaths.add(projectPath + "\\"+ ProjectName);
+						projpaths.add(projectPath + "\\" + ProjectName);
 					}
 					in.close();
 					fr.close();
+
+
 					FileWriter fw = new FileWriter(saveData);
-					for(String s : projpaths){
-						fw.write(s+'$');
+					for (String s : projpaths) {
+						fw.write(s + '$');
 					}
 					fw.close();
 				} catch (FileNotFoundException e1) {
@@ -338,19 +349,21 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 					FileWriter fw;
 					try {
 						fw = new FileWriter(saveData);
-						fw.write(projectPath + "\\"+ ProjectName+"$");
+						fw.write(projectPath + "\\" + ProjectName + "$");
 						fw.close();
 					} catch (IOException e2) {
 						saveData.delete();
-					}	
+					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					saveData.delete();
-				} 
+				}
+
+
 				MainFrame.OWNER.setNewProject();
 				MainFrame.OWNER.setDefaultTileSet();
 				MainFrame.OWNER.syncProjOpenCloseBtn();
-				
+
 				dispose();
 				new NewMapDlg(MainFrame.OWNER);
 			} else {
@@ -361,12 +374,12 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		}
 
 	}
-	
-	public void setWorkspace(String str){
+
+	public void setWorkspace(String str) {
 		tf_workspace.setText(str);
 	}
-	
-	private void setDefaultProject(String fullPath){
+
+	private void setDefaultProject(String fullPath) {
 		File tileSet = new File(fullPath + "\\TileSet");
 		File tileSetFore = new File(fullPath + "\\TileSet\\Foreground");
 		File tileSetBack = new File(fullPath + "\\TileSet\\Background");
@@ -395,9 +408,13 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		job.mkdir();
 		skill.mkdir();
 		map.mkdir();
+
+		addPercent();
 		
 		File defaultData = new File(fullPath + "\\.DefaultData");
-		File originalDefaultData = new File(this.getClass().getResource("").getPath() + "\\DefaultData");
+		File originalDefaultData = new File(this.getClass().getResource("")
+				.getPath()
+				+ "\\DefaultData");
 		File srcData = new File("src\\resouce\\utilImg");
 		try {
 			directoryCopy(originalDefaultData, defaultData);
@@ -405,11 +422,10 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 
 		try {
 			// 프로젝트 폴더인지 확인을 위한 파일
-			File isProjDir = new File(fullPath+"\\.isProj");
+			File isProjDir = new File(fullPath + "\\.isProj");
 			isProjDir.createNewFile();
 			// 폴더 속성 종류
 			// .tileSet
@@ -423,20 +439,24 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			// .job
 			// .skill
 			// .map
-			File attributeTileSet = new File(tileSet.getPath()+"\\.tileSet");
-			File attributeBackground = new File(tileSetBack.getPath()+"\\.background");
-			File attributeForeground = new File(tileSetFore.getPath()+"\\.foreground");
-			File attributeCharacter =  new File(character.getPath()+"\\.character");
-			File attributeNPC =  new File(npc.getPath()+"\\.npc");
-			File attributeMonster =  new File(monster.getPath()+"\\.monster");
-			File attributeAnimationr =  new File(animation.getPath()+"\\.animation");
-			File attributeWeapon =  new File(weapon.getPath()+"\\.weapon");
-			File attributeArmor =  new File(armor.getPath()+"\\.armor");
-			File attributeItem =  new File(item.getPath()+"\\.item");
-			File attributeJob =  new File(job.getPath()+"\\.job");
-			File attributeSkill =  new File(skill.getPath()+"\\.skill");
-			File attributeMap =  new File(map.getPath()+"\\.map");
-			File attributeUtilImg =  new File(utilImg.getPath()+"\\.utilImg");
+			File attributeTileSet = new File(tileSet.getPath() + "\\.tileSet");
+			File attributeBackground = new File(tileSetBack.getPath()
+					+ "\\.background");
+			File attributeForeground = new File(tileSetFore.getPath()
+					+ "\\.foreground");
+			File attributeCharacter = new File(character.getPath()
+					+ "\\.character");
+			File attributeNPC = new File(npc.getPath() + "\\.npc");
+			File attributeMonster = new File(monster.getPath() + "\\.monster");
+			File attributeAnimationr = new File(animation.getPath()
+					+ "\\.animation");
+			File attributeWeapon = new File(weapon.getPath() + "\\.weapon");
+			File attributeArmor = new File(armor.getPath() + "\\.armor");
+			File attributeItem = new File(item.getPath() + "\\.item");
+			File attributeJob = new File(job.getPath() + "\\.job");
+			File attributeSkill = new File(skill.getPath() + "\\.skill");
+			File attributeMap = new File(map.getPath() + "\\.map");
+			File attributeUtilImg = new File(utilImg.getPath() + "\\.utilImg");
 
 			attributeTileSet.createNewFile();
 			attributeCharacter.createNewFile();
@@ -447,36 +467,46 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 			attributeArmor.createNewFile();
 			attributeItem.createNewFile();
 			attributeJob.createNewFile();
-			attributeSkill.createNewFile();		
+			attributeSkill.createNewFile();
 			attributeMap.createNewFile();
 			attributeBackground.createNewFile();
 			attributeForeground.createNewFile();
 			attributeUtilImg.createNewFile();
 
+			addPercent();
+			
 			File originalResouce = new File("src\\resouce\\tileSet\\background");
-			for(int i=0; i<originalResouce.list().length-1; i++){
-				fileCopy(originalResouce.getPath().concat("\\TileBack").concat(i+"").concat(".png"), 
-						fullPath.concat("\\TileSet\\Background\\TileBack").concat(i+"").concat(".png"));
+			for (int i = 0; i < originalResouce.list().length - 1; i++) {
+				addPercent();
+				fileCopy(originalResouce.getPath().concat("\\TileBack").concat(
+						i + "").concat(".png"), fullPath.concat(
+						"\\TileSet\\Background\\TileBack").concat(i + "")
+						.concat(".png"));
+				
 			}
 			originalResouce = new File("src\\resouce\\tileSet\\foreground");
-			for(int i=0; i<originalResouce.list().length-1; i++){
-				fileCopy(originalResouce.getPath().concat("\\TileFore").concat(i+"").concat(".png"), 
-						fullPath.concat("\\TileSet\\Foreground\\TileFore").concat(i+"").concat(".png"));
+			for (int i = 0; i < originalResouce.list().length - 1; i++) {
+				addPercent();
+				fileCopy(originalResouce.getPath().concat("\\TileFore").concat(
+						i + "").concat(".png"), fullPath.concat(
+						"\\TileSet\\Foreground\\TileFore").concat(i + "")
+						.concat(".png"));
+				
 			}
 		} catch (IOException e3) {
 			e3.printStackTrace();
 		}
 	}
-	
-	private boolean fileCopy(String src, String dst){
+
+	private boolean fileCopy(String src, String dst) {
 		OutputStream out = null;
 		BufferedInputStream in = null;
 		try {
 			in = new BufferedInputStream(new FileInputStream(new File(src)));
 			out = new FileOutputStream(dst);
-			
+
 			int data = -1;
-			while ((data=in.read())!=-1){
+			while ((data = in.read()) != -1) {
 				out.write(data);
 			}
 			out.close();
@@ -484,24 +514,53 @@ public class NewProjectDlg extends JDialog implements ActionListener {
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 			return false;
-		} catch (Exception e2){
+		} catch (Exception e2) {
 			e2.printStackTrace();
 			return false;
 		}
+		addPercent();
 		return true;
 	}
-	
+
 	// 폴더를 복사하기 위한 함수
 	public void directoryCopy(File src, File dst) throws IOException {
 		if (src.isDirectory()) {
-			if (!dst.isDirectory())	dst.mkdir();
-			
+			if (!dst.isDirectory())
+				dst.mkdir();
+
 			String[] children = src.list();
-			for (int i = 0; i < children.length; i++)
-				directoryCopy(new File(src, children[i]), new File(dst, children[i]));
-			
+			for (int i = 0; i < children.length; i++) {
+				addPercent();
+				directoryCopy(new File(src, children[i]), new File(dst,
+						children[i]));
+				
+			}
+
 		} else {
+			addPercent();
 			fileCopy(src.getCanonicalPath(), dst.getCanonicalPath());
+			
 		}
 	}
+
+	@Override
+	public void run() {
+		percent=0;
+		while(true){
+			progress.setValue(percent);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void addPercent(){
+		percent+=progress.getIncreaseInterval();
+		if (percent>=100){
+			progress.setGo(false);
+		}
+	}
+	
 }

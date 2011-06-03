@@ -12,9 +12,12 @@ package viewControl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -38,10 +41,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-
-import execute.GameDemoExecution;
 
 import palette.PalettePanel;
 import viewControl.dialogSet.NewMapDlg;
@@ -66,6 +68,7 @@ import viewControl.tabSet.ProjectTree;
 import MapEditor.DrawingTemplate;
 import MapEditor.MapEditorSystem;
 import MapEditor.MapIntegrateGUI;
+import execute.GameDemoExecution;
 
 public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private static final long serialVersionUID = 8501284830543162114L;
@@ -189,7 +192,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_newCharacter = new JMenuItem("Character");
 		fileItem_newMonster = new JMenuItem("Monster");
 		fileItem_newJob = new JMenuItem("Job");
-		fileItem_newSKill = new JMenuItem("SKill");
+		fileItem_newSkill = new JMenuItem("SKill");
 		fileItem_newWeapon = new JMenuItem("Weapon");
 		fileItem_newArmor = new JMenuItem("Armor");
 		fileItem_newItem = new JMenuItem("Item");
@@ -249,7 +252,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		btnProjOpen.setToolTipText("Open project");
 		btnProjClose.setToolTipText("Close project");
 		toolBar.setToolTipText("Save selected map");
-		btnSaveProj.setToolTipText("Save project");
+		btnSaveMap.setToolTipText("Save current map");
+		btnSaveProj.setToolTipText("Save all maps");
 		btnExeProj.setToolTipText("Execute project");
 		btnHelp.setToolTipText("Help");
 		toolBar.setFloatable(false);
@@ -446,6 +450,13 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuBar.add(menuHelp);
 		menuBar.add(menuAbout);
 		setJMenuBar(menuBar);
+		menuFile.setMnemonic(KeyEvent.VK_I);
+		menuCanvas.setMnemonic(KeyEvent.VK_C);
+		menuEvent.setMnemonic(KeyEvent.VK_E);
+		menuPallete.setMnemonic(KeyEvent.VK_P);
+		menuExecution.setMnemonic(KeyEvent.VK_X);
+		menuHelp.setMnemonic(KeyEvent.VK_H);
+		menuAbout.setMnemonic(KeyEvent.VK_A);
 
 		// file
 		menuFile.add(fileMenu_new);
@@ -463,7 +474,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileMenu_new.add(fileItem_newCharacter);
 		fileMenu_new.add(fileItem_newMonster);
 		fileMenu_new.add(fileItem_newJob);
-		fileMenu_new.add(fileItem_newSKill);
+		fileMenu_new.add(fileItem_newSkill);
 		fileMenu_new.add(fileItem_newWeapon);
 		fileMenu_new.add(fileItem_newArmor);
 		fileMenu_new.add(fileItem_newItem);
@@ -476,7 +487,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_newCharacter.setEnabled(false);
 		fileItem_newMonster.setEnabled(false);
 		fileItem_newJob.setEnabled(false);
-		fileItem_newSKill.setEnabled(false);
+		fileItem_newSkill.setEnabled(false);
 		fileItem_newWeapon.setEnabled(false);
 		fileItem_newArmor.setEnabled(false);
 		fileItem_newItem.setEnabled(false);
@@ -488,7 +499,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_newCharacter.addActionListener(this);
 		fileItem_newMonster.addActionListener(this);
 		fileItem_newJob.addActionListener(this);
-		fileItem_newSKill.addActionListener(this);
+		fileItem_newSkill.addActionListener(this);
 		fileItem_newWeapon.addActionListener(this);
 		fileItem_newArmor.addActionListener(this);
 		fileItem_newItem.addActionListener(this);
@@ -500,6 +511,37 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_projectClose.addActionListener(this);
 		fileItem_exit.addActionListener(this);
 
+		fileItem_open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+				Event.CTRL_MASK));
+		fileItem_saveProj.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J,
+				Event.CTRL_MASK));
+		fileItem_saveMap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				Event.CTRL_MASK));
+		fileItem_exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+				Event.CTRL_MASK));
+		fileItem_newProject.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_P, Event.CTRL_MASK));
+		fileItem_newMap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
+				Event.CTRL_MASK));
+		fileItem_newTileSet.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_T, Event.CTRL_MASK));
+		fileItem_newCharacter.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_H, Event.CTRL_MASK));
+		fileItem_newMonster.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_M, Event.CTRL_MASK));
+		fileItem_newJob.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J,
+				Event.CTRL_MASK));
+		fileItem_newSkill.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+				Event.CTRL_MASK));
+		fileItem_newWeapon.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W,
+				Event.CTRL_MASK));
+		fileItem_newArmor.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
+				Event.CTRL_MASK));
+		fileItem_newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
+				Event.CTRL_MASK));
+		fileItem_newEffectAnimation.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_L, Event.CTRL_MASK));
+
 		// Canvas
 		menuCanvas.add(canvasItem_backgroundOnly);
 		menuCanvas.add(canvasItem_foregroundOnly);
@@ -510,7 +552,16 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasItem_foregroundOnly.setEnabled(false);
 		canvasItem_Semitransparent.setEnabled(false);
 		canvasItem_grid.setEnabled(false);
-
+		
+		canvasItem_backgroundOnly.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+				Event.CTRL_MASK));
+		canvasItem_foregroundOnly.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+				Event.CTRL_MASK));
+		canvasItem_Semitransparent.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+				Event.CTRL_MASK));
+		canvasItem_grid.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
+				Event.CTRL_MASK));
+		
 		canvasItem_backgroundOnly.addActionListener(this);
 		canvasItem_foregroundOnly.addActionListener(this);
 		canvasItem_Semitransparent.addActionListener(this);
@@ -524,6 +575,18 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuEvent.add(eventItem_paste);
 		menuEvent.add(eventItem_delete);
 		menuEvent.add(eventItem_setStartingPoint);
+		
+		eventItem_viewOnEvent.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
+				Event.CTRL_MASK));
+		eventItem_setEvent.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT,
+				Event.CTRL_MASK));
+		eventItem_copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+				Event.CTRL_MASK));
+		eventItem_paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+				Event.CTRL_MASK));
+		eventItem_delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,
+				Event.CTRL_MASK));
+		
 
 		eventItem_viewOnEvent.setEnabled(false);
 		eventItem_setEvent.setEnabled(false);
@@ -549,6 +612,17 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuPallete.add(palleteItem_upper);
 		menuPallete.addSeparator();
 		menuPallete.add(palleteItem_grid);
+		
+		paletteItem_background.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+				Event.ALT_MASK));
+		paletteItem_foreground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+				Event.ALT_MASK));
+		palleteItem_movable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
+				Event.ALT_MASK));
+		palleteItem_upper.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
+				Event.ALT_MASK));
+		palleteItem_grid.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
+				Event.ALT_MASK));
 
 		paletteItem_background.setEnabled(false);
 		paletteItem_foreground.setEnabled(false);
@@ -566,12 +640,19 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuExecution.add(executionItem_execute);
 		menuExecution.add(executionItem_makeRelease);
 
+		executionItem_execute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
+				Event.CTRL_MASK));
+		
 		executionItem_execute.addActionListener(this);
 		executionItem_makeRelease.addActionListener(this);
 
 		// help
 		menuHelp.add(helpItem_Manual);
 		menuHelp.add(helpItem_Tutorial);
+		helpItem_Manual.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1,
+				Event.CTRL_MASK));
+		helpItem_Tutorial.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2,
+				Event.CTRL_MASK));
 
 		// about
 		menuAbout.add(aboutItem_aboutBaeSsaGong);
@@ -657,7 +738,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private JMenuItem fileItem_newCharacter;
 	private JMenuItem fileItem_newMonster;
 	private JMenuItem fileItem_newJob;
-	private JMenuItem fileItem_newSKill;
+	private JMenuItem fileItem_newSkill;
 	private JMenuItem fileItem_newWeapon;
 	private JMenuItem fileItem_newArmor;
 	private JMenuItem fileItem_newItem;
@@ -748,7 +829,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			new NewMonsterDlg(this, true, null);
 		} else if (e.getSource() == fileItem_newJob) {
 			new JobDlg(this, true, null);
-		} else if (e.getSource() == fileItem_newSKill) {
+		} else if (e.getSource() == fileItem_newSkill) {
 			new SkillDlg(this, true, null);
 		} else if (e.getSource() == fileItem_newWeapon) {
 			new WeaponDlg(this, true, null);
@@ -766,6 +847,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			new NewMapNameDlg(this);
 		} else if (e.getSource() == fileItem_saveProj) {
 			saveAllCanvas();
+		} else if (e.getSource() == fileItem_exit) {
+			System.exit(0);
 		}
 
 		// canvas
@@ -894,9 +977,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == btnEvent) {
 			setCanvasEventMode(btnEvent.isSelected());
 		} else if (e.getSource() == btnExeProj) {
-			//GameDemoExecution.getInstanse(ProjectFullPath).execute();
+			// GameDemoExecution.getInstanse(ProjectFullPath).execute();
 			new NextMapDstDlg(this);
-		} 
+		}
 	}
 
 	// TODO
@@ -974,7 +1057,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_newCharacter.setEnabled(true);
 		fileItem_newMonster.setEnabled(true);
 		fileItem_newJob.setEnabled(true);
-		fileItem_newSKill.setEnabled(true);
+		fileItem_newSkill.setEnabled(true);
 		fileItem_newWeapon.setEnabled(true);
 		fileItem_newArmor.setEnabled(true);
 		fileItem_newItem.setEnabled(true);
@@ -1623,7 +1706,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			btnEvent.setPressed(true);
 			eventItem_copy.setEnabled(true);
 			eventItem_delete.setEnabled(true);
-			eventItem_paste.setEnabled(true);
+			eventItem_paste.setEnabled(getSelectedCanvasFromCanvasTab().syncEventPasteBtn());
 			eventItem_setEvent.setEnabled(true);
 			eventItem_setStartingPoint.setEnabled(true);
 			break;
@@ -1781,5 +1864,4 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	public JMenuItem getEventItem_paste() {
 		return eventItem_paste;
 	}
-
 }
