@@ -22,10 +22,13 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import viewControl.editorDlg.eventContentDlg.DialogEventDlg;
+
 import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.EventTile;
 import eventEditor.eventContents.ChangeBGMEvent;
+import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
 
 import bootstrap.Bootstrap;
@@ -97,7 +100,10 @@ public class GameData implements Runnable{
 	private GameEventDispatcher eventDispatcher;
 	private static final int MAXFLAG = 1001;
 	private boolean [] conditionFlag;
+	//새로운 리스트를 받아와야하나?
 	private boolean eventStart = false;
+	//지금 이벤트가 수행중인가?
+	//private boolean eventStart = false;
 	private Event nowEventList = null;
 	private EventContent nowEvent = null;
 	private int eventContentListIndex = 0;
@@ -276,7 +282,8 @@ public class GameData implements Runnable{
 			System.exit(0);
 		}
 		//loadAlliances();
-		loadMonsters();
+		//loadMonsters();
+		loadAlliances();
 		//startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
 		/****************************************************/
 		this.computeGameTile();
@@ -424,13 +431,12 @@ public class GameData implements Runnable{
 	//현제 선택된 이벤트 실행
 	private void computeNowEvent()
 	{
-		//eventContentListIndex
 		if(nowEventList == null || eventContentListIndex >= nowEventList.getEventContentList().size())
 		{
 			//이벤트리스트 하나가 다 끝났다면 이벤트 종료
-			this.eventStart = false;
 			nowEventList = null;
 			eventContentListIndex = 0;
+			this.eventStart = false;
 			return;
 		}
 		else
@@ -445,12 +451,27 @@ public class GameData implements Runnable{
 	
 	private void runEvent()
 	{
+		int type = nowEvent.getContentType();
 		//지금 이벤트가 뭔지 확인
-		if(nowEvent instanceof ChangeBGMEvent)
+		if(type == EventContent.CHANGE_BGM_EVNET)
 		{
 			//음악시작
 			startMusic(((ChangeBGMEvent) nowEvent).getFileName());
 			eventContentListIndex++;
+			this.eventStart = false;
+		}
+		else if(type == EventContent.DIALOG_EVNET)
+		{
+//			//캐릭터 상태 이벤트로 설정
+//			player.setActionType(GameCharacter.EVENTSTATE);
+//			//대화창 시작
+//			DialogEvent dialog = (DialogEvent)nowEvent;
+//			dialogScreen.setText(dialog.getText());
+//			//엔터키나 액션 키가 눌리면
+//			if(keyFlag.isAction() || keyFlag.isEnter())
+//			{
+//				
+//			}
 		}
 	}
 	
@@ -752,7 +773,7 @@ public class GameData implements Runnable{
 			//현재 맵에 정의된 npc들 출력
 			alliances = new Vector<GameCharacter>();
 			alliances.add(new Alliance(gamePath));
-			alliances.elementAt(0).deployActor(0, 100, 100, null);
+			alliances.elementAt(0).deployActor(0, 20, 20, null);
 		}
 		catch(Exception e)
 		{
