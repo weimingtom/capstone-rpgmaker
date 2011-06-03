@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.EventTile;
+import eventEditor.eventContents.ChangeBGMEvent;
 import eventEditor.eventContents.EventContent;
 
 import bootstrap.Bootstrap;
@@ -96,6 +97,10 @@ public class GameData implements Runnable{
 	private GameEventDispatcher eventDispatcher;
 	private static final int MAXFLAG = 1001;
 	private boolean [] conditionFlag;
+	private boolean eventStart = false;
+	private Event nowEventList = null;
+	private EventContent nowEvent = null;
+	private int eventContentListIndex = 0;
 	/****************************************************/
 	
 	//게임 패스
@@ -122,7 +127,7 @@ public class GameData implements Runnable{
 	private boolean actionAnimFlag = false;
 
 	private int animTimer;
-	private int screenHeight;
+	
 
 	//맵데이터
 	private BufferedImage background;
@@ -375,7 +380,12 @@ public class GameData implements Runnable{
 			//한꺼번에 배열에 움직임 작성
 			this.computeGameTile();
 
-			runMapEvent();
+			//실행중인 이벤트가 없다면
+			if(eventStart == false)
+			{
+				computeNowEvent();
+			}
+			runEvent();
 		}
 		
 		//캐릭터 체력 채워줌
@@ -387,11 +397,63 @@ public class GameData implements Runnable{
 		}
 	}
 	
-	private void runMapEvent()
+	//맵의 자동이벤트 찾기
+	private void computeMapAutoEvent()
 	{
-		
-		
+		//우선 자동이벤트 받아옴1
+		List<Event> autoEvents = null;
+		autoEvents = eventDispatcher.getAutoEvents();
+		if(autoEvents != null)
+		{
+			//자동 이벤트 리스트중 실행 조건이 맞는거 받아옴
+			for(int i = 0 ; i < autoEvents.size(); i++)
+			{
+				nowEventList = autoEvents.get(i);
+				int [] conditionIndex = nowEventList.getPreconditionFlagArray();
+				if(this.conditionFlag[conditionIndex[0]+1] &&
+						this.conditionFlag[conditionIndex[1]+1] &&
+						this.conditionFlag[conditionIndex[2]+1])
+				{
+					break;
+				}
+			}
+			
+		}
 	}
+	
+	//현제 선택된 이벤트 실행
+	private void computeNowEvent()
+	{
+		//eventContentListIndex
+		if(nowEventList == null || eventContentListIndex >= nowEventList.getEventContentList().size())
+		{
+			//이벤트리스트 하나가 다 끝났다면 이벤트 종료
+			this.eventStart = false;
+			nowEventList = null;
+			eventContentListIndex = 0;
+			return;
+		}
+		else
+		{
+			//이벤트 시작
+			eventStart = true;
+			//현재 선택된 리스트에서 하나 받아옴
+			nowEvent = nowEventList.getEventContentList().get(eventContentListIndex);
+		}
+	}
+	
+	
+	private void runEvent()
+	{
+		//지금 이벤트가 뭔지 확인
+		if(nowEvent instanceof ChangeBGMEvent)
+		{
+			//음악시작
+			startMusic(((ChangeBGMEvent) nowEvent).getFileName());
+			eventContentListIndex++;
+		}
+	}
+	
 	
 	//실행중 스테이터스 화면일때
 	private void runAtStatus()
@@ -744,6 +806,7 @@ public class GameData implements Runnable{
 		//이벤트 타일 생성
 		eventDispatcher.setEventLoader(gameMap.getEventEditSys(), this);
 		eventDispatcher.makeMapEvent(gameMap.getM_Width(), gameMap.getM_Height());
+		computeMapAutoEvent();
 	}
 
 	//플레이어로드
@@ -856,7 +919,6 @@ public class GameData implements Runnable{
 	public int getFadeTimer() {
 		return fadeTimer;
 	}
-
 
 	
 	public GameUtilityInformation getTitleScreen() {
@@ -1053,6 +1115,46 @@ public class GameData implements Runnable{
 				}
 			}
 		}
+	}
+
+
+	public void setNowEvent(EventContent nowEvent) {
+		this.nowEvent = nowEvent;
+	}
+
+
+	public EventContent getNowEvent() {
+		return nowEvent;
+	}
+
+
+	public void setEventStart(boolean eventStart) {
+		this.eventStart = eventStart;
+	}
+
+
+	public boolean isEventStart() {
+		return eventStart;
+	}
+
+
+	public void setEventContentListIndex(int eventContentListIndex) {
+		this.eventContentListIndex = eventContentListIndex;
+	}
+
+
+	public int getEventContentListIndex() {
+		return eventContentListIndex;
+	}
+
+
+	public void setNowEventLost(Event nowEventLost) {
+		this.nowEventList = nowEventLost;
+	}
+
+
+	public Event getNowEventLost() {
+		return nowEventList;
 	}
 
 	
