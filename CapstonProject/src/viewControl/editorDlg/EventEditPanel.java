@@ -32,6 +32,7 @@ import viewControl.editorDlg.eventContentDlg.ChangeMapDlg;
 import viewControl.editorDlg.eventContentDlg.DialogEventDlg;
 import viewControl.editorDlg.eventContentDlg.EventContentDlg;
 import viewControl.editorDlg.eventContentDlg.MotionEventDlg;
+import viewControl.editorDlg.eventContentDlg.NextMapDstDlg;
 import viewControl.editorDlg.eventContentDlg.SwitchDialogDlg;
 import characterEditor.Actors;
 import characterEditor.MonsterEditorSystem;
@@ -694,22 +695,23 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		return 0;
 	}
 	
-	private void createEditEventContentDlg(Event event, int insetIndex) {
+	private void createEditEventContentDlg(Event event, int insertIndex) {
 		// 선택된 내용이 있으면 편집.
-		if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_MAP_EVNET) {
-			new ChangeMapDlg(owner, event, false, insetIndex);
-		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_FLAG_EVENT) {
-			new ChangeFlagDlg(owner, event, false, insetIndex);
-		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.CHANGE_BGM_EVNET) {
-			new ChangeBGMDlg(owner, event, false, insetIndex);
-		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.DIALOG_EVNET) {
-			new DialogEventDlg(owner, event, false, insetIndex);
-		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.GAMEOVER_EVNET) {
+		if(event.getEventContent(insertIndex).getContentType() == EventContent.CHANGE_MAP_EVNET) {
+			new NextMapDstDlg(owner, event, false, insertIndex);
+//			new ChangeMapDlg(owner, event, false, insetIndex);
+		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.CHANGE_FLAG_EVENT) {
+			new ChangeFlagDlg(owner, event, false, insertIndex);
+		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.CHANGE_BGM_EVNET) {
+			new ChangeBGMDlg(owner, event, false, insertIndex);
+		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.DIALOG_EVNET) {
+			new DialogEventDlg(owner, event, false, insertIndex);
+		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.GAMEOVER_EVNET) {
 			JOptionPane.showMessageDialog(null, "You can't modify Gameover Event!");
-		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.MOTION_EVNET) {
-			new MotionEventDlg(owner, event, false, insetIndex);
-		} else if(event.getEventContent(insetIndex).getContentType() == EventContent.SWITCH_DIALOG_EVNET) {
-			new SwitchDialogDlg(owner, event, false, insetIndex);
+		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.MOTION_EVNET) {
+			new MotionEventDlg(owner, event, false, insertIndex);
+		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.SWITCH_DIALOG_EVNET) {
+			new SwitchDialogDlg(owner, event, false, insertIndex);
 		}
 	}
 	
