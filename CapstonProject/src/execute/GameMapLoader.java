@@ -24,10 +24,12 @@ public class GameMapLoader {
 		}
 	}
 	
-	public Map loadMap(String mapPath)
-	{
-		try {
-			mapSys.load(mapPath);
+
+
+	public void setMapFile(String string) {
+		try
+		{
+			mapSys.load(string);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println("Can't load Map file");
@@ -37,6 +39,12 @@ public class GameMapLoader {
 			System.out.println("Can't load Map file");
 			e.printStackTrace();
 		}
+	}
+
+
+
+	public Map getMap() {
+		// TODO Auto-generated method stub
 		return mapSys.getMapInfo();
 	}
 	
