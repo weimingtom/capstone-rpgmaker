@@ -89,7 +89,7 @@ public class MapEditorSystem {
 				
 	}
 
-	// 미구현 : 파일에 저장된 맵을 불러온다
+	//  파일에 저장된 맵을 불러온다
 	public void load(String fileName)throws IOException, ClassNotFoundException  {
 		FileInputStream fis = new FileInputStream(fileName);
 		ObjectInputStream ois = new ObjectInputStream(fis);
