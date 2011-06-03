@@ -3,7 +3,6 @@ package viewControl.editorDlg.eventContentDlg;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -26,16 +25,13 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 
-import eventEditor.Event;
-import eventEditor.eventContents.ChangeBGMEvent;
-import eventEditor.eventContents.ChangeMapEvent;
-import eventEditor.eventContents.DialogEvent;
-
 import viewControl.MainFrame;
 import MapEditor.DrawingTemplate;
 import MapEditor.MapEditorSystem;
 import MapEditor.MapIntegrateGUI;
 import MapEditor.MouseDrawUtility;
+import eventEditor.Event;
+import eventEditor.eventContents.ChangeMapEvent;
 
 public class NextMapDstDlg extends JDialog implements ActionListener {
 
@@ -58,7 +54,7 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 	private String mapFolderPath;
 	// End of variables declaration
 
-	private MainFrame owner;
+//	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -67,7 +63,7 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 	public NextMapDstDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change Map Event");
 		
-		this.owner = parent;
+//		this.owner = parent;
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;
@@ -105,8 +101,7 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 		}
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
-		if(!isNew) {//event.getEventContent(index)
-			int loadIndex = 0;
+		if(!isNew) {
 			for (int i = 0; i < mapList.getItemCount(); i++) {
 				if(((String)(mapList.getItemAt(i))).equals(((ChangeMapEvent)(event.getEventContent(index))).getMapName())) {
 					mapList.setSelectedIndex(i);
@@ -117,6 +112,9 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 			
 			l_xpoint.setText(new String(""+p.x));
 			l_ypoint.setText(new String(""+p.y));
+			
+			p.x = p.x*DrawingTemplate.pixel;
+			p.y = p.y*DrawingTemplate.pixel;
 		}
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -227,10 +225,10 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 		} else if (e.getSource() == btnOk) {
 			// EventContent를 event에 삽입한다.
 			if(isNew)
-				event.getEventContentList().add(index, new ChangeMapEvent((String)(mapList.getSelectedItem()), new Point(p.x, p.y)));
+				event.getEventContentList().add(index, new ChangeMapEvent((String)(mapList.getSelectedItem()), new Point(p.x / DrawingTemplate.pixel, p.y / DrawingTemplate.pixel)));
 			else {
 				event.getEventContentList().remove(index);
-				event.getEventContentList().add(index, new ChangeMapEvent((String)(mapList.getSelectedItem()), new Point(p.x, p.y)));
+				event.getEventContentList().add(index, new ChangeMapEvent((String)(mapList.getSelectedItem()), new Point(p.x / DrawingTemplate.pixel, p.y / DrawingTemplate.pixel)));
 			}
 			
 			dispose();

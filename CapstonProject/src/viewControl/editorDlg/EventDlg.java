@@ -207,10 +207,6 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		eventTabPanelList.add(new EventEditPanel(owner, addEvent, cb_objectType.getSelectedIndex()));
 	}
 	
-	private void addEvent(Event addEvent) {
-		addTabPanel(addEvent);
-	}
-	
 	private void deleteEvent(int index) {
 		// 해당 index의 패널을 삭제한다.
 		eventTabPanelList.remove(index);
@@ -227,14 +223,14 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		addNewEvent();
 	}
 	
-	private void addTabPanel(Event event) {
-		// 전달받은 event를 패널에 넣고 eventTabPanelList에 삽입한다.
-		EventEditPanel addPanel = new EventEditPanel(owner, event, cb_objectType.getSelectedIndex());
-		eventTabPanelList.add(addPanel);
-		
-		// 새로 생성한 패널을 tp_eventTap에 넣는다.
-		tp_eventTab.addTab(new String("Event"+tp_eventTab.getTabCount()), addPanel);
-	}
+//	private void addTabPanel(Event event) {
+//		// 전달받은 event를 패널에 넣고 eventTabPanelList에 삽입한다.
+//		EventEditPanel addPanel = new EventEditPanel(owner, event, cb_objectType.getSelectedIndex());
+//		eventTabPanelList.add(addPanel);
+//		
+//		// 새로 생성한 패널을 tp_eventTap에 넣는다.
+//		tp_eventTab.addTab(new String("Event"+tp_eventTab.getTabCount()), addPanel);
+//	}
 	
 	private void renewTabPanels(int beginIndex) {
 		int selectedIndex = 0;

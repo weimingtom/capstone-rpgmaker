@@ -28,7 +28,6 @@ import javax.swing.LayoutStyle;
 import viewControl.MainFrame;
 import viewControl.editorDlg.eventContentDlg.ChangeBGMDlg;
 import viewControl.editorDlg.eventContentDlg.ChangeFlagDlg;
-import viewControl.editorDlg.eventContentDlg.ChangeMapDlg;
 import viewControl.editorDlg.eventContentDlg.DialogEventDlg;
 import viewControl.editorDlg.eventContentDlg.EventContentDlg;
 import viewControl.editorDlg.eventContentDlg.MotionEventDlg;
@@ -520,21 +519,21 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		}
 	}
 	
-	private void setSelectedIndexActorMenu() {
-		if(objectType != EventEditorSystem.MAP_EVENT) {
-			if(cb_actorIndex == null)		cb_actorIndex = new JComboBox();
-			if(cb_actorMotionType == null)	cb_actorMotionType = new JComboBox();
-			
-			for (int i = 0; i < cb_actorIndex.getComponentCount(); i++) {
-				if(event.getActorIndex() == (new Integer(((String)(cb_actorIndex.getItemAt(i))).substring(0, 3))).intValue())
-					cb_actorIndex.setSelectedIndex(i);
-			}
-			
-			if(cb_actorMotionType.getItemCount() > EventEditorSystem.ATTACK_ENEMY) {
-				cb_actorMotionType.setSelectedIndex(event.getActionType());
-			}
-		}
-	}
+//	private void setSelectedIndexActorMenu() {
+//		if(objectType != EventEditorSystem.MAP_EVENT) {
+//			if(cb_actorIndex == null)		cb_actorIndex = new JComboBox();
+//			if(cb_actorMotionType == null)	cb_actorMotionType = new JComboBox();
+//			
+//			for (int i = 0; i < cb_actorIndex.getComponentCount(); i++) {
+//				if(event.getActorIndex() == (new Integer(((String)(cb_actorIndex.getItemAt(i))).substring(0, 3))).intValue())
+//					cb_actorIndex.setSelectedIndex(i);
+//			}
+//			
+//			if(cb_actorMotionType.getItemCount() > EventEditorSystem.ATTACK_ENEMY) {
+//				cb_actorMotionType.setSelectedIndex(event.getActionType());
+//			}
+//		}
+//	}
 	
 	private void setEventStartType() {
 		if(btng_startType == null)	btng_startType = new ButtonGroup();

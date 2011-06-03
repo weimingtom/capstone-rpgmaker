@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import viewControl.MainFrame;
-
 import animationEditor.Animations;
 import characterEditor.exceptions.IllegalLevelNumber;
 import characterEditor.exceptions.NullBufferedImage;

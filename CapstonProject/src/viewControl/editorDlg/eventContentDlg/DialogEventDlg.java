@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 
 import viewControl.MainFrame;
 import eventEditor.Event;
-import eventEditor.eventContents.ChangeBGMEvent;
 import eventEditor.eventContents.DialogEvent;
 
 public class DialogEventDlg extends JDialog implements ActionListener {
@@ -30,7 +29,7 @@ public class DialogEventDlg extends JDialog implements ActionListener {
 	private JTextArea ta_dialogContent;
 	// End of variables declaration
 	
-	private MainFrame owner;
+//	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -38,7 +37,7 @@ public class DialogEventDlg extends JDialog implements ActionListener {
 	public DialogEventDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Dialog Event");
 		
-		this.owner = parent;
+//		this.owner = parent;
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;

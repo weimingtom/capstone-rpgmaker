@@ -21,11 +21,9 @@ public class Bootstrap {
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
-			boolean findBootstrap = false;
 			while((line=br.readLine()) != null) {
 				// bootstrap이 기록된 라인이면 루프를 종료한다.
 				if(isBootstrapLine(line)) {
-					findBootstrap = true;
 					break;
 				}
 			}
