@@ -127,6 +127,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		renewConditionComboBox();	// cb_condition#에 최신 Flag Name으로 갱신
 		renewSelectedListComboBox();// cb_selectedEventContent에 최신 리스트 목록으로 갱신
 		
+		rbtn_parallelStart.setEnabled(false);
+		
 		p_activeCondition.setBorder(BorderFactory.createTitledBorder("Active Conditions"));
 		p_actor.setBorder(BorderFactory.createTitledBorder("Actor"));
 		p_actorImg.setBackground(new java.awt.Color(255, 255, 255));
