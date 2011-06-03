@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 import viewControl.MainFrame;
 import eventEditor.Event;
 import eventEditor.FlagList;
-import eventEditor.eventContents.ChangeBGMEvent;
 import eventEditor.eventContents.ChangeFlagEvent;
 
 public class ChangeFlagDlg extends JDialog implements ActionListener {
@@ -32,7 +31,7 @@ public class ChangeFlagDlg extends JDialog implements ActionListener {
 	private JLabel jLabel3;
 	// End of variables declaration
 	
-	private MainFrame owner;
+//	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -40,7 +39,7 @@ public class ChangeFlagDlg extends JDialog implements ActionListener {
 	public ChangeFlagDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change Flag Event");
 
-		this.owner = parent;
+//		this.owner = parent;
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;

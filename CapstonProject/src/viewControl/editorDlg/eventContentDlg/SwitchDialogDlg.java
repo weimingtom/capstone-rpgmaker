@@ -15,6 +15,9 @@ import javax.swing.WindowConstants;
 
 import viewControl.MainFrame;
 import eventEditor.Event;
+import eventEditor.FlagList;
+import eventEditor.eventContents.Switch;
+import eventEditor.eventContents.SwitchDialogEvent;
 
 public class SwitchDialogDlg extends JDialog implements ActionListener {
 
@@ -55,7 +58,7 @@ public class SwitchDialogDlg extends JDialog implements ActionListener {
 	private JLabel jLabel17;
 	// End of variables declaration
 	
-	private MainFrame owner;
+//	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -63,7 +66,7 @@ public class SwitchDialogDlg extends JDialog implements ActionListener {
 	public SwitchDialogDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Switch Dialog Event");
 		
-		this.owner = parent;
+//		this.owner = parent;
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;
@@ -108,16 +111,47 @@ public class SwitchDialogDlg extends JDialog implements ActionListener {
 		jLabel15 = new JLabel("Value");
 		jLabel16 = new JLabel("Value");
 		jLabel17 = new JLabel("Value");
+		
+		// 액션 이벤트
+		btn_OK.addActionListener(this);
+		btn_cancel.addActionListener(this);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		cb_flagName1.setModel(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-		cb_flagName2.setModel(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-		cb_flagName3.setModel(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-		cb_flagName4.setModel(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+		cb_flagName1.setModel(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+		cb_flagName2.setModel(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+		cb_flagName3.setModel(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
+		cb_flagName4.setModel(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
-		
+		if(!isNew) {
+			SwitchDialogEvent sde = (SwitchDialogEvent)(event.getEventContent(index));
+			
+			if(sde.getQuestion() != null) {
+				tf_question.setText(sde.getQuestion());
+			}
+			if(sde.getSwitch(0) != null) {
+				tf_answer1.setText(sde.getAnswer(0));
+				cb_flagName1.setSelectedIndex(sde.getFlagIndex(0));
+				cb_value1.setSelectedIndex(sde.getState(0)?0:1);
+			}
+			if(sde.getSwitch(1) != null) {
+				tf_answer2.setText(sde.getAnswer(1));
+				cb_flagName2.setSelectedIndex(sde.getFlagIndex(1));
+				cb_value2.setSelectedIndex(sde.getState(1)?0:1);
+			}
+			if(sde.getSwitch(2) != null) {
+				tf_answer3.setText(sde.getAnswer(2));
+				cb_flagName3.setSelectedIndex(sde.getFlagIndex(2));
+				cb_value3.setSelectedIndex(sde.getState(2)?0:1);
+			}
+			if(sde.getSwitch(3) != null) {
+				tf_answer4.setText(sde.getAnswer(3));
+				cb_flagName4.setSelectedIndex(sde.getFlagIndex(3));
+				cb_value4.setSelectedIndex(sde.getState(3)?0:1);
+			}
+			
+		}
 		
 		// 레이아웃 구성
 		GroupLayout layout = new GroupLayout(getContentPane());
@@ -259,8 +293,30 @@ public class SwitchDialogDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
+			SwitchDialogEvent addSwitchDlgEvent = new SwitchDialogEvent(tf_question.getText());
+			int insertIndex = 0;
+			if(tf_answer1.getText().length() > 0) {
+				Switch addSwitch = new Switch(tf_answer1.getText(), cb_flagName1.getSelectedIndex(), cb_value1.getSelectedIndex()==0?true:false);
+				addSwitchDlgEvent.addSwitch(addSwitch, insertIndex++);
+			}
+			if(tf_answer2.getText().length() > 0) {
+				Switch addSwitch = new Switch(tf_answer2.getText(), cb_flagName2.getSelectedIndex(), cb_value2.getSelectedIndex()==0?true:false);
+				addSwitchDlgEvent.addSwitch(addSwitch, insertIndex++);
+			}
+			if(tf_answer3.getText().length() > 0) {
+				Switch addSwitch = new Switch(tf_answer3.getText(), cb_flagName3.getSelectedIndex(), cb_value3.getSelectedIndex()==0?true:false);
+				addSwitchDlgEvent.addSwitch(addSwitch, insertIndex++);
+			}
+			if(tf_answer4.getText().length() > 0) {
+				Switch addSwitch = new Switch(tf_answer4.getText(), cb_flagName4.getSelectedIndex(), cb_value4.getSelectedIndex()==0?true:false);
+				addSwitchDlgEvent.addSwitch(addSwitch, insertIndex++);
+			}
+			
+			if(!isNew)	event.getEventContentList().remove(index);
+			event.getEventContentList().add(index, addSwitchDlgEvent);
+			
 			this.dispose();
-		} else if(e.getSource() == btn_OK) {
+		} else if(e.getSource() == btn_cancel) {
 			this.dispose();
 		}
 	}

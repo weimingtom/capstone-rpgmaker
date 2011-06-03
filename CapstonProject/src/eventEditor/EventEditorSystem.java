@@ -14,8 +14,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import MapEditor.MapIntegrateGUI;
-
 import viewControl.MainFrame;
 import editor.ObjectEditorSystem;
 

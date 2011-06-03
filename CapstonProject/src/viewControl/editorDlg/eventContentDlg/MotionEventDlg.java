@@ -37,7 +37,7 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 	private JTextField tf_speed;
 	// End of variables declaration
 	
-	private MainFrame owner;
+//	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -45,7 +45,7 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 	public MotionEventDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Motion Event");
 		
-		this.owner = parent;
+//		this.owner = parent;
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;
@@ -79,7 +79,11 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 		cb_actorType.addMouseListener(this);
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
-		
+		if(isNew) {
+			
+		} else {
+			
+		}
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		

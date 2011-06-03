@@ -17,7 +17,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import viewControl.MainFrame;
 import eventEditor.Event;
 import eventEditor.eventContents.ChangeBGMEvent;
-import eventEditor.eventContents.EventContent;
 
 public class ChangeBGMDlg extends JDialog implements ActionListener {
 
