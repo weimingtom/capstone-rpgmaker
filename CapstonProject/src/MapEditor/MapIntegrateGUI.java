@@ -384,7 +384,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		Color tmp = g2d.getColor();
 		g.setColor(Color.white);
 		g.fillRect(0,0,background.getWidth(), background.getHeight());
-
+		g2d.setColor(tmp);
+		tmp = g2d.getColor();
 		if (this.outputFlag == MapIntegrateGUI.BACKGROUND_ONLY) {
 			if (background != null)
 				g2d.drawImage(background, xAxis, yAxis, null);
