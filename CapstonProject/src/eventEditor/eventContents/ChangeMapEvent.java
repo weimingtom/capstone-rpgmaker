@@ -1,27 +1,22 @@
 package eventEditor.eventContents;
 
+import java.awt.Point;
 import java.io.Serializable;
 
 public class ChangeMapEvent extends EventContent implements Serializable {
 
 	private static final long serialVersionUID = -828828425991104090L;
 	
+	private String mapName;
+	private Point startPoint;
 	
-	private String fileName;
-	private int startColLocation;
-	private int startRowLocation;
-	
-	public ChangeMapEvent(String fileName, int startColLocation, int startRowLocation) {
+	public ChangeMapEvent(String mapName, Point startPoint) {
 		this.contentType = CHANGE_MAP_EVNET;
-		this.fileName = "";
-		this.startColLocation = startColLocation;
-		this.startRowLocation = startRowLocation;
+		this.mapName = mapName;
+		this.startPoint = startPoint;
 	}
 
-	public String getFileName()						{	return fileName;							}
-	public void setFileName(String fileName)		{	this.fileName = fileName;					}
-	public int getStartCol()						{	return startColLocation;					}
-	public void setStartCol(int startColLocation)	{	this.startColLocation = startColLocation;	}
-	public int getStartRow()						{	return startRowLocation;					}
-	public void setStartRow(int startRowLocation)	{	this.startRowLocation = startRowLocation;	}
+	public String getMapName()				{	return mapName;			}
+	public void setMapName(String mapName)	{	this.mapName = mapName;	}
+	public Point getStartPoint()			{	return startPoint;		}
 }
