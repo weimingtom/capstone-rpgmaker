@@ -59,7 +59,6 @@ import viewControl.editorDlg.NewCharacterDlg;
 import viewControl.editorDlg.NewMonsterDlg;
 import viewControl.editorDlg.SkillDlg;
 import viewControl.editorDlg.WeaponDlg;
-import viewControl.editorDlg.eventContentDlg.NextMapDstDlg;
 import viewControl.esComponent.EstyleButton;
 import viewControl.esComponent.EstyleCheckBoxItem;
 import viewControl.esComponent.EstyleCheckBoxItemGroup;
@@ -124,9 +123,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		mainState = new JLabel("BAESSAGONG RPG MAKER ALPA 0.1");
 		coordinatePanel = new JPanel(new FlowLayout());
 		coordinateXlabel = new JLabel("X : ");
-		coordinateYlabel= new JLabel("Y : ");
-		coordinateX= new JLabel("?");
-		coordinateY= new JLabel("?");
+		coordinateYlabel = new JLabel("Y : ");
+		coordinateX = new JLabel("?");
+		coordinateY = new JLabel("?");
 		coordinatePanel.add(coordinateXlabel);
 		coordinatePanel.add(coordinateX);
 		coordinatePanel.add(coordinateYlabel);
@@ -151,6 +150,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				"src\\resouce\\btnImg\\alphaBtn.png"), iconSize, iconSize);
 		btnEvent = new EstyleToggleButton(new ImageIcon(
 				"src\\resouce\\btnImg\\eventBtn.png"), iconSize, iconSize);
+		btnPaint = new EstyleToggleButton(new ImageIcon(
+				"src\\resouce\\btnImg\\paintBtn.png"), iconSize, iconSize);
+		btnStamp = new EstyleToggleButton(new ImageIcon(
+				"src\\resouce\\btnImg\\stampBtn.png"), iconSize, iconSize);
 		canvasTab = new JTabbedPane(JTabbedPane.LEFT);
 		canvasToolbar = new JToolBar(JToolBar.HORIZONTAL);
 
@@ -221,6 +224,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasItem_foregroundOnly = new EstyleCheckBoxItem("Foreground Only",
 				canvasItemGroup);
 		canvasItem_grid = new EstyleCheckBoxItem("Grid style");
+		canvasToolGroup = new ButtonGroup();
+		canvasItem_paintTool = new JRadioButtonMenuItem("Paint tool");
+		canvasItem_stampTool = new JRadioButtonMenuItem("Stamp tool");
 
 		eventItem_viewOnEvent = new EstyleCheckBoxItem("Event mode");
 		eventItem_copy = new JMenuItem("Copy event");
@@ -294,10 +300,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		southPanel.add(mainState, BorderLayout.CENTER);
 		southPanel.add(southSeparator, BorderLayout.PAGE_START);
 		southPanel.add(subState, BorderLayout.LINE_START);
-		
+
 		southPanel.add(coordinatePanel, BorderLayout.LINE_END);
 
-		
 		getContentPane().add(southPanel, BorderLayout.PAGE_END);
 
 		// CENTER
@@ -326,16 +331,26 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasToolbar.add(btnSemitransparent);
 		canvasToolbar.addSeparator();
 		canvasToolbar.add(btnEvent);
+		canvasToolbar.addSeparator();
+		canvasToolbar.add(btnStamp);
+		canvasToolbar.add(btnPaint);
+
 		btnCanvasGrid.addActionListener(this);
 		btnBgOnly.addActionListener(this);
 		btnFgOnly.addActionListener(this);
 		btnSemitransparent.addActionListener(this);
 		btnEvent.addActionListener(this);
+		btnStamp.addActionListener(this);
+		btnPaint.addActionListener(this);
+
 		btnCanvasGrid.setToolTipText("Grid style");
 		btnBgOnly.setToolTipText("View background only");
 		btnFgOnly.setToolTipText("View foreground only");
 		btnSemitransparent.setToolTipText("View background translucence");
 		btnEvent.setToolTipText("Event setting");
+		btnPaint.setToolTipText("Paint draw");
+		btnStamp.setToolTipText("Stamp draw");
+		btnStamp.setPressed(true);
 
 		canvasTab.setMinimumSize(new Dimension(200, 200));
 		canvasTab.addMouseListener(new MouseEventHandler());
@@ -464,7 +479,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuFile.setMnemonic(KeyEvent.VK_I);
 		menuCanvas.setMnemonic(KeyEvent.VK_C);
 		menuEvent.setMnemonic(KeyEvent.VK_E);
-		menuPallete.setMnemonic(KeyEvent.VK_P);
+		menuPallete.setMnemonic(KeyEvent.VK_L);
 		menuExecution.setMnemonic(KeyEvent.VK_X);
 		menuHelp.setMnemonic(KeyEvent.VK_H);
 		menuAbout.setMnemonic(KeyEvent.VK_A);
@@ -554,25 +569,40 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				KeyEvent.VK_L, Event.CTRL_MASK));
 
 		// Canvas
+		canvasToolGroup.add(canvasItem_paintTool);
+		canvasToolGroup.add(canvasItem_stampTool);
+
+		menuCanvas.add(canvasItem_stampTool);
+		menuCanvas.add(canvasItem_paintTool);
+		menuCanvas.addSeparator();
 		menuCanvas.add(canvasItem_backgroundOnly);
 		menuCanvas.add(canvasItem_foregroundOnly);
 		menuCanvas.add(canvasItem_Semitransparent);
-		menuCanvas.add(new JSeparator());
+		menuCanvas.addSeparator();
 		menuCanvas.add(canvasItem_grid);
+		canvasItem_stampTool.setEnabled(false);
+		canvasItem_paintTool.setEnabled(false);
 		canvasItem_backgroundOnly.setEnabled(false);
 		canvasItem_foregroundOnly.setEnabled(false);
 		canvasItem_Semitransparent.setEnabled(false);
 		canvasItem_grid.setEnabled(false);
-		
-		canvasItem_backgroundOnly.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
-				Event.CTRL_MASK));
-		canvasItem_foregroundOnly.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
-				Event.CTRL_MASK));
-		canvasItem_Semitransparent.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
-				Event.CTRL_MASK));
+		canvasItem_stampTool.setSelected(true);
+
+		canvasItem_stampTool.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_S, Event.ALT_MASK));
+		canvasItem_paintTool.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_P, Event.ALT_MASK));
+		canvasItem_backgroundOnly.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_B, Event.CTRL_MASK));
+		canvasItem_foregroundOnly.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_F, Event.CTRL_MASK));
+		canvasItem_Semitransparent.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_D, Event.CTRL_MASK));
 		canvasItem_grid.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
 				Event.CTRL_MASK));
-		
+
+		canvasItem_stampTool.addActionListener(this);
+		canvasItem_paintTool.addActionListener(this);
 		canvasItem_backgroundOnly.addActionListener(this);
 		canvasItem_foregroundOnly.addActionListener(this);
 		canvasItem_Semitransparent.addActionListener(this);
@@ -586,18 +616,17 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuEvent.add(eventItem_paste);
 		menuEvent.add(eventItem_delete);
 		menuEvent.add(eventItem_setStartingPoint);
-		
-		eventItem_viewOnEvent.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
-				Event.CTRL_MASK));
-		eventItem_setEvent.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT,
-				Event.CTRL_MASK));
+
+		eventItem_viewOnEvent.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_E, Event.CTRL_MASK));
+		eventItem_setEvent.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_INSERT, Event.CTRL_MASK));
 		eventItem_copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
 				Event.CTRL_MASK));
 		eventItem_paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
 				Event.CTRL_MASK));
-		eventItem_delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,
-				Event.CTRL_MASK));
-		
+		eventItem_delete.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_DELETE, Event.CTRL_MASK));
 
 		eventItem_viewOnEvent.setEnabled(false);
 		eventItem_setEvent.setEnabled(false);
@@ -623,13 +652,13 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuPallete.add(palleteItem_upper);
 		menuPallete.addSeparator();
 		menuPallete.add(palleteItem_grid);
-		
-		paletteItem_background.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
-				Event.ALT_MASK));
-		paletteItem_foreground.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
-				Event.ALT_MASK));
-		palleteItem_movable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
-				Event.ALT_MASK));
+
+		paletteItem_background.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_B, Event.ALT_MASK));
+		paletteItem_foreground.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_F, Event.ALT_MASK));
+		palleteItem_movable.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_M, Event.ALT_MASK));
 		palleteItem_upper.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
 				Event.ALT_MASK));
 		palleteItem_grid.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
@@ -651,9 +680,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuExecution.add(executionItem_execute);
 		menuExecution.add(executionItem_makeRelease);
 
-		executionItem_execute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
-				Event.CTRL_MASK));
-		
+		executionItem_execute.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_ENTER, Event.CTRL_MASK));
+
 		executionItem_execute.addActionListener(this);
 		executionItem_makeRelease.addActionListener(this);
 
@@ -708,6 +737,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private EstyleToggleButton btnFgOnly;
 	private EstyleToggleButton btnSemitransparent;
 	private EstyleToggleButton btnEvent;
+	private EstyleToggleButton btnPaint;
+	private EstyleToggleButton btnStamp;
 	private JToolBar canvasToolbar;
 
 	// CENTER - EAST
@@ -770,6 +801,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private EstyleCheckBoxItem canvasItem_foregroundOnly;
 	private EstyleCheckBoxItem canvasItem_Semitransparent;
 	private EstyleCheckBoxItem canvasItem_grid;
+	private ButtonGroup canvasToolGroup;
+	private JRadioButtonMenuItem canvasItem_paintTool;
+	private JRadioButtonMenuItem canvasItem_stampTool;
 
 	private EstyleCheckBoxItem eventItem_viewOnEvent;
 	private JMenuItem eventItem_setEvent;
@@ -887,6 +921,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				setCanvasSemitransparentMode(true);
 		} else if (e.getSource() == canvasItem_grid) {
 			setCanvasGridMode(canvasItem_grid.isSelected());
+		} else if (e.getSource() == canvasItem_paintTool) {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.PAINT_TOOL);
+		} else if (e.getSource() == canvasItem_stampTool) {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
 		}
 
 		// event
@@ -942,6 +980,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			new OpenProjectDlg(this);
 		} else if (e.getSource() == btnProjClose) {
 			closeProject();
+		} else if (e.getSource() == btnExeProj) {
+			GameDemoExecution.getInstanse(ProjectFullPath).execute();
+		} else if (e.getSource() == btnHelp) {
+
 		}
 
 		// CENTER EAST TOOLBAR
@@ -991,8 +1033,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			setCanvasSemitransparentMode(btnSemitransparent.isSelected());
 		} else if (e.getSource() == btnEvent) {
 			setCanvasEventMode(btnEvent.isSelected());
-		} else if (e.getSource() == btnExeProj) {
-			GameDemoExecution.getInstanse(ProjectFullPath).execute();
+		} else if (e.getSource() == btnPaint) {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.PAINT_TOOL);
+		} else if (e.getSource() == btnStamp) {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
 		}
 	}
 
@@ -1040,6 +1084,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 					setCanvasSemitransparentMode(true);
 				} else {
 					m.setOutputFlag(MapIntegrateGUI.SYNTHESYS_MODE);
+				}
+
+				if (btnPaint.isSelected()) {
+					syncBetweenCanvasTabsMode(MapIntegrateGUI.PAINT_TOOL);
+				} else if (btnStamp.isSelected()) {
+					syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
+				} else {
+					syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
 				}
 			}
 		}
@@ -1443,6 +1495,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		else
 			syncBetweenCanvasTabsMode(MapIntegrateGUI.CANVAS_MODE);
 
+		if (btnPaint.isSelected()) {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.PAINT_TOOL);
+		} else if (btnStamp.isSelected()) {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
+		} else {
+			syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
+		}
+
 		// 캔버스가 처음 생긴 경우면 버튼 활성화
 		if (canvasTabCounter == 1) {
 			enableMapRelatedBtn(true);
@@ -1596,6 +1656,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		btnBgOnly.setEnabled(b);
 		btnCanvasGrid.setEnabled(b);
 		btnFgOnly.setEnabled(b);
+		btnPaint.setEnabled(b);
+		btnStamp.setEnabled(b);
 		btnForePalette.setEnabled(b);
 		btnMovable.setEnabled(b);
 		btnPaletteGrid.setEnabled(b);
@@ -1608,6 +1670,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			syncBetweenPalettesMode(PalettePanel.PALETTEMODE);
 		}
 
+		canvasItem_paintTool.setEnabled(b);
+		canvasItem_stampTool.setEnabled(b);
 		canvasItem_grid.setEnabled(b);
 		canvasItem_Semitransparent.setEnabled(b);
 		canvasItem_backgroundOnly.setEnabled(b);
@@ -1642,31 +1706,37 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		MapIntegrateGUI m = getSelectedCanvasFromCanvasTab();
 		switch (mode) {
 		case MapIntegrateGUI.BACKGROUND_ONLY:
-			btnFgOnly.setSelected(false);
-			btnFgOnly.setContentAreaFilled(false);
-			btnSemitransparent.setSelected(false);
-			btnSemitransparent.setContentAreaFilled(false);
+			btnFgOnly.setPressed(false);
+			btnSemitransparent.setPressed(false);
 			canvasItem_backgroundOnly.setSelected(true);
 			m.popupBgOnly.setSelected(true);
 			m.popupEventBgOnly.setSelected(true);
 			break;
 		case MapIntegrateGUI.FOREGROUND_ONLY:
-			btnBgOnly.setSelected(false);
-			btnBgOnly.setContentAreaFilled(false);
-			btnSemitransparent.setSelected(false);
-			btnSemitransparent.setContentAreaFilled(false);
+			btnBgOnly.setPressed(false);
+			btnSemitransparent.setPressed(false);
 			canvasItem_foregroundOnly.setSelected(true);
 			m.popupFgOnly.setSelected(true);
 			m.popupEventFgOnly.setSelected(true);
 			break;
 		case MapIntegrateGUI.SEMITRANSPARENT:
-			btnBgOnly.setSelected(false);
-			btnBgOnly.setContentAreaFilled(false);
-			btnFgOnly.setSelected(false);
-			btnFgOnly.setContentAreaFilled(false);
+			btnBgOnly.setPressed(false);
+			btnFgOnly.setPressed(false);
 			canvasItem_Semitransparent.setSelected(true);
 			m.popupSemitransparent.setSelected(true);
 			m.popupEventSemitransparent.setSelected(true);
+			break;
+		case MapIntegrateGUI.PAINT_TOOL:
+			btnPaint.setPressed(true);
+			btnStamp.setPressed(false);
+			canvasItem_paintTool.setSelected(true);
+			m.popupPaintTool.setSelected(true);
+			break;
+		case MapIntegrateGUI.STAMP_TOOL:
+			btnPaint.setPressed(false);
+			btnStamp.setPressed(true);
+			canvasItem_stampTool.setSelected(true);
+			m.popupStampTool.setSelected(true);
 			break;
 		default:
 			btnBgOnly.setSelected(false);
@@ -1684,7 +1754,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		}
 	}
 
-	private void syncBetweenCanvasTabsMode(int mode) {
+	public void syncBetweenCanvasTabsMode(int mode) {
 		MapIntegrateGUI m = getSelectedCanvasFromCanvasTab();
 		switch (mode) {
 		case MapIntegrateGUI.SEMITRANSPARENT:
@@ -1720,7 +1790,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			btnEvent.setPressed(true);
 			eventItem_copy.setEnabled(true);
 			eventItem_delete.setEnabled(true);
-			eventItem_paste.setEnabled(getSelectedCanvasFromCanvasTab().syncEventPasteBtn());
+			eventItem_paste.setEnabled(getSelectedCanvasFromCanvasTab()
+					.syncEventPasteBtn());
 			eventItem_setEvent.setEnabled(true);
 			eventItem_setStartingPoint.setEnabled(true);
 			break;
@@ -1738,6 +1809,15 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			m.setOutputFlag(MapIntegrateGUI.SYNTHESYS_MODE);
 			syncBetweenCanvasBtns(MapIntegrateGUI.SYNTHESYS_MODE);
 			break;
+		case MapIntegrateGUI.PAINT_TOOL:
+			syncBetweenCanvasBtns(MapIntegrateGUI.PAINT_TOOL);
+			m.setDrawTool(MapIntegrateGUI.PAINT_TOOL);
+			break;
+		case MapIntegrateGUI.STAMP_TOOL:
+			syncBetweenCanvasBtns(MapIntegrateGUI.STAMP_TOOL);
+			m.setDrawTool(MapIntegrateGUI.STAMP_TOOL);
+			break;
+
 		default:
 			break;
 		}
@@ -1818,13 +1898,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		syncPaletteCanvas();
 	}
 
-	public void setPalletSetMovableMode(boolean b) {
-		syncBetweenPalettesMode(PalettePanel.MOVEEMODE);
-	}
-
-	public void setPalletSetUpperMode(boolean b) {
-	}
-
 	// explorer 보이기/감추기
 	public void explorerVisible(boolean b) {
 		if (b) {
@@ -1880,8 +1953,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	public void setCoordinate(Point p) {
-		this.coordinateX.setText((p.x/DrawingTemplate.pixel)+1+"");
-		this.coordinateY.setText((p.y/DrawingTemplate.pixel)+1+"");
+		this.coordinateX.setText((p.x / DrawingTemplate.pixel) + 1 + "");
+		this.coordinateY.setText((p.y / DrawingTemplate.pixel) + 1 + "");
 	}
 
 }
