@@ -200,13 +200,13 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 			for (int i = 0; i < pathStr.length; i++) {
 				pathStr[i] = projpaths.get(projpaths.size() - 1 - i);
 			}
-		} catch (FileNotFoundException e) {
-			pathStr = new String[1];
-		} catch (Exception e) {
+			cb_workspace.setModel(new DefaultComboBoxModel(pathStr));
+		}  catch (Exception e) {
 			e.printStackTrace();
+			pathStr = new String[1];
 		}
 
-		cb_workspace.setModel(new DefaultComboBoxModel(pathStr));
+		
 		btn_browser.addActionListener(this);
 		btn_cancel.addActionListener(this);
 		btn_ok.addActionListener(this);
