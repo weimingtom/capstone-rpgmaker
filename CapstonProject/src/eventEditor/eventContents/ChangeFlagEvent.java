@@ -23,8 +23,8 @@ public class ChangeFlagEvent extends EventContent implements Serializable {
 //		fl.getFlagList().get(indexFlag).setFlag(state);
 //	}
 
-	public int getIndexFlag() {	return indexFlag;	}
-	public void setIndexFlag(int indexFlag) {	this.indexFlag = indexFlag;	}
-	public boolean isState() {	return state;	}
-	public void setState(boolean state) {	this.state = state;	}
+	public int getIndexFlag()				{	return indexFlag;			}
+	public void setIndexFlag(int indexFlag)	{	this.indexFlag = indexFlag;	}
+	public boolean isState()				{	return state;				}
+	public void setState(boolean state)		{	this.state = state;			}
 }

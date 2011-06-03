@@ -17,6 +17,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import viewControl.MainFrame;
 import eventEditor.Event;
 import eventEditor.eventContents.ChangeBGMEvent;
+import eventEditor.eventContents.EventContent;
 
 public class ChangeBGMDlg extends JDialog implements ActionListener {
 
@@ -33,14 +34,16 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	
 	private MainFrame owner;
 	private Event event;
-	private int insertIndex;
+	private boolean isNew;
+	private int index;
 	
-	public ChangeBGMDlg(MainFrame parent, Event event, int insertIndex) {
+	public ChangeBGMDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change BGM Event");
 		
 		this.owner = parent;
 		this.event = event;
-		this.insertIndex = insertIndex;
+		this.isNew = isNew;
+		this.index = index;
 		
 		setResizable(false);
 		setModal(true);
@@ -61,6 +64,12 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 		btn_OK.addActionListener(this);
 		btn_cancel.addActionListener(this);
 		btn_bgmSelect.addActionListener(this);
+		
+		// isNew가 false면 event의 index번 데이터로 초기화
+		if(!isNew) {
+			tf_filePath.setText(((ChangeBGMEvent)(event.getEventContent(index))).getFileName());
+			tf_volumn.setText(new Integer(((ChangeBGMEvent)(event.getEventContent(index))).getVolumn()).toString());
+		}
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
@@ -112,7 +121,12 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
 			// EventContent를 event에 삽입한다.
-			event.getEventContentList().add(insertIndex, new ChangeBGMEvent(tf_filePath.getText(), (new Integer(tf_volumn.getText())).intValue()));
+			if(isNew)
+				event.getEventContentList().add(index, new ChangeBGMEvent(tf_filePath.getText(), (new Integer(tf_volumn.getText())).intValue()));
+			else {
+				event.getEventContentList().remove(index);
+				event.getEventContentList().add(index, new ChangeBGMEvent(tf_filePath.getText(), (new Integer(tf_volumn.getText())).intValue()));
+			}
 			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {

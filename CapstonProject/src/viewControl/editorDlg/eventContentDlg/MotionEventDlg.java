@@ -39,14 +39,16 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 	
 	private MainFrame owner;
 	private Event event;
-	private int insetIndex;
+	private boolean isNew;
+	private int index;
 	
-	public MotionEventDlg(MainFrame parent, Event event, int insetIndex) {
+	public MotionEventDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Motion Event");
 		
 		this.owner = parent;
 		this.event = event;
-		this.insetIndex = insetIndex;
+		this.isNew = isNew;
+		this.index = index;
 		
 		setResizable(false);
 		setModal(true);
@@ -75,6 +77,9 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 		
 		// 마우스 이벤트
 		cb_actorType.addMouseListener(this);
+		
+		// isNew가 false면 event의 index번 데이터로 초기화
+		
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
