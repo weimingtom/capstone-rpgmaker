@@ -484,11 +484,13 @@ public class GameData implements Runnable{
 		}
 		else if(type == EventContent.CHANGE_MAP_EVNET)
 		{
+			gameState = GameData.LOADING;
 			eventContentListIndex++;
 			this.eventStart = false;
 			ChangeMapEvent mapChange = (ChangeMapEvent) nowEvent;
 			startMusic(null);
 			loadMap(mapChange.getMapName());
+			gameState = GameData.PLAY;
 		}
 	}
 	
@@ -667,7 +669,6 @@ public class GameData implements Runnable{
 		}
 	}
 
-
 	//플레이어의 키입력에 따른 움직임 설정
 	public void actionPlayer(int playerState)
 	{	
@@ -769,7 +770,6 @@ public class GameData implements Runnable{
 			}
 		}	
 	}
-
 
 	//괴물들 로드
 	private void loadMonsters() {
