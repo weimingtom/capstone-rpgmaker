@@ -487,7 +487,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void mouseDragged(MouseEvent e) {
 		if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 			return;
-		
+		MainFrame.OWNER.setCoordinate(e.getPoint());
 		if (EVENTMODE_FLAG) {
 			if (isDragEvent) {
 				endEventPoint = e.getPoint();
@@ -574,9 +574,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		
 		if(!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 			return;
-		
+		MainFrame.OWNER.setCoordinate(e.getPoint());
 		if (EVENTMODE_FLAG) {
 			if (isDragEvent) {
 				endEventPoint = e.getPoint();
@@ -632,6 +633,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 	}
+
 
 	@Override
 	public void mousePressed(MouseEvent e) {

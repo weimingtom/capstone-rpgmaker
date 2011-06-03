@@ -531,6 +531,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 	// 마우스 움직임을 포착
 	@Override
 	public void mouseDragged(MouseEvent me) {
+		MainFrame.OWNER.setCoordinate(me.getPoint());
 		// 드래그 되면서 측정할 좌표 선택
 		if ((me.getModifiers() & InputEvent.BUTTON1_MASK) != 0) { // 왼쪽
 			dragPoint = me.getPoint();
@@ -555,6 +556,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 
 	@Override
 	public void mouseMoved(MouseEvent me) {
+		MainFrame.OWNER.setCoordinate(me.getPoint());
 		this.mousePoint = me.getPoint();
 		repaint();
 	}

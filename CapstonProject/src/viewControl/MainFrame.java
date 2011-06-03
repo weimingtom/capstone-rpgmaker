@@ -13,10 +13,11 @@ package viewControl;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Event;
+import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -33,7 +34,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -122,7 +122,16 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		southPanel = new JPanel(new BorderLayout());
 		subState = new JLabel("WELCOME!");
 		mainState = new JLabel("BAESSAGONG RPG MAKER ALPA 0.1");
-		progressBar = new JProgressBar(0, 100);
+		coordinatePanel = new JPanel(new FlowLayout());
+		coordinateXlabel = new JLabel("X : ");
+		coordinateYlabel= new JLabel("Y : ");
+		coordinateX= new JLabel("?");
+		coordinateY= new JLabel("?");
+		coordinatePanel.add(coordinateXlabel);
+		coordinatePanel.add(coordinateX);
+		coordinatePanel.add(coordinateYlabel);
+		coordinatePanel.add(coordinateY);
+		coordinatePanel.add(new JLabel("    "));
 		southSeparator = new JSeparator();
 
 		// CENTER
@@ -280,13 +289,15 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		// SOUTH
 		subState.setHorizontalAlignment(SwingConstants.CENTER);
 		subState.setPreferredSize(new Dimension(150, 20));
-		progressBar.setPreferredSize(new Dimension(150, 20));
 		mainState.setHorizontalAlignment(SwingConstants.CENTER);
 		mainState.setPreferredSize(new Dimension(40, 20));
 		southPanel.add(mainState, BorderLayout.CENTER);
 		southPanel.add(southSeparator, BorderLayout.PAGE_START);
 		southPanel.add(subState, BorderLayout.LINE_START);
-		southPanel.add(progressBar, BorderLayout.LINE_END);
+		
+		southPanel.add(coordinatePanel, BorderLayout.LINE_END);
+
+		
 		getContentPane().add(southPanel, BorderLayout.PAGE_END);
 
 		// CENTER
@@ -725,7 +736,11 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	// SOUTH
 	private JLabel mainState;
 	private JLabel subState;
-	public JProgressBar progressBar;
+	private JPanel coordinatePanel;
+	private JLabel coordinateXlabel;
+	private JLabel coordinateYlabel;
+	private JLabel coordinateX;
+	private JLabel coordinateY;
 	private JPanel southPanel;
 	private JSeparator southSeparator;
 
@@ -1864,4 +1879,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	public JMenuItem getEventItem_paste() {
 		return eventItem_paste;
 	}
+
+	public void setCoordinate(Point p) {
+		this.coordinateX.setText((p.x/DrawingTemplate.pixel)+1+"");
+		this.coordinateY.setText((p.y/DrawingTemplate.pixel)+1+"");
+	}
+
 }
