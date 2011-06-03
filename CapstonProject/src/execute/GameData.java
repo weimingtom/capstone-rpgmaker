@@ -481,6 +481,12 @@ public class GameData implements Runnable{
 		else if(type == EventContent.DIALOG_EVNET)
 		{
 			startDialogEvent();
+			try {
+				Thread.sleep(SLOWTIMER);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else if(type == EventContent.CHANGE_MAP_EVNET)
 		{
