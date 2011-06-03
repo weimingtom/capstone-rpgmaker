@@ -22,6 +22,11 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import eventEditor.Event;
+import eventEditor.EventEditorSystem;
+import eventEditor.EventTile;
+import eventEditor.eventContents.EventContent;
+
 import bootstrap.Bootstrap;
 import bootstrap.BootstrapInfo;
 
@@ -58,7 +63,7 @@ public class GameData implements Runnable{
 	public static final int STATUSCALLED = 18;
 	/**************************************************/
 	//이 쓰레드의 클럭 타이머
-	public static int TIMER = 60;
+	public static int TIMER = 100;
 	private static int FASTTIMER = 60;
 	private static int SLOWTIMER = 100;
 	
@@ -89,6 +94,8 @@ public class GameData implements Runnable{
 
 	private int[][] gameTile;
 	private GameEventDispatcher eventDispatcher;
+	private static final int MAXFLAG = 1001;
+	private boolean [] conditionFlag;
 	/****************************************************/
 	
 	//게임 패스
@@ -146,6 +153,10 @@ public class GameData implements Runnable{
 		gameDisplay = null;
 		gameRobot = new AI(this);
 		
+		conditionFlag = new boolean[MAXFLAG];
+		for(int i = 0 ; i < MAXFLAG; i++)
+			conditionFlag[i] = false;
+		conditionFlag[0] = true;
 		eventDispatcher = new GameEventDispatcher();
 	}
 	
@@ -335,7 +346,7 @@ public class GameData implements Runnable{
 			gameState = GameData.STATUSCALLED;
 			statusScreen.setCalled(true);
 			try {
-				Thread.sleep(FASTTIMER);
+				Thread.sleep(SLOWTIMER);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -364,6 +375,7 @@ public class GameData implements Runnable{
 			//한꺼번에 배열에 움직임 작성
 			this.computeGameTile();
 
+			runMapEvent();
 		}
 		
 		//캐릭터 체력 채워줌
@@ -373,6 +385,12 @@ public class GameData implements Runnable{
 		{
 			player.getNowStatus().setHP(player.getMaxStatus().getHP());
 		}
+	}
+	
+	private void runMapEvent()
+	{
+		
+		
 	}
 	
 	//실행중 스테이터스 화면일때
@@ -643,8 +661,14 @@ public class GameData implements Runnable{
 		try{
 			//현재 맵에 정의된 npc들 출력
 			monsters = new Vector<GameCharacter>();
-//			monsters.add(new Monster(gamePath));
-//			monsters.elementAt(0).deployActor(0, 60, 60, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(0).deployActor(0, 60, 60, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(1).deployActor(0, 20, 60, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(2).deployActor(0, 30, 60, null);
+			monsters.add(new Monster(gamePath));
+			monsters.elementAt(3).deployActor(0, 40, 60, null);
 		}
 		catch(Exception e)
 		{
@@ -666,7 +690,7 @@ public class GameData implements Runnable{
 			//현재 맵에 정의된 npc들 출력
 			alliances = new Vector<GameCharacter>();
 			alliances.add(new Alliance(gamePath));
-			alliances.elementAt(0).deployActor(1, 100, 100, null);
+			alliances.elementAt(0).deployActor(0, 100, 100, null);
 		}
 		catch(Exception e)
 		{
@@ -718,15 +742,15 @@ public class GameData implements Runnable{
 		g.dispose();
 		
 		//이벤트 타일 생성
-//		eventDispatcher.setEventLoader(gameMap.getEventEditSys());
-//		eventDispatcher.loadMapEvent(gameMap.getM_Width(), gameMap.getM_Height());
+		eventDispatcher.setEventLoader(gameMap.getEventEditSys(), this);
+		eventDispatcher.makeMapEvent(gameMap.getM_Width(), gameMap.getM_Height());
 	}
 
 	//플레이어로드
 	public void loadPlayer(int charIndex, Point startPoint)
 	{
 		try{
-			this.player = new Alliance(gamePath);
+			this.player = new PlayerCharacter(gamePath);
 			
 			int startX = startPoint.x*mapCharArrayRatio-mapCharArrayRatio/2;
 			int startY = startPoint.y*mapCharArrayRatio-mapCharArrayRatio/2;

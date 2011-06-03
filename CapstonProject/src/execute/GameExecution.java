@@ -6,7 +6,7 @@ public class GameExecution {
 	//더블 버퍼링모드
 	public static int DOUBLEBUFFERMODE = 2;
 	
-	private String gamePath = "D:/GameDataFiles";
+	private String gamePath = "D:\\ca";
 	
 	//게임 데이터, 디스플레이, 윈도우
 	private GameData gameData;
