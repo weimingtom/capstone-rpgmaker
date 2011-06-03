@@ -194,11 +194,10 @@ public class MapEditorSystem {
 			if(m_backTemplate.size()<0)
 			{
 				System.out.println("error in mapeditorSystem.java");
-				System.exit(-1);
+				//System.exit(-1);
 			}
 			m_selectedTile = m_backTemplate.elementAt(vectorIndex).getTileSet(
 					startCol, startRow, endCol, endRow);
-			System.out.println(vectorIndex);
 		}
 		// 포어그라운드가 클릭된거면
 		else {
