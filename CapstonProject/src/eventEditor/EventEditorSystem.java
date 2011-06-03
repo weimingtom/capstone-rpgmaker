@@ -36,6 +36,7 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	public final static int ATTACK_PLAYER = 3;			// 이벤트가 플레이어를 공격한다.
 	public final static int ATTACK_ENEMY = 4;			// 이벤트가 적을 공격한다.
 	// objectType
+	public final static int NONE = -1;
 	public final static int MAP_EVENT = 0;
 	public final static int NPC_EVENT = 1;				// 이벤트가 NPC로 설정된다.
 	public final static int MONSTER_EVENT = 2;			// 이벤트가 Monster로 설정된다.
