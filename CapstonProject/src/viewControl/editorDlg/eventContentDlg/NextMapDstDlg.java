@@ -6,8 +6,13 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,6 +29,7 @@ import javax.swing.WindowConstants;
 import viewControl.MainFrame;
 import MapEditor.DrawingTemplate;
 import MapEditor.MapEditorSystem;
+import MapEditor.MapIntegrateGUI;
 
 public class NextMapDstDlg extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -32,6 +38,7 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 		super(parent, true);
 		setPreferredSize(new Dimension(800, 640));
 		initComponents();
+		setTitle("Where is the destination?");
 		setVisible(true);
 	}
 
@@ -58,17 +65,17 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 		}
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(400, 400));
-		setName("Form"); // NOI18N
+		JLabel l_state = new JLabel(
+				"  Please, choose destination of the character.");
 
-		topP.setName("topP"); // NOI18N
 		topP.setLayout(new BorderLayout());
 
 		topP.add(mapList, BorderLayout.CENTER);
 
 		topP.add(btnBrower, BorderLayout.LINE_END);
 
-		getContentPane().add(topP, BorderLayout.PAGE_START);
-
+		getContentPane().add(topP, BorderLayout.NORTH);
+		getContentPane().add(l_state, BorderLayout.SOUTH);
 		centerP.setLayout(new BorderLayout());
 
 		GroupLayout eastPLayout = new GroupLayout(eastP);
@@ -135,7 +142,14 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 		btnBrower.addActionListener(this);
 		btnCancel.addActionListener(this);
 		btnOk.addActionListener(this);
-		mapList.addActionListener(this);
+		mapList.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED)
+					setCanvas((String) (mapList.getSelectedItem()));
+			}
+		});
 
 	}
 
@@ -144,7 +158,7 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 	private JButton btnOk;
 	private JPanel centerP;
 	private JPanel eastP;
-	private JComboBox mapList;
+	public JComboBox mapList;
 	private Canvas canvas;
 	private JLabel l_x;
 	private JLabel l_xpoint;
@@ -172,13 +186,19 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 		if (e.getSource() == btnBrower) {
 			btnBrower.setEnabled(false);
 			new NextMapDstFileChooserDlg(this);
+		} else if (e.getSource() == btnOk) {
+
+		} else if (e.getSource() == btnCancel) {
+			dispose();
 		}
 	}
 
-	class Canvas extends JScrollPane {
+	class Canvas extends JScrollPane implements MouseListener {
 
 		private static final long serialVersionUID = 1L;
 		private Image backImg = null;
+		private Point p = new Point(MapIntegrateGUI.STARTING_POINT,
+				MapIntegrateGUI.STARTING_POINT);
 
 		public Image getBackImg() {
 			return backImg;
@@ -200,20 +220,22 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 
 		public Canvas() {
 			setVisible(true);
+			addMouseListener(this);
 		}
 
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
-			int h = mapsys.getMapInfo().getM_Height();
-			int w = mapsys.getMapInfo().getM_Width();
-			if (mapsys.getMapInfo() != null)
-				g.drawImage(backImg, 0, 0, this);
+			if (mapsys.getMapInfo() == null)
+				return;
+
+			int h = mapsys.getMapInfo().getM_Height() * DrawingTemplate.pixel;
+			int w = mapsys.getMapInfo().getM_Width() * DrawingTemplate.pixel;
+			g.drawImage(backImg, 0, 0, this);
 			g.drawImage(foreImg, 0, 0, this);
 
-			// 그리드 모드 삽입
 			Color tmp = g.getColor();
-			g.setColor(new Color(255, 255, 255, 100));
+			g.setColor(new Color(0, 0, 0, 100));
 			for (int i = 0; i < h / DrawingTemplate.pixel; i++) {
 				g.drawLine(0, i * DrawingTemplate.pixel, w, i
 						* DrawingTemplate.pixel);
@@ -222,7 +244,40 @@ public class NextMapDstDlg extends JDialog implements ActionListener {
 				g.drawLine(j * DrawingTemplate.pixel, 0, j
 						* DrawingTemplate.pixel, h);
 			}
+
+			// 마우스 위치
+			g.setColor(new Color(255, 0, 0, 255));
+			int sx = (p.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
+			int sy = (p.y / DrawingTemplate.pixel) * DrawingTemplate.pixel;
+			g.draw3DRect(sx, sy, DrawingTemplate.pixel, DrawingTemplate.pixel,
+					false);
 			g.setColor(tmp);
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			p.setLocation(e.getPoint());
+			repaint();
+			int row = p.x / DrawingTemplate.pixel;
+			int col = p.y / DrawingTemplate.pixel;
+			l_xpoint.setText(row + "");
+			l_ypoint.setText(col + "");
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
 		}
 	}
 }
