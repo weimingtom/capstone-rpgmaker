@@ -992,8 +992,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == btnEvent) {
 			setCanvasEventMode(btnEvent.isSelected());
 		} else if (e.getSource() == btnExeProj) {
-			// GameDemoExecution.getInstanse(ProjectFullPath).execute();
-			new NextMapDstDlg(this);
+			GameDemoExecution.getInstanse(ProjectFullPath).execute();
 		}
 	}
 
