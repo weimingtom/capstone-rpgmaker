@@ -22,6 +22,16 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 
 	private static final long serialVersionUID = 1L;
 	
+	// cb_actorType
+	public static final int CHARACTER = 0;
+	public static final int NPC = 1;
+	public static final int MONSTER = 2;
+	// cb_direction
+	public static final int EAST = 0;
+	public static final int WEST = 1;
+	public static final int SOUTH = 2;
+	public static final int NORTH = 3;
+	
 	// Variables declaration - do not modify
 	private JButton btn_OK;
 	private JButton btn_cancel;
@@ -37,7 +47,7 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 	private JTextField tf_speed;
 	// End of variables declaration
 	
-//	private MainFrame owner;
+	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -57,13 +67,14 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 	}
 	
 	private void initComponents() {
+		// 컨포넌트 정의 
 		jLabel1 = new JLabel("Actor Type:");
 		jLabel2 = new JLabel("Actor Index:");
 		jLabel3 = new JLabel("Direction:");
 		jLabel4 = new JLabel("Motion Distance:");
 		jLabel5 = new JLabel("Speed:");
 		cb_actorType = new JComboBox(new DefaultComboBoxModel(new String[] { "Character", "NPC", "Monster" }));
-		cb_actorIndex = new JComboBox();
+//		cb_actorIndex = new JComboBox();
 		cb_direction = new JComboBox(new DefaultComboBoxModel(new String[] { "East", "West", "South", "North" }));
 		tf_MotionDistance = new JTextField(3);
 		tf_speed = new JTextField("1", 2);
@@ -79,11 +90,14 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 		cb_actorType.addMouseListener(this);
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
-		if(isNew) {
-			
-		} else {
-			
-		}
+//		if(!isNew) {
+//			int selectedIndex = 0;
+//			cb_actorType.setSelectedIndex(selectedIndex);
+//			cb_actorIndex = new JComboBox(getActorNames(selectedIndex));
+//		} else {
+//			cb_actorType.setSelectedIndex(0);
+//			cb_actorIndex = new JComboBox(getActorNames(CHARACTER));
+//		}
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
@@ -149,6 +163,9 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 
 		pack();
 	}
+	
+//	private String[] getActorNames(int actorType) {
+//	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
