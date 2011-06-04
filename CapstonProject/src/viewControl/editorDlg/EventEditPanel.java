@@ -713,17 +713,17 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	}
 	
 	public int getCondition1() {
-		if(objectType != EventEditorSystem.MAP_EVENT && ckb_condition1.isSelected())
+		if(ckb_condition1.isSelected())
 			return cb_condition1.getSelectedIndex();
 		return -1;
 	}
 	public int getCondition2() {
-		if(objectType != EventEditorSystem.MAP_EVENT && ckb_condition2.isSelected())
+		if(ckb_condition2.isSelected())
 			return cb_condition2.getSelectedIndex();
 		return -1;
 	}
 	public int getCondition3() {
-		if(objectType != EventEditorSystem.MAP_EVENT && ckb_condition3.isSelected())
+		if(ckb_condition3.isSelected())
 			return cb_condition3.getSelectedIndex();
 		return -1;
 	}
@@ -792,9 +792,15 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_moveUpEventContent) {
-		
+			int index = cb_selectedEventContent.getSelectedIndex();
+			if(index != 0) {
+				
+			}
 		} else if(e.getSource() == btn_moveUpEventContent) {
-			
+			int index = cb_selectedEventContent.getSelectedIndex();
+			if(index != cb_selectedEventContent.getComponentCount()-1) {
+				
+			}
 		} else if(e.getSource() == btn_insertEventContest) {
 			// 새 이벤트를 삽입한다.
 			int index = cb_selectedEventContent.getSelectedIndex();
