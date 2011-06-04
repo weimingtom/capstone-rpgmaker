@@ -51,10 +51,7 @@ public class EditFlagListDlg extends JDialog implements ActionListener, MouseLis
 		// 마우스 이벤트
 		cb_indexFlag.addMouseListener(this);
 		
-		String[] indexsFlag = new String[1000];
-		for (int i = 0; i < indexsFlag.length; i++) {
-			indexsFlag[i] = new String("" + (i+1));
-		}
+		String[] indexsFlag = FlagList.getIndexedFlagNames();
 		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		cb_indexFlag.setModel(new DefaultComboBoxModel(indexsFlag));

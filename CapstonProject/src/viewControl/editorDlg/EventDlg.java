@@ -261,6 +261,12 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		this.repaint();
 	}
 	
+	private void renewActorMenu() {
+		for (int i = 0; i < eventTabPanelList.size(); i++) {
+			eventTabPanelList.get(i).renewActorMenu(cb_objectType.getSelectedIndex());
+		}
+	}
+	
 	private Event getEventInTapPanel(int index) {
 		return eventTabPanelList.get(index).getEvent();
 	}
@@ -326,11 +332,11 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 			for (int i = 0; i < eventTabPanelList.size(); i++)
 				eventTabPanelList.get(i).renewConditionComboBox();
 			renewConditionComboBoxImTapPanel();
+			renewActorMenu();
 			
 		} else if(e.getSource() == cb_objectType) {
-			for (int i = 0; i < eventTabPanelList.size(); i++) {
-				eventTabPanelList.get(i).renewActorMenu(cb_objectType.getSelectedIndex());
-			}
+			renewActorMenu();
+			
 		}
 	}
 	
@@ -349,9 +355,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(e.getSource() == cb_objectType) {
-			for (int i = 0; i < eventTabPanelList.size(); i++) {
-				eventTabPanelList.get(i).renewActorMenu(cb_objectType.getSelectedIndex());
-			}
+			renewActorMenu();
 		}
 	}
 }

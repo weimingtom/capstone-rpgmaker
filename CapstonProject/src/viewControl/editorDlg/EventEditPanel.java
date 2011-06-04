@@ -563,6 +563,9 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 				p_actorImg.setEnabled(false);
 				cb_actorIndex.setEnabled(false);
 				cb_actorMotionType.setEnabled(false);
+				ckb_ifDie.setEnabled(false);
+				cb_dieCondition.setEnabled(false);
+				cb_dieConditionState.setEnabled(false);
 			} else {
 				cb_actorIndex.setModel(new DefaultComboBoxModel(getComboBoxList(objectType)));
 				if(cb_actorIndex.getItemCount()>0) {
@@ -574,12 +577,20 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 				p_actorImg.setEnabled(true);
 				cb_actorIndex.setEnabled(true);
 				cb_actorMotionType.setEnabled(true);
+				ckb_ifDie.setEnabled(true);
+				cb_dieCondition.setEnabled(true);
+				cb_dieConditionState.setEnabled(true);
 			}
 			
-			p_actorImg.revalidate();
-			cb_actorIndex.revalidate();
-			cb_actorMotionType.revalidate();
+//			p_actorImg.revalidate();
+//			cb_actorIndex.revalidate();
+//			cb_actorMotionType.revalidate();
+//			ckb_ifDie.revalidate();
+//			cb_dieCondition.setEnabled(true);
+//			cb_dieConditionState.setEnabled(true);
 		}
+		
+		renewDieCondition();
 	}
 	
 	// Actor 의 인덱스를 ComboBox에 넣어준다.
@@ -637,24 +648,21 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		}
 	}
 	
-	private EventContent getEventContent(int index) {
-		return event.getEventContent(index);
-	}
-	
+	private EventContent getEventContent(int index) {	return event.getEventContent(index);	}
 	public Event getEvent()	{	return event;	}
 	
 	public int getCondition1() {
-		if(ckb_condition1.isSelected())
+		if(objectType != EventEditorSystem.MAP_EVENT && ckb_condition1.isSelected())
 			return cb_condition1.getSelectedIndex();
 		return -1;
 	}
 	public int getCondition2() {
-		if(ckb_condition2.isSelected())
+		if(objectType != EventEditorSystem.MAP_EVENT && ckb_condition2.isSelected())
 			return cb_condition2.getSelectedIndex();
 		return -1;
 	}
 	public int getCondition3() {
-		if(ckb_condition3.isSelected())
+		if(objectType != EventEditorSystem.MAP_EVENT && ckb_condition3.isSelected())
 			return cb_condition3.getSelectedIndex();
 		return -1;
 	}
@@ -664,11 +672,15 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	}
 	
 	public int getDieConditionIndex() {
-		return cb_dieCondition.getSelectedIndex();
+		if(objectType != EventEditorSystem.MAP_EVENT && ckb_ifDie.isSelected())
+			return cb_dieCondition.getSelectedIndex();
+		return -1;
 	}
 	
 	public boolean getDieConditionState() {
-		return cb_dieConditionState.getSelectedIndex()==0?true:false;
+		if(objectType != EventEditorSystem.MAP_EVENT && ckb_ifDie.isSelected())
+			return cb_dieConditionState.getSelectedIndex()==0?true:false;
+		return false;
 	}
 	
 	// 설정된 objectType에 따라 actorIndex의 ComboBox를 정의한다.
@@ -724,7 +736,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		if(cb_dieCondition.getSelectedIndex() != -1)
 			selectedIndex = cb_dieCondition.getSelectedIndex();
 		
-		if(ckb_ifDie.isSelected()) {
+		if(objectType != EventEditorSystem.MAP_EVENT && ckb_ifDie.isSelected()) {
+			cb_dieCondition.setModel(new DefaultComboBoxModel(FlagList.getIndexedFlagNames()));
 			cb_dieCondition.setEnabled(true);
 			cb_dieConditionState.setEnabled(true);
 			cb_dieCondition.setSelectedIndex(selectedIndex);
