@@ -24,6 +24,7 @@ public class GameMusic implements Runnable{
 	private FileInputStream fis = null;
 	private GameData gameData;
 	private boolean isMusicPlay;
+
 	
 	public GameMusic(String fileName)
 	{
@@ -152,5 +153,6 @@ public class GameMusic implements Runnable{
 			loadMusicFile(fileName);
 		}		
 	}
+
 	
 }

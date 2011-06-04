@@ -7,6 +7,7 @@ public class GameUtilityInformation {
 	private Image utilImage = null;
 	private Font font = null;
 	private int position = 0;
+	private int endPosition = 0;
 	private int fontSize = 60;
 	private String text;
 	private boolean isCalled = false;
@@ -58,6 +59,14 @@ public class GameUtilityInformation {
 
 	public boolean isCalled() {
 		return isCalled;
+	}
+
+	public void setEndPosition(int endPosition) {
+		this.endPosition = endPosition;
+	}
+
+	public int getEndPosition() {
+		return endPosition;
 	}
 
 
