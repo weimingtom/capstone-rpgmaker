@@ -8,7 +8,9 @@ public class EstyleProgressbar extends JProgressBar {
 	private int percent = 0;
 	private int increaseInterval;
 	private boolean go = true;
-
+	private int max = 0;
+	private int min = 0;
+	
 	public EstyleProgressbar() {
 		increaseInterval = 5;
 	}
@@ -41,5 +43,29 @@ public class EstyleProgressbar extends JProgressBar {
 	}
 	public void setIncreaseInterval(int increaseInterval) {
 		this.increaseInterval = increaseInterval;
+	}
+
+	@Override
+	public void setMaximum(int n) {
+		super.setMaximum(n);
+		max=n;
+	}
+	
+	@Override
+	public void setMinimum(int n) {
+		super.setMinimum(n);
+		min = n;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public int getMin() {
+		return min;
+	}
+	
+	public void setMaxGage(){
+		setValue(max);
 	}
 }
