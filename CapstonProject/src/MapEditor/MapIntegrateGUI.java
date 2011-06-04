@@ -871,8 +871,12 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		if (JOptionPane.showConfirmDialog(this, "Really delete event?",
 				"CLOSE", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE) == 0) {
-			mapSys.getEventEditSys().deleteEvents(startEventPoint,
-					endEventPoint);
+			int startRow = startEventPoint.x / DrawingTemplate.pixel;
+			int startCol = startEventPoint.y / DrawingTemplate.pixel;
+			int endRow = endEventPoint.x / DrawingTemplate.pixel;
+			int endCol = endEventPoint.y / DrawingTemplate.pixel;
+			
+			mapSys.getEventEditSys().deleteEvents(new Point(startRow,startCol), new Point(endRow,endCol));
 		}
 	}
 
