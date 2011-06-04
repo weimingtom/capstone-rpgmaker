@@ -2,19 +2,18 @@ package viewControl.editorDlg.eventContentDlg;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
@@ -28,19 +27,24 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	
-	// Variables declaration - do not modify
-	private JButton btn_OK;
-	private JButton btn_bgmSelect;
-	private JButton btn_cancel;
-	private JLabel jLabel1;
-	private JTextField tf_filePath;
-	private JTextField tf_volumn;
-	// End of variables declaration
+	 // Variables declaration - do not modify
+    private JButton btn_OK;
+    private JButton btn_cancel;
+    private JButton btn_bgmSelect;
+    private JButton btn_playBGM;
+    private JButton btn_stapBGM;
+    private JTextField tf_filePath;
+    private JTextField tf_volumn;
+    private JLabel jLabel1;
+    private JLabel jLabel2;
+    // End of variables declaration
 	
 	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
+	
+	private boolean isPlaying;
 	
 	public ChangeBGMDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change BGM Event");
@@ -49,6 +53,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;
+		this.isPlaying = false;
 		
 		setResizable(false);
 		setModal(true);
@@ -61,14 +66,19 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 		btn_OK = new JButton("OK");
 		btn_cancel = new JButton("Cancel");
 		btn_bgmSelect = new JButton("BGM Select");
+		btn_playBGM = new JButton("▷");
+		btn_stapBGM = new JButton("□");
 		tf_filePath = new JTextField();
 		tf_volumn = new JTextField("70", 3);
 		jLabel1 = new JLabel("Volumn:");
+		jLabel2 = new JLabel("File Path:");
 		
 		// 액션 이벤트
 		btn_OK.addActionListener(this);
 		btn_cancel.addActionListener(this);
 		btn_bgmSelect.addActionListener(this);
+		btn_playBGM.addActionListener(this);
+		btn_stapBGM.addActionListener(this);
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
 		if(!isNew) {
@@ -79,45 +89,53 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		// 레이아웃 구성
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(
-			layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-			.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-					.addGroup(layout.createSequentialGroup()
-						.addComponent(btn_OK, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(btn_cancel))
-					.addGroup(layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(tf_filePath, GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
-							.addGroup(layout.createSequentialGroup()
-								.addComponent(jLabel1)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(tf_volumn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)))
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(btn_bgmSelect)))
-				.addContainerGap())
-		);
-		layout.setVerticalGroup(
-			layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-			.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(tf_filePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addComponent(btn_bgmSelect))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(jLabel1)
-					.addComponent(tf_volumn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(btn_cancel)
-					.addComponent(btn_OK))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tf_filePath, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btn_playBGM)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_stapBGM)
+                        .addGap(44, 44, 44)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tf_volumn, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                        .addComponent(btn_bgmSelect))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btn_OK, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_cancel)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(tf_filePath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_bgmSelect)
+                    .addComponent(btn_playBGM)
+                    .addComponent(btn_stapBGM)
+                    .addComponent(tf_volumn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_cancel)
+                    .addComponent(btn_OK))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
 		pack();
 	}
@@ -125,14 +143,26 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
-			// EventContent를 event에 삽입한다.
+			String srcFileName = tf_filePath.getText();
+			String dstFileName = MainFrame.OWNER.ProjectFullPath + File.separator + ".DefaultData" + File.separator + "Musics" + File.separator + tf_filePath.getText().substring(tf_filePath.getText().lastIndexOf(File.separator)+1);
+			String saveFileName = ".DefaultData" + File.separator + "Musics" + File.separator + tf_filePath.getText().substring(tf_filePath.getText().lastIndexOf(File.separator)+1);
+			int volumn = (new Integer(tf_volumn.getText())).intValue();
+			
+			// 파일이 프로젝트 폴더 내에 존재하지 않으면 복사한다.
+			if(!isExistingBGMFile(srcFileName)) {
+				File srcFile = new File(srcFileName);
+				if(srcFile.exists()) {
+					if(!copyFile(srcFileName, dstFileName))
+						JOptionPane.showMessageDialog(null, "Failed to copy srcFile.");
+					else
+						JOptionPane.showMessageDialog(null, "Complete copying the File.\n"+dstFileName);
+				} else
+					JOptionPane.showMessageDialog(null, srcFileName+"\ndoesn't exist.");
+			}
+			
 			if(!isNew)
 				event.getEventContentList().remove(index);
-			
-			event.getEventContentList().add(index, new ChangeBGMEvent(tf_filePath.getText(),
-																	  ".DefaultData" + File.separator + "Musics" + File.separator + tf_filePath.getText().substring(tf_filePath.getText().lastIndexOf(File.separator)+1),
-																	  (new Integer(tf_volumn.getText())).intValue()));
-			fileCopy(tf_filePath.getText(), MainFrame.OWNER.ProjectFullPath + File.separator + ".DefaultData" + File.separator + "Musics" + File.separator + tf_filePath.getText().substring(tf_filePath.getText().lastIndexOf(File.separator)+1));
+			event.getEventContentList().add(index, new ChangeBGMEvent(srcFileName, saveFileName, volumn));
 			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {
@@ -162,30 +192,57 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
+		} else if(e.getSource() == btn_playBGM) {
+			isPlaying = !isPlaying;
+			if(isPlaying) {
+				btn_playBGM.setText(" || ");
+			} else {
+				btn_playBGM.setText("▷");
+			}
+			btn_playBGM.revalidate();
+			
+		} else if(e.getSource() == btn_stapBGM) {
+			if(isPlaying) {
+				isPlaying = false;
+			}
+			btn_playBGM.setText("▷");
 		}
 	}
 	
-	private boolean fileCopy(String src, String dst) {
-		OutputStream out = null;
-		BufferedInputStream in = null;
-		try {
-			in = new BufferedInputStream(new FileInputStream(new File(src)));
-			out = new FileOutputStream(dst);
-
-			int data = -1;
-			while ((data = in.read()) != -1) {
-				out.write(data);
+	private boolean copyFile(String source, String target) {
+		FileChannel inChannel = null;
+		FileChannel outChannel = null;
+	    try {
+		    inChannel = new FileInputStream(new File(source)).getChannel();
+		    outChannel = new FileOutputStream(new File(target)).getChannel();
+	        // magic number for Windows, 64Mb - 32Kb
+	        int maxCount = (64 * 1024 * 1024) - (32 * 1024);
+	        long size = inChannel.size();
+	        long position = 0;
+	        while (position < size) {
+	            position += inChannel.transferTo(position, maxCount, outChannel);
+	        }
+	        return true;
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	    	return false;
+	    } finally {
+	    	try {
+	    		if (inChannel != null)
+					inChannel.close();
+		        if (outChannel != null)
+		            outChannel.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			out.close();
-			in.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+	    }
+	}
+	
+	private boolean isExistingBGMFile(String fileName) {
+		int index = fileName.lastIndexOf(MainFrame.OWNER.ProjectFullPath+File.separator+".DefaultData"+File.separator+"Musics");
+		if(index != -1)
+			return true;
+		else
 			return false;
-		} catch (Exception e2) {
-			e2.printStackTrace();
-			return false;
-		}
-		
-		return true;
 	}
 }
