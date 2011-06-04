@@ -96,8 +96,6 @@ public class GameEventDispatcher {
 				if(this.hasMapEvent(width, height))
 				{
 					mapEventTile = getEventTile(width, height);
-//					if(mapEventTile.getObjectType() != EventEditorSystem.MAP_EVENT)
-//						continue;
 					
 					eventList = mapEventTile.getEventList();
 

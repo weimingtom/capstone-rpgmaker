@@ -330,8 +330,6 @@ public class GameDisplay implements Runnable{
 		int playerTimer = gameData.getAnimTimer();
 		//맵의 위치
 		
-//		if(gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE)
-//			isStop = true;
 		
 		if(isStop == false)
 		{
@@ -362,7 +360,7 @@ public class GameDisplay implements Runnable{
 		{
 			BufferedImage actorImage = null;
 			try{
-				actorImage = actorAnim.getCurrentImage();
+				actorImage = actorAnim.getBaseImage();
 			}
 			catch(ArrayIndexOutOfBoundsException e)
 			{
@@ -528,19 +526,6 @@ public class GameDisplay implements Runnable{
 			{	
 				displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), false,player);
 			}
-			//액션버튼이 눌렷다면
-			else if ( gameData.isActionAnimFlag()) 
-			{
-				if (player.getNowDirection() == GameCharacter.UP) {
-					displayActorAttackMotion(g, playerAnim.getAttackUpAnimation(), player);
-				} else if (player.getNowDirection() == GameCharacter.DOWN) {
-					displayActorAttackMotion(g, playerAnim.getAttackDownAnimation(),player);
-				} else if (player.getNowDirection() == GameCharacter.LEFT) {
-					displayActorAttackMotion(g, playerAnim.getAttackLeftAnimation(),player);
-				} else if (player.getNowDirection() == GameCharacter.RIGHT) {
-					displayActorAttackMotion(g, playerAnim.getAttackRightAnimation(),player);
-				}
-			}
 			else if(keyFlag.isUp() == false && keyFlag.isDown() == false &&
 					keyFlag.isRight() == false && keyFlag.isLeft() == false)
 			{
@@ -564,6 +549,62 @@ public class GameDisplay implements Runnable{
 			}
 			
 		}//무브애니와 어택 애니 나눠야함, 무브쪽 앤드
+		if(player.getActorState() == GameCharacter.BATTLESTATE)
+		{
+			//액션버튼이 눌렷다면
+			if ( gameData.isActionAnimFlag()) 
+			{
+				if (player.getNowDirection() == GameCharacter.UP) {
+					displayActorAttackMotion(g, playerAnim.getAttackUpAnimation(), player);
+				} else if (player.getNowDirection() == GameCharacter.DOWN) {
+					displayActorAttackMotion(g, playerAnim.getAttackDownAnimation(),player);
+				} else if (player.getNowDirection() == GameCharacter.LEFT) {
+					displayActorAttackMotion(g, playerAnim.getAttackLeftAnimation(),player);
+				} else if (player.getNowDirection() == GameCharacter.RIGHT) {
+					displayActorAttackMotion(g, playerAnim.getAttackRightAnimation(),player);
+				}
+			}
+			else{
+				if(keyFlag.isUp() == false && keyFlag.isDown() == false &&
+						keyFlag.isRight() == false && keyFlag.isLeft() == false)
+				{
+					//정지 애니메이션 출력
+					if(player.getNowDirection() == GameCharacter.UP)
+					{
+						displayActorMoveMotion(g, playerAnim.getBattleMoveUpAni(), true,player);
+					}
+					else if(player.getNowDirection() == GameCharacter.DOWN)
+					{
+						displayActorMoveMotion(g, playerAnim.getBattleMoveDownAni(), true,player);
+					}
+					else if(player.getNowDirection() == GameCharacter.LEFT)
+					{
+						displayActorMoveMotion(g, playerAnim.getBattleMoveLeftAni(), true,player);
+					}
+					else if(player.getNowDirection() == GameCharacter.RIGHT)
+					{
+						displayActorMoveMotion(g, playerAnim.getBattleMoveRightAni(), true,player);
+					}
+				}
+				else 
+				{
+						if (player.getNowDirection() == GameCharacter.UP) {
+							displayActorMoveMotion(g,
+									playerAnim.getBattleMoveUpAni(), false, player);
+						} else if (player.getNowDirection() == GameCharacter.DOWN) {
+							displayActorMoveMotion(g,
+									playerAnim.getBattleMoveDownAni(), false, player);
+						} else if (player.getNowDirection() == GameCharacter.LEFT) {
+							displayActorMoveMotion(g,
+									playerAnim.getBattleMoveLeftAni(), false, player);
+						} else if (player.getNowDirection() == GameCharacter.RIGHT) {
+							displayActorMoveMotion(g,
+									playerAnim.getBattleMoveRightAni(), false,
+									player);
+						}
+					}
+			}
+		}
 		
 	}
 
@@ -577,6 +618,7 @@ public class GameDisplay implements Runnable{
 		//몬스터가 움직임 상태이면
 		if(monster.getActorState() == GameCharacter.MOVESTATE)
 		{
+			//System.out.println("몬스터 움직임 상태");
 			//정지하면
 			if(monster.getActionType() == GameCharacter.STOP)
 			{
@@ -615,7 +657,7 @@ public class GameDisplay implements Runnable{
 		}
 		else if(monster.getActorState() == GameCharacter.BATTLESTATE)
 		{
-
+			//System.out.println("몬스터 전투 상태");
 			if(monster.getActionType() == GameCharacter.ATTACK)
 			{
 				if (monster.getNowDirection() == GameCharacter.UP) {
@@ -665,7 +707,6 @@ public class GameDisplay implements Runnable{
 		}
 	}
 	
-
 	//액터들의 체력 출력
 	public void displayHealthBar(Graphics2D g, GameCharacter actor)
 	{
@@ -897,11 +938,13 @@ public class GameDisplay implements Runnable{
 				// 게임 데이터가 먼저 종료된 경우
 				//JOptionPane.showMessageDialog(null, "게임을 종료합니다.");
 				e.printStackTrace();
+				continue;
 				//System.exit(0);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				//JOptionPane.showMessageDialog(null, "게임을 종료합니다.");
 				e.printStackTrace();
+				continue;
 				//System.exit(0);
 			}
 
