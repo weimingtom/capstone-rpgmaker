@@ -79,6 +79,12 @@ public class GameDemoExecution {
 		
 	}
 	
+	public static void main(String args[])
+	{
+		GameDemoExecution game = new GameDemoExecution("D:\\ca");
+		game.execute();
+	}
+	
 	public void setGamePath(String gamePath) {
 		this.gamePath = gamePath;
 	}
