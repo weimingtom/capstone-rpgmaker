@@ -10,6 +10,9 @@ package viewControl;
  * 
  */
 
+import help.Manual;
+import help.Tutorial;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Event;
@@ -693,6 +696,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				Event.CTRL_MASK));
 		helpItem_Tutorial.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2,
 				Event.CTRL_MASK));
+		
+		helpItem_Manual.addActionListener(this);
+		helpItem_Tutorial.addActionListener(this);
 
 		// about
 		menuAbout.add(aboutItem_aboutBaeSsaGong);
@@ -964,11 +970,23 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == palleteItem_grid) {
 			setPalletSetGridMode(palleteItem_grid.isSelected());
 		}
-
+		
+		
+		// execution
 		else if (e.getSource() == executionItem_execute) {
 			GameDemoExecution.getInstanse(ProjectFullPath).execute();
 		} else if (e.getSource() == executionItem_makeRelease) {
 
+		}
+		
+		
+		// help
+		else if(e.getSource()==helpItem_Manual){
+			Thread h = new Thread(new Manual());
+			h.start();
+		}else if(e.getSource()==helpItem_Tutorial){
+			Thread h = new Thread(new Tutorial());
+			h.start();
 		}
 
 		// Tool bar
@@ -983,7 +1001,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == btnExeProj) {
 			GameDemoExecution.getInstanse(ProjectFullPath).execute();
 		} else if (e.getSource() == btnHelp) {
-
+			Thread h = new Thread(new Manual());
+			h.start();
 		}
 
 		// CENTER EAST TOOLBAR
