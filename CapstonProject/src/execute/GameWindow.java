@@ -55,7 +55,7 @@ public class GameWindow extends JFrame implements KeyListener{
 //			System.out.println("Full-screen mode not supported");
 //		}// end else
 		
-		this.setSize(800, 640);
+		this.setSize(1024, 640);
 		this.setVisible(true);
 		
 		//키보드 입력 이벤트 리스너
