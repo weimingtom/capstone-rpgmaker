@@ -2,23 +2,25 @@ package viewControl.editorDlg.eventContentDlg;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 import viewControl.MainFrame;
 import eventEditor.Event;
 import eventEditor.eventContents.ChangeBGMEvent;
@@ -44,7 +46,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	private boolean isNew;
 	private int index;
 	
-	private boolean isPlaying;
+	private BGMPlayer bgmPlayer;
 	
 	public ChangeBGMDlg(MainFrame parent, Event event, boolean isNew, int index) {
 		super(parent, "Change BGM Event");
@@ -53,7 +55,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 		this.event = event;
 		this.isNew = isNew;
 		this.index = index;
-		this.isPlaying = false;
+		this.bgmPlayer = null;
 		
 		setResizable(false);
 		setModal(true);
@@ -164,8 +166,33 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				event.getEventContentList().remove(index);
 			event.getEventContentList().add(index, new ChangeBGMEvent(srcFileName, saveFileName, volumn));
 			
+			
+
+			
+			// BGM이 재생중이거나 일시정지중이면 정지시킨다.
+			if(bgmPlayer != null) {
+				bgmPlayer.setPlayState(BGMPlayer.STOP);
+				bgmPlayer.stop();
+				bgmPlayer = null;
+				btn_playBGM.setText("▷");
+			}
+			
+			
+			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {
+			
+			
+
+			
+			// BGM이 재생중이거나 일시정지중이면 정지시킨다.
+			if(bgmPlayer != null) {
+				bgmPlayer.setPlayState(BGMPlayer.STOP);
+				bgmPlayer.stop();
+				bgmPlayer = null;
+				btn_playBGM.setText("▷");
+			}
+			
 			this.dispose();
 		} else if(e.getSource() == btn_bgmSelect) {
 			// 파일의 경로를 가져와 임시 저장한다.
@@ -188,24 +215,49 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				try {
 					tf_filePath.setText(fileChooser.getSelectedFile().getCanonicalPath());
 					tf_filePath.revalidate();
+					
+					// BGM이 재생중이거나 일시정지중이면 정지시킨다.
+					if(bgmPlayer != null) {
+						bgmPlayer.setPlayState(BGMPlayer.STOP);
+						bgmPlayer.stop();
+						bgmPlayer = null;
+						btn_playBGM.setText("▷");
+					}
+					
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			}
 		} else if(e.getSource() == btn_playBGM) {
-			isPlaying = !isPlaying;
-			if(isPlaying) {
-				btn_playBGM.setText(" || ");
-			} else {
+				String fileName = tf_filePath.getText();
+				File srcFile = new File(fileName);
+				
+				// btn_playBGM이 아직 생성되지 않았으면 생성한다.
+				if(bgmPlayer == null && srcFile.exists()) {
+					bgmPlayer = new BGMPlayer(srcFile);
+					bgmPlayer.start();
+				}
+				// playState에 따라 재생시키거나 일시정지시킨다. 버튼의 모양도 바꾼다.
+				if(bgmPlayer != null && bgmPlayer.getPlayState() != BGMPlayer.PLAY) {
+					// 재생시킨다.
+					bgmPlayer.setPlayState(BGMPlayer.PLAY);
+//					btn_playBGM.setText(" || ");
+				}
+//				else {
+//					// 일시정지시킨다.
+//					bgmPlayer.setPlayState(BGMPlayer.PAUSE);
+//					bgmPlayer.
+//					btn_playBGM.setText("▷");
+//				}
+				
+		} else if(e.getSource() == btn_stapBGM) {
+			if(btn_playBGM != null) {
+				// 정지시킨다.
+				bgmPlayer.setPlayState(BGMPlayer.STOP);
+				bgmPlayer.stop();
+				bgmPlayer = null;
 				btn_playBGM.setText("▷");
 			}
-			btn_playBGM.revalidate();
-			
-		} else if(e.getSource() == btn_stapBGM) {
-			if(isPlaying) {
-				isPlaying = false;
-			}
-			btn_playBGM.setText("▷");
 		}
 	}
 	
@@ -215,7 +267,6 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	    try {
 		    inChannel = new FileInputStream(new File(source)).getChannel();
 		    outChannel = new FileOutputStream(new File(target)).getChannel();
-	        // magic number for Windows, 64Mb - 32Kb
 	        int maxCount = (64 * 1024 * 1024) - (32 * 1024);
 	        long size = inChannel.size();
 	        long position = 0;
@@ -244,5 +295,60 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 			return true;
 		else
 			return false;
+	}
+	
+	// BGM을 실행하기 위한 클래스
+	class BGMPlayer extends Thread {
+		
+		public static final int PLAY = 0;
+		public static final int PAUSE = 1;
+		public static final int STOP = 2;
+		
+		private int playState;
+		
+		private Player player;
+
+		public BGMPlayer(File srcFile) {
+			try {
+				player = new Player(new BufferedInputStream(new FileInputStream(srcFile)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (JavaLayerException e) {
+				e.printStackTrace();
+			}
+			
+			playState = STOP;
+		}
+		
+		public void run() {
+			playState = PLAY;
+			try {
+				player.play();
+			} catch (JavaLayerException e) {
+				e.printStackTrace();
+			}
+			
+			while(playState != STOP) {
+				while(playState == PLAY) {
+					// 플레이 상태 유지
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+//				player.close();
+			}
+			
+			player.close();
+			player = null;
+		}
+		
+		public void setPlayState(int playState) {
+			if(playState >= PLAY && playState <= STOP)
+				this.playState = playState;
+		}
+		
+		public int getPlayState()	{	return playState;	}
 	}
 }
