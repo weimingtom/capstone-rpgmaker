@@ -17,6 +17,7 @@ public class GameEventDispatcher {
 	private EventEditorSystem eventLoader;
 	private boolean[][] mapEventChecker;
 	private List<Event> autoEvents;
+	private List<EventTile> actors;
 	
 	private GameData gameData;
 	
@@ -32,6 +33,7 @@ public class GameEventDispatcher {
 		if(eventLoader == null)
 		{
 			JOptionPane.showMessageDialog(null, "이벤트 로더가 널임");
+			System.out.println("이벤트 로더가 널임");
 			System.exit(0);
 		}
 		this.eventLoader = eventLoader;
@@ -41,7 +43,7 @@ public class GameEventDispatcher {
 	{
 		//맵이벤트 체커 생성
 		mapEventChecker = new boolean[height][];
-		for(int i = 0 ; i < width; i++)
+		for(int i = 0 ; i < height; i++)
 			mapEventChecker[i] = new boolean[width];
 		
 		for(int y = 0 ; y < height; y++)
@@ -85,7 +87,7 @@ public class GameEventDispatcher {
 		//맵 정보를 받아서
 		Map gameMap = gameData.getGameMap();
 		
-		for(int height = 0 ; height < gameMap.getM_Width(); height++)
+		for(int height = 0 ; height < gameMap.getM_Height(); height++)
 		{
 			for(int width = 0 ; width < gameMap.getM_Width(); width++)
 			{
@@ -109,10 +111,10 @@ public class GameEventDispatcher {
 		}
 	}
 	
-	
-	public void loadChars()
+	//npc들 생성
+	public void makeAlliances()
 	{
-	 	
+		setActors(eventLoader.getActorEventTiles());
 	}
 
 	public void setAutoEvents(List<Event> autoEvents) {
@@ -130,4 +132,15 @@ public class GameEventDispatcher {
 		setAutoEvents(new LinkedList<Event>());
 		mapEventChecker = null;
 	}
+
+
+	public void setActors(List<EventTile> actors) {
+		this.actors = actors;
+	}
+
+	public List<EventTile> getActors() {
+		return actors;
+	}
+
+
 }

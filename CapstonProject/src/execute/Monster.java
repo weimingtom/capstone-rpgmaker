@@ -1,11 +1,13 @@
 package execute;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import characterEditor.Abilities;
 import characterEditor.Actors;
 import characterEditor.CharacterEditorSystem;
 import characterEditor.MonsterEditorSystem;
+import eventEditor.Event;
 import eventEditor.EventTile;
 
 public class Monster extends GameCharacter {
@@ -29,7 +31,7 @@ public class Monster extends GameCharacter {
 		nowStatus.setVitality(maxStatus.getVitality());
 	}
 	
-	public void deployActor(int actorIndex, int xPosition, int yPosition, EventTile eventList)
+	public void deployActor(int actorIndex, int xPosition, int yPosition, Event eventList)
 	{
 		try {
 			monster.load(actorIndex);

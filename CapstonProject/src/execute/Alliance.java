@@ -1,11 +1,13 @@
 package execute;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import characterEditor.Abilities;
 import characterEditor.Actors;
 import characterEditor.CharacterEditorSystem;
 import characterEditor.NPCEditorSystem;
+import eventEditor.Event;
 import eventEditor.EventTile;
 
 public class Alliance extends GameCharacter {
@@ -30,13 +32,13 @@ public class Alliance extends GameCharacter {
 	
 	//액터 배치
 	@Override
-	public void deployActor(int actorIndex, int xPosition, int yPosition, EventTile eventList)
+	public void deployActor(int actorIndex, int xPosition, int yPosition, Event eventContentList)
 	{
 		try {
 			actor.load(actorIndex);
 			this.setxPosition(xPosition);
 			this.setyPosition(yPosition);
-			this.setActorEvent(eventList);
+			this.setActorEvent(eventContentList);
 			maxStatus = actor.getInitAbility();
 			nowStatus.setAgility(maxStatus.getAgility());
 			nowStatus.setEXP(maxStatus.getEXP());

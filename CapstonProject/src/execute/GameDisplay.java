@@ -329,6 +329,10 @@ public class GameDisplay implements Runnable{
 
 		int playerTimer = gameData.getAnimTimer();
 		//맵의 위치
+		
+//		if(gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE)
+//			isStop = true;
+		
 		if(isStop == false)
 		{
 			BufferedImage actorImage = null;
@@ -356,7 +360,14 @@ public class GameDisplay implements Runnable{
 		}
 		else
 		{
-			BufferedImage actorImage = actorAnim.getBaseImage();
+			BufferedImage actorImage = null;
+			try{
+				actorImage = actorAnim.getCurrentImage();
+			}
+			catch(ArrayIndexOutOfBoundsException e)
+			{
+				actorImage = actorAnim.getNextImage();
+			}
 			// 출력 기준점 확인
 			//getPointxyBaseImg()
 			int charX = actorAnim.getPointXBaseImg();
@@ -412,8 +423,24 @@ public class GameDisplay implements Runnable{
 		NPCEditorSystem allianceAnim = (NPCEditorSystem) alliance
 				.getCharacter();
 		// 경우에 따른 애니메이션 출력, 움직임이냐 전투냐
+		if(gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE)
+		{
+			if (alliance.getNowDirection() == GameCharacter.UP)
+				displayActorMoveMotion(g,
+						allianceAnim.getMoveUpAnimation(), true, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.DOWN)
+				displayActorMoveMotion(g,
+						allianceAnim.getMoveDownAnimation(), true, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.LEFT)
+				displayActorMoveMotion(g,
+						allianceAnim.getMoveLeftAnimation(), true, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.RIGHT)
+				displayActorMoveMotion(g,
+						allianceAnim.getMoveRightAnimation(), true,
+						alliance);
+			return ;
+		}
 		if (gameData.getPlayer().getActorState() == GameCharacter.MOVESTATE) {
-			// 정지 애니메이션 출력
 			if (alliance.getActionType() == GameCharacter.STOP
 					|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
 				if (alliance.getNowDirection() == GameCharacter.UP)
@@ -447,23 +474,6 @@ public class GameDisplay implements Runnable{
 				else if (alliance.getNowDirection() == GameCharacter.RIGHT)
 					displayActorMoveMotion(g,
 							allianceAnim.getMoveRightAnimation(), false,
-							alliance);
-			}
-		} else if (gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE) {
-			if (alliance.getActionType() == GameCharacter.STOP
-					|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
-				if (alliance.getNowDirection() == GameCharacter.UP)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveUpAnimation(), true, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.DOWN)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveDownAnimation(), true, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.LEFT)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveLeftAnimation(), true, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.RIGHT)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveRightAnimation(), true,
 							alliance);
 			}
 		}
@@ -863,10 +873,10 @@ public class GameDisplay implements Runnable{
 					{
 						displayLevelUp(g, gameData.getPlayer());
 					}
-					displayDialog(g);
-					displaySwitchDialog(g);
 					g.dispose();
 					gameGraphics.drawImage(gameImage,0,0,null);
+					displayDialog(gameGraphics);
+					displaySwitchDialog(gameGraphics);
 				} 
 				else if (gameState == GameData.GAMEOVER)
 				{
