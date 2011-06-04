@@ -111,6 +111,8 @@ public class GameData implements Runnable{
 	private EventContent nowEvent = null;
 	private int eventContentListIndex = -1;
 	private boolean firstEvent = false;
+	private boolean charEnterMap = false;
+	private boolean charActionMap = false;
 	/****************************************************/
 	
 	//게임 패스
@@ -152,6 +154,8 @@ public class GameData implements Runnable{
 	private boolean autoMonsterEventCalled = false;
 	private List<Event> autoEvents;
 	private List<EventTile> actorEventTiles;
+	private int charOnMapX;
+	private int charOnMapY;
 	
 	//생성자
 	public GameData()
@@ -416,20 +420,31 @@ public class GameData implements Runnable{
 
 			if(nowEventList == null)
 			{
+				if(charEnterMap == true && (player.getxPosition()/mapCharArrayRatio != charOnMapX ||
+						player.getyPosition()/mapCharArrayRatio != charOnMapY))
+				{
+					charEnterMap = false;
+				}
 				//자동이벤트 생성
 				if(autoEventCalled == false)
 					computeMapAutoEvent();
 				//실행 중인 이벤트가 없는데
-				if(nowEventList == null)
+				//캐릭터 자동이벤트가 있다면
+				if(autoAllianceEventCalled == false && nowEventList == null)
+					computeAutoAlliances();
+				if(autoMonsterEventCalled == false&& nowEventList == null)
+					computeAutoMonsters();
+				if(charEnterMap == false && nowEventList == null)
+					runMapEventOnTile();
+				if((keyFlag.isAction() || keyFlag.isEnter())&& nowEventList == null)
 				{
-					//캐릭터 자동이벤트가 있다면
-					if(autoAllianceEventCalled == false)
-						computeAutoAlliances();
-				}
-				if(nowEventList == null)
-				{
-					if(autoMonsterEventCalled == false)
-						computeAutoMonsters();
+					runMapEventAction();
+					try {
+						Thread.sleep(SLOWTIMER);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 			//실행중인 이벤트가 없다면
@@ -445,23 +460,31 @@ public class GameData implements Runnable{
 			
 			if(nowEventList == null)
 			{
-				//자동이벤트 생성
-				if(autoEventCalled == false)
-				computeMapAutoEvent();
+				if(charEnterMap == true && (player.getxPosition()/mapCharArrayRatio != charOnMapX ||
+						player.getyPosition()/mapCharArrayRatio != charOnMapY))
+				{
+					charEnterMap = false;
+				}
 				//자동이벤트 생성
 				if(autoEventCalled == false)
 					computeMapAutoEvent();
 				//실행 중인 이벤트가 없는데
-				if(nowEventList == null)
+				//캐릭터 자동이벤트가 있다면
+				if(autoAllianceEventCalled == false && nowEventList == null)
+					computeAutoAlliances();
+				if(autoMonsterEventCalled == false&& nowEventList == null)
+					computeAutoMonsters();
+				if(charEnterMap == false && nowEventList == null)
+					runMapEventOnTile();
+				if((keyFlag.isAction() || keyFlag.isEnter())&& nowEventList == null)
 				{
-					//캐릭터 자동이벤트가 있다면
-					if(autoAllianceEventCalled == false)
-						computeAutoAlliances();
-				}
-				if(nowEventList == null)
-				{
-					if(autoMonsterEventCalled == false)
-						computeAutoMonsters();
+					runMapEventAction();
+					try {
+						Thread.sleep(SLOWTIMER);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 			//실행중인 이벤트가 없다면
@@ -481,19 +504,85 @@ public class GameData implements Runnable{
 		}
 	}
 	
+	//타일 위에 있는 맵이벤트 실행
 	private void runMapEventOnTile()
 	{
-		int charX = player.getxPosition();
-		int charY = player.getyPosition();
+		charOnMapX = player.getxPosition()/mapCharArrayRatio;
+		charOnMapY = player.getyPosition()/mapCharArrayRatio;
+		
+		//맵 이벤트가 있는 경우에만 이벤트 타일 받아옴
+		if(eventDispatcher.hasMapEvent(charOnMapX, charOnMapY))
+		{
+			//영역범위단위로 실행되므로
+			//this.charEnterMap = true;
+			
+			//이벤트 받아올 테니 초기화
+			EventTile mapEvent = eventDispatcher.getEventTile(charOnMapX, charOnMapY);
+			List<Event> eventList = mapEvent.getEventList();
+			//이벤트들 중에 조건에 맞는거 찾기
+			for(int i = 0 ; i < eventList.size(); i++)
+			{
+				Event nextEvent = eventList.get(i);
+				int [] condition = nextEvent.getPreconditionFlagArray();
+				//실행 조건이 맞으면
+				if((nextEvent.getStartType() == EventEditorSystem.ABOVE_EVENT_TILE ||
+						nextEvent.getStartType() == EventEditorSystem.CONTACT_WITH_PLAYER)&&
+						conditionFlag[condition[0]+1]==true&&
+						conditionFlag[condition[1]+1]==true&&
+						conditionFlag[condition[2]+1]==true)
+				{
+					int now = i;
+					this.charEnterMap = true;
+					nowEventList = nextEvent;
+					eventContentListIndex = 0;
+					i = now;
+					return;
+				}
+			}//for종료
+		}//if종료
+		
 	}
 	
-	
+	private void runMapEventAction()
+	{
+		int charX = player.getxPosition()/mapCharArrayRatio;
+		int charY = player.getyPosition()/mapCharArrayRatio;
+		
+//		System.out.println("charXY is : "+charX + " : " + charY);
+//		System.out.println("주인공위치" + player.getxPosition()+" : " + player.getyPosition());
+//		System.out.println(eventDispatcher.hasMapEvent(charX, charY));
+
+		
+		//맵 이벤트가 있는 경우에만 이벤트 타일 받아옴
+		if(eventDispatcher.hasMapEvent(charX, charY))
+		{
+			//이벤트 받아올 테니 초기화
+			EventTile mapEvent = eventDispatcher.getEventTile(charX, charY);
+			List<Event> eventList = mapEvent.getEventList();
+			//이벤트들 중에 조건에 맞는거 찾기
+			for(int i = 0 ; i < eventList.size(); i++)
+			{
+				Event nextEvent = eventList.get(i);
+				int [] condition = nextEvent.getPreconditionFlagArray();
+				//실행 조건이 맞으면
+				if(nextEvent.getStartType() == EventEditorSystem.PRESS_BUTTON&&
+						conditionFlag[condition[0]+1]==true&&
+						conditionFlag[condition[1]+1]==true&&
+						conditionFlag[condition[2]+1]==true)
+				{
+					nowEventList = nextEvent;
+					eventContentListIndex = 0;
+					return;
+				}
+			}//for종료
+		}//if종료
+	}
 	
 	//맵의 자동이벤트 찾기
 	private void computeMapAutoEvent()
 	{
 		//List<Event> autoEvents = null;
-		//nowEventList = null;
+		nowEventList = null;
 		if(autoEvents != null && autoEvents.size() != 0)
 		{
 			//System.out.println("자동이벤트 계산 호출됨");
@@ -530,6 +619,8 @@ public class GameData implements Runnable{
 			eventStart = false;
 			autoAllianceEventCalled = false;
 			autoMonsterEventCalled = false;
+			//charActionMap = false;
+			//charEnterMap = false;
 			//player.setActorState(GameCharacter.MOVESTATE);
 		}
 		else
@@ -999,7 +1090,7 @@ public class GameData implements Runnable{
 			{
 				return;
 			}
-			nowEventList = null;
+			//nowEventList = null;
 			eventContentListIndex = 0;
 			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
 			for(int i = 0 ; i < actorEventTiles.size(); i++)
@@ -1049,12 +1140,6 @@ public class GameData implements Runnable{
 							alliances.elementAt(j).setActionType(GameCharacter.TOPLAYER);
 						j=now;
 						return;
-					}
-					else
-					{
-						eventList = null;
-						nowEventList = null;
-						
 					}
 				}
 			}
@@ -1601,6 +1686,26 @@ public class GameData implements Runnable{
 
 	public boolean isAutoAllianceEventCalled() {
 		return autoAllianceEventCalled;
+	}
+
+
+	public void setCharActionMap(boolean charActionMap) {
+		this.charActionMap = charActionMap;
+	}
+
+
+	public boolean isCharActionMap() {
+		return charActionMap;
+	}
+
+
+	public void setCharEnterMap(boolean charEnterMap) {
+		this.charEnterMap = charEnterMap;
+	}
+
+
+	public boolean isCharEnterMap() {
+		return charEnterMap;
 	}
 
 	
