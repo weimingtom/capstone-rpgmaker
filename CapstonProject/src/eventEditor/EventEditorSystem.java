@@ -298,7 +298,12 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 	}
 	
 	public void deleteEvents(Point startPoint, Point endPoint) {
-		
+		for (int i = 0; i < eventTileList.size(); i++) {
+			int x = eventTileList.get(i).getInitRowLocation();
+			int y = eventTileList.get(i).getInitColLocation();
+			if(x >= startPoint.x && x <= endPoint.x && y >= startPoint.y && y <= endPoint.y)
+				eventTileList.remove(i--);
+		}
 	}
 	
 	public List<Event> getEventList(int col, int row) {
