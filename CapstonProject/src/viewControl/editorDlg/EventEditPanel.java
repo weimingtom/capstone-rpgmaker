@@ -238,6 +238,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		setJListEventContents();
 		renewSelectedListComboBox();
 		
+		lst_eventList.setSelectedIndex(0);
+		
 		// 레이아웃 구성
 		javax.swing.GroupLayout p_activeConditionLayout = new javax.swing.GroupLayout(p_activeCondition);
         p_activeCondition.setLayout(p_activeConditionLayout);
