@@ -105,7 +105,14 @@ public class GameMusic implements Runnable{
 		{
 			if(gameData.getMusicFile()!=null)
 			{
-				playMusic(gameData.getMusicFile());
+				try
+				{
+					playMusic(gameData.getMusicFile());
+				}
+				catch(NullPointerException e)
+				{
+					break;
+				}
 			}
 			else
 			{
