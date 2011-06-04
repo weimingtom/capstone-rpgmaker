@@ -109,7 +109,8 @@ public class GameData implements Runnable{
 	//private boolean eventStart = false;
 	private Event nowEventList = null;
 	private EventContent nowEvent = null;
-	private int eventContentListIndex = 0;
+	private int eventContentListIndex = -1;
+	private boolean firstEvent = false;
 	/****************************************************/
 	
 	//게임 패스
@@ -232,6 +233,12 @@ public class GameData implements Runnable{
 			else if(gameState == GameData.LOADING)
 			{
 				//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
+				try {
+					Thread.sleep(SLOWTIMER);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else if(gameState == GameData.PLAY)
 			{
@@ -372,6 +379,8 @@ public class GameData implements Runnable{
 	//실행중 플레이일때
 	private void runAtPlay()
 	{		
+//		if(nowEvent != null)
+//			System.out.println(nowEvent.getContentType());
 		if(keyFlag.isCancel())
 		{
 			//스테이터스 창 보여주기
@@ -407,15 +416,18 @@ public class GameData implements Runnable{
 			//한꺼번에 배열에 움직임 작성
 			this.computeGameTile();
 
-			//자동이벤트 생성
-			if(autoEventCalled == false)
-				computeMapAutoEvent();
-			//실행 중인 이벤트가 없는데
 			if(nowEventList == null)
 			{
-				//캐릭터 자동이벤트가 있다면
-				if(autoAllianceEventCalled == false)
-					computeAutoAlliances();
+				//자동이벤트 생성
+				if(autoEventCalled == false)
+					computeMapAutoEvent();
+				//실행 중인 이벤트가 없는데
+				if(nowEventList == null)
+				{
+					//캐릭터 자동이벤트가 있다면
+					if(autoAllianceEventCalled == false)
+						computeAutoAlliances();
+				}
 			}
 			//실행중인 이벤트가 없다면
 			if(eventStart == false)
@@ -428,18 +440,22 @@ public class GameData implements Runnable{
 		{
 			this.animTimer++;
 			
-			//자동이벤트 생성
-			if(autoEventCalled == false)
-				computeMapAutoEvent();
-			//실행 중인 이벤트가 없는데
 			if(nowEventList == null)
 			{
-				//캐릭터 자동이벤트가 있다면
-				if(autoAllianceEventCalled == false)
-					computeAutoAlliances();
+				//자동이벤트 생성
+				if(autoEventCalled == false)
+				computeMapAutoEvent();
+				//자동이벤트 생성
+				if(autoEventCalled == false)
+					computeMapAutoEvent();
+				//실행 중인 이벤트가 없는데
+				if(nowEventList == null)
+				{
+					//캐릭터 자동이벤트가 있다면
+					if(autoAllianceEventCalled == false)
+						computeAutoAlliances();
+				}
 			}
-			//한꺼번에 배열에 움직임 작성
-			this.computeGameTile();
 			//실행중인 이벤트가 없다면
 			if(eventStart == false)
 			{
@@ -461,7 +477,7 @@ public class GameData implements Runnable{
 	private void computeMapAutoEvent()
 	{
 		//List<Event> autoEvents = null;
-		nowEventList = null;
+		//nowEventList = null;
 		if(autoEvents != null && autoEvents.size() != 0)
 		{
 			//System.out.println("자동이벤트 계산 호출됨");
@@ -513,6 +529,7 @@ public class GameData implements Runnable{
 	{
 		if(nowEvent == null)
 			return;
+		
 		int type = nowEvent.getContentType();
 		//eventContentListIndex++랑 eventStart폴스 해줘야함
 		
@@ -636,13 +653,14 @@ public class GameData implements Runnable{
 	//음악 이벤트
 	private void startMusicEvent()
 	{
-//		System.out.println("불렸음");
-		//음악시작
-		musicThread = null;
-		musicThread = new Thread(gameMusic);
+		ChangeBGMEvent bgm = (ChangeBGMEvent) nowEvent;
+		
+		gameMusic = new GameMusic(this);
+		gameMusic.setFilePathAndName(gamePath+"\\"+bgm.getFileName());
+//		gameMusic.setFilePathAndName(bgm.get);
+		
+		Thread musicThread = new Thread(gameMusic);
 		musicThread.start();
-//		startMusic(null);
-		startMusic(((ChangeBGMEvent) nowEvent).getFileName());
 		eventContentListIndex++;
 		this.eventStart = false;
 	}
@@ -677,13 +695,13 @@ public class GameData implements Runnable{
 		//엔터키나 액션 키가 눌리면
 		if(keyFlag.isAction() || keyFlag.isEnter())
 		{
-//			System.out.println("다이얼3");
-			dialogScreen.setText(null);
-			eventContentListIndex++;
-			this.eventStart = false;
-			player.setActorState(GameCharacter.MOVESTATE);
+			//System.out.println("다이얼3");
 			
 			try {
+				dialogScreen.setText(null);
+				this.eventStart = false;
+				player.setActorState(GameCharacter.MOVESTATE);
+				eventContentListIndex++;
 				Thread.sleep(FASTTIMER);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -985,8 +1003,6 @@ public class GameData implements Runnable{
 	//npc들 중에 자동이벤트 생성
 	private void computeAutoAlliances() {
 		// TODO Auto-generated method stub
-		//맵이 바뀌엇기 때문에 이 루틴이 호출되면 이전에 있던 캐릭터들은 지운다.
-		
 		try{
 			//현재 맵에 정의된 npc들 출력
 			//actorEventTiles= eventDispatcher.getActors();
@@ -994,8 +1010,9 @@ public class GameData implements Runnable{
 			{
 				return;
 			}
-			autoAllianceEventCalled = true;
+			nowEventList = null;
 			eventContentListIndex = 0;
+			//autoAllianceEventCalled = true;
 			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
 			for(int i = 0 ; i < actorEventTiles.size(); i++)
 			{
@@ -1017,15 +1034,16 @@ public class GameData implements Runnable{
 					conditionFlag[cond[1]+1]==true &&
 					conditionFlag[cond[2]+1]==true && eventList.getStartType() == EventEditorSystem.AUTO_START)
 					{
+						int now = j;
 						alliances.add(new Alliance(gamePath));
 						alliances.elementAt(j).deployActor(eventList.getActorIndex(),
 								actorEventTile.getInitColLocation(),
 								actorEventTile.getInitRowLocation(),
 								eventList);
 						//선택한 이벤트 지움
+						nowEventList = eventList;
 						actorEventList.remove(j);
 						autoAllianceEventCalled = true;
-						nowEventList = eventList;
 						//캐릭터 배치
 						if(eventList.getActionType() == EventEditorSystem.RANDOM_MOTION)
 						{
@@ -1041,7 +1059,14 @@ public class GameData implements Runnable{
 						}
 						else
 							alliances.elementAt(j).setActionType(GameCharacter.TOPLAYER);
+						j=now;
 						return;
+					}
+					else
+					{
+						eventList = null;
+						nowEventList = null;
+						
 					}
 				}
 			}
@@ -1112,7 +1137,7 @@ public class GameData implements Runnable{
 		
 		eventDispatcher.makeAlliances();
 		//npc들과 몬스터 로드해야함
-		computeAutoAlliances();
+		//computeAutoAlliances();
 		if(alliances!= null)
 			alliances = null;
 		alliances = new Vector<GameCharacter>();
