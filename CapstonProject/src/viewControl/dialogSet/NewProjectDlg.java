@@ -44,16 +44,12 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 
 	public NewProjectDlg(MainFrame parent) {
 		super(parent);
-		setPreferredSize(new Dimension(580, 290));
+		setPreferredSize(new Dimension(580, 310));
 		setResizable(false);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		
 		initComponents();
-		
-		Thread t = new Thread(this);
-		t.start();
 		setVisible(true);
-		
 	}
 
 	private void initComponents() {
@@ -75,7 +71,9 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		btn_browser = new JButton("Browser");
 		btn_ok = new JButton("O K");
 		btn_cancel = new JButton("Cancel");
-		progress = new EstyleProgressbar();
+		progress = new EstyleProgressbar(2);
+		progress.setMinimum(0);
+		progress.setMaximum(230);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -291,84 +289,16 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		if (e.getSource() == btn_browser) {
 			btn_browser.setEnabled(false);
 			new NewProjFolderChooserDlg(this);
+		
 		} else if (e.getSource() == btn_ok) {
-			projectPath = tf_workspace.getText();
-			ProjectName = tf_projectName.getText();
-			String fullPath = projectPath + "\\" + ProjectName;
-			File projectDir = new File(projectPath);
-			File projectNameDir = new File(fullPath);
-
-			// 프로젝트 폴더명이 잘됐는지. 경로는 정확한지 확인
-			if (projectPath.compareTo("") == 0
-					|| ProjectName.compareTo("") == 0) {
-				l_state.setText("Fill the blank!");
-			} else if (!projectDir.isDirectory()) {
-				l_state.setText("Path is wrong!");
-			} // 프로젝트 디렉토리 만듬
-			else if (projectNameDir.mkdir()) {
-				MainFrame.OWNER.projectPath = projectPath;
-				MainFrame.OWNER.ProjectName = ProjectName;
-
-				setDefaultProject(fullPath);
-
-				MainFrame.OWNER.setSubState(ProjectName + " is made");
-				MainFrame.OWNER.setMainState(projectPath);
-				MainFrame.OWNER.setTitle(ProjectName);
-
-
-
-				// 최신 프로젝트 생성 정보 저장
-				File saveData = new File(System.getProperty("user.dir")
-						+ "\\info.ini");
-				try {
-					// ini 파일에 첫줄의 최근 프로젝트 목록을 갱신
-					FileReader fr = new FileReader(saveData);
-					BufferedReader in = new BufferedReader(fr);
-					StringTokenizer tk = new StringTokenizer(in.readLine(), "$");
-					ArrayList<String> projpaths = new ArrayList<String>();
-					while (tk.hasMoreTokens()) {
-						projpaths.add(tk.nextToken());
-					}
-					if (projpaths.size() >= 6) {
-						projpaths.remove(0);
-						projpaths.add(projectPath + "\\" + ProjectName);
-					} else {
-						projpaths.add(projectPath + "\\" + ProjectName);
-					}
-					in.close();
-					fr.close();
-
-
-					FileWriter fw = new FileWriter(saveData);
-					for (String s : projpaths) {
-						fw.write(s + '$');
-					}
-					fw.close();
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
-					FileWriter fw;
-					try {
-						fw = new FileWriter(saveData);
-						fw.write(projectPath + "\\" + ProjectName + "$");
-						fw.close();
-					} catch (IOException e2) {
-						saveData.delete();
-					}
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					saveData.delete();
-				}
-
-
-				MainFrame.OWNER.setNewProject();
-				MainFrame.OWNER.setDefaultTileSet();
-				MainFrame.OWNER.syncProjOpenCloseBtn();
-
-				dispose();
-				new NewMapDlg(MainFrame.OWNER);
-			} else {
-				l_state.setText("Project already exists or path is wrong!");
-			}
+			btn_browser.setEnabled(false);
+			btn_ok.setEnabled(false);
+			btn_cancel.setEnabled(false);
+			setEnabled(false);
+			Thread makeProj = new Thread(this);
+			progress.setIndeterminate(true);
+			makeProj.start();
+			
 		} else if (e.getSource() == btn_cancel) {
 			dispose();
 		}
@@ -408,8 +338,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		job.mkdir();
 		skill.mkdir();
 		map.mkdir();
-
-		addPercent();
+		
 		
 		File defaultData = new File(fullPath + "\\.DefaultData");
 		File originalDefaultData = new File(this.getClass().getResource("")
@@ -473,11 +402,9 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 			attributeForeground.createNewFile();
 			attributeUtilImg.createNewFile();
 
-			addPercent();
 			
 			File originalResouce = new File("src\\resouce\\tileSet\\background");
 			for (int i = 0; i < originalResouce.list().length - 1; i++) {
-				addPercent();
 				fileCopy(originalResouce.getPath().concat("\\TileBack").concat(
 						i + "").concat(".png"), fullPath.concat(
 						"\\TileSet\\Background\\TileBack").concat(i + "")
@@ -486,7 +413,6 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 			}
 			originalResouce = new File("src\\resouce\\tileSet\\foreground");
 			for (int i = 0; i < originalResouce.list().length - 1; i++) {
-				addPercent();
 				fileCopy(originalResouce.getPath().concat("\\TileFore").concat(
 						i + "").concat(".png"), fullPath.concat(
 						"\\TileSet\\Foreground\\TileFore").concat(i + "")
@@ -506,6 +432,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 			out = new FileOutputStream(dst);
 
 			int data = -1;
+			
 			while ((data = in.read()) != -1) {
 				out.write(data);
 			}
@@ -518,7 +445,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 			e2.printStackTrace();
 			return false;
 		}
-		addPercent();
+
 		return true;
 	}
 
@@ -530,14 +457,12 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 
 			String[] children = src.list();
 			for (int i = 0; i < children.length; i++) {
-				addPercent();
 				directoryCopy(new File(src, children[i]), new File(dst,
 						children[i]));
 				
 			}
 
 		} else {
-			addPercent();
 			fileCopy(src.getCanonicalPath(), dst.getCanonicalPath());
 			
 		}
@@ -545,22 +470,89 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 
 	@Override
 	public void run() {
-		percent=0;
-		while(true){
-			progress.setValue(percent);
+		projectPath = tf_workspace.getText();
+		ProjectName = tf_projectName.getText();
+		String fullPath = projectPath + "\\" + ProjectName;
+		File projectDir = new File(projectPath);
+		File projectNameDir = new File(fullPath);
+
+		// 프로젝트 폴더명이 잘됐는지. 경로는 정확한지 확인
+		if (projectPath.compareTo("") == 0
+				|| ProjectName.compareTo("") == 0) {
+			l_state.setText("Fill the blank!");
+		} else if (!projectDir.isDirectory()) {
+			l_state.setText("Path is wrong!");
+		} // 프로젝트 디렉토리 만듬
+		else if (projectNameDir.mkdir()) {
+			
+			MainFrame.OWNER.projectPath = projectPath;
+			MainFrame.OWNER.ProjectName = ProjectName;
+
+			setDefaultProject(fullPath);
+
+			MainFrame.OWNER.setSubState(ProjectName + " is made");
+			MainFrame.OWNER.setMainState(projectPath);
+			MainFrame.OWNER.setTitle(ProjectName);
+
+
+
+			// 최신 프로젝트 생성 정보 저장
+			File saveData = new File(System.getProperty("user.dir")
+					+ "\\info.ini");
 			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				// ini 파일에 첫줄의 최근 프로젝트 목록을 갱신
+				FileReader fr = new FileReader(saveData);
+				BufferedReader in = new BufferedReader(fr);
+				StringTokenizer tk = new StringTokenizer(in.readLine(), "$");
+				ArrayList<String> projpaths = new ArrayList<String>();
+				while (tk.hasMoreTokens()) {
+					projpaths.add(tk.nextToken());
+				}
+				if (projpaths.size() >= 6) {
+					projpaths.remove(0);
+					projpaths.add(projectPath + "\\" + ProjectName);
+				} else {
+					projpaths.add(projectPath + "\\" + ProjectName);
+				}
+				in.close();
+				fr.close();
+
+
+				FileWriter fw = new FileWriter(saveData);
+				for (String s : projpaths) {
+					fw.write(s + '$');
+				}
+				fw.close();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+				FileWriter fw;
+				try {
+					fw = new FileWriter(saveData);
+					fw.write(projectPath + "\\" + ProjectName + "$");
+					fw.close();
+				} catch (IOException e2) {
+					saveData.delete();
+				}
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				saveData.delete();
 			}
+
+			MainFrame.OWNER.setNewProject();
+			MainFrame.OWNER.setDefaultTileSet();
+			MainFrame.OWNER.syncProjOpenCloseBtn();
+
+			dispose();
+			new NewMapDlg(MainFrame.OWNER);
+			MainFrame.OWNER.validate();
+		} else {
+			l_state.setText("Project already exists or path is wrong!");
 		}
+		btn_browser.setEnabled(true);
+		btn_ok.setEnabled(true);
+		btn_cancel.setEnabled(true);
+		setEnabled(true);
 	}
-	
-	private void addPercent(){
-		percent+=progress.getIncreaseInterval();
-		if (percent>=100){
-			progress.setGo(false);
-		}
-	}
+
 	
 }
