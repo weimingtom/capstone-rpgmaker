@@ -25,6 +25,11 @@ public class GameMusic implements Runnable{
 	private GameData gameData;
 	private boolean isMusicPlay;
 	
+	public GameMusic(String fileName)
+	{
+		setFilePathAndName(fileName);
+	}
+	
 	public GameMusic(GameData gameData)
 	{
 		this.gameData = gameData;
