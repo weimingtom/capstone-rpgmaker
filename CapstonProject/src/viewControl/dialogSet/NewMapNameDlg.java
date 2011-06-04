@@ -33,6 +33,7 @@ public class NewMapNameDlg extends JDialog{
 		setResizable(false);
 		setVisible(true);
 		setModal(true);
+		setTitle("Save As..");
 		initComponents();
 	}
 

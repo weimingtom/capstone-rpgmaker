@@ -47,7 +47,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		setPreferredSize(new Dimension(580, 310));
 		setResizable(false);
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		
+		setTitle("New Project!");
 		initComponents();
 		setVisible(true);
 	}

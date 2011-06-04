@@ -40,6 +40,7 @@ public class TileSetChooserDlg extends JDialog {
 
 	public TileSetChooserDlg(MainFrame parant) {
 		super(parant);
+		setTitle("Tile Set Chooser");
 		attributePanel = new JPanel(new GridLayout(1, 3));
 		radiobtnGroup = new ButtonGroup();
 		isFore = new JRadioButton("Foreground");
