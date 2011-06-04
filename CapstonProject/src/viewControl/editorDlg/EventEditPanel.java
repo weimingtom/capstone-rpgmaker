@@ -59,8 +59,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	// Variables declaration - do not modify
 	private JButton btn_insertEventContest;
 	private JButton btn_deleteEventContent;
-    private JButton btn_moveUpEventContent;
-    private JButton btn_moveDownEventContent;
+	private JButton btn_moveUpEventContent;
+	private JButton btn_moveDownEventContent;
 	private ButtonGroup btng_startType;
 	private JComboBox cb_actorIndex;
 	private JComboBox cb_actorMotionType;
@@ -161,6 +161,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		cb_actorIndex.addActionListener(this);
 		btn_insertEventContest.addActionListener(this);
 		btn_deleteEventContent.addActionListener(this);
+		cb_selectedEventContent.addActionListener(this);
 		
 		// 마우스 이벤트
 		ckb_condition1.addMouseListener(this);
@@ -220,6 +221,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		renewActorMenu(tmpObjectType);
 //		setSelectedIndexActorMenu();
 		setEventStartType();
+		lst_eventList.setSelectedIndex(0);
 		
 		if(event.getDieChangeConditionIndex() != -1)
 			ckb_ifDie.setSelected(true);
@@ -247,15 +249,15 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
                     .addGroup(p_activeConditionLayout.createSequentialGroup()
                         .addComponent(ckb_condition1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cb_condition1, 0, 203, Short.MAX_VALUE))
+                        .addComponent(cb_condition1, 0, 219, Short.MAX_VALUE))
                     .addGroup(p_activeConditionLayout.createSequentialGroup()
                         .addComponent(ckb_condition2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cb_condition2, 0, 203, Short.MAX_VALUE))
+                        .addComponent(cb_condition2, 0, 219, Short.MAX_VALUE))
                     .addGroup(p_activeConditionLayout.createSequentialGroup()
                         .addComponent(ckb_condition3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cb_condition3, 0, 203, Short.MAX_VALUE)))
+                        .addComponent(cb_condition3, 0, 219, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         p_activeConditionLayout.setVerticalGroup(
@@ -280,7 +282,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
         p_actorImg.setLayout(p_actorImgLayout);
         p_actorImgLayout.setHorizontalGroup(
             p_actorImgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 131, Short.MAX_VALUE)
+            .addGap(0, 115, Short.MAX_VALUE)
         );
         p_actorImgLayout.setVerticalGroup(
             p_actorImgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -295,24 +297,25 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
                 .addContainerGap()
                 .addComponent(p_actorImg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(p_actorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cb_actorIndex, 0, 145, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cb_actorMotionType, 0, 145, Short.MAX_VALUE)
-                    .addComponent(ckb_ifDie, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(p_actorLayout.createSequentialGroup()
-                        .addComponent(cb_dieCondition, 0, 72, Short.MAX_VALUE)
+                .addGroup(p_actorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p_actorLayout.createSequentialGroup()
+                        .addComponent(cb_dieCondition, 0, 95, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cb_dieConditionState, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(cb_dieConditionState, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ckb_ifDie, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                    .addComponent(cb_actorMotionType, javax.swing.GroupLayout.Alignment.TRAILING, 0, 177, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                    .addComponent(cb_actorIndex, javax.swing.GroupLayout.Alignment.TRAILING, 0, 177, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
                 .addContainerGap())
         );
         p_actorLayout.setVerticalGroup(
             p_actorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(p_actorLayout.createSequentialGroup()
                 .addGroup(p_actorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(p_actorImg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(p_actorLayout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -327,8 +330,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
                         .addGroup(p_actorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cb_dieConditionState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)
-                            .addComponent(cb_dieCondition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(p_actorImg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(cb_dieCondition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
 
@@ -348,7 +350,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
                         .addGroup(p_startTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(rbtn_parallelStart, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(rbtn_autoStart, javax.swing.GroupLayout.Alignment.LEADING))))
-                .addContainerGap(71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(87, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         p_startTypeLayout.setVerticalGroup(
             p_startTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -578,7 +580,10 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	
 	private void setSelectedIndexJList(int index) {
 		cb_selectedEventContent.setSelectedIndex(index);
-		lst_eventList.setSelectedIndex(index);
+		if(index != cb_selectedEventContent.getItemCount())
+			lst_eventList.setSelectedIndex(index);
+		else
+			setJListEventContents();
 	}
 	
 	private void setJListEventContents() {
@@ -773,7 +778,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		// 선택된 내용이 있으면 편집.
 		if(event.getEventContent(insertIndex).getContentType() == EventContent.CHANGE_MAP_EVNET) {
 			new NextMapDstDlg(owner, event, false, insertIndex);
-//			new ChangeMapDlg(owner, event, false, insetIndex);
 		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.CHANGE_FLAG_EVENT) {
 			new ChangeFlagDlg(owner, event, false, insertIndex);
 		} else if(event.getEventContent(insertIndex).getContentType() == EventContent.CHANGE_BGM_EVNET) {
@@ -792,14 +796,18 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_moveUpEventContent) {
-			int index = cb_selectedEventContent.getSelectedIndex();
-			if(index != 0) {
-				
+			int index = lst_eventList.getSelectedIndex();
+			if(index>=1 && index<cb_selectedEventContent.getItemCount()) {
+				event.getEventContentList().add(index-1, event.getEventContentList().remove(index));
+				setJListEventContents();
+				setSelectedIndexJList(index-1);
 			}
-		} else if(e.getSource() == btn_moveUpEventContent) {
-			int index = cb_selectedEventContent.getSelectedIndex();
-			if(index != cb_selectedEventContent.getComponentCount()-1) {
-				
+		} else if(e.getSource() == btn_moveDownEventContent) {
+			int index = lst_eventList.getSelectedIndex();
+			if(index>=0 && index<cb_selectedEventContent.getItemCount()-1) {
+				event.getEventContentList().add(index+1, event.getEventContentList().remove(index));
+				setJListEventContents();
+				setSelectedIndexJList(index+1);
 			}
 		} else if(e.getSource() == btn_insertEventContest) {
 			// 새 이벤트를 삽입한다.
@@ -823,8 +831,10 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 			// JList 재출력
 			setJListEventContents();
 			renewSelectedListComboBox();
-			if(index-1>=1)
+			if(index-1>=0)
 				setSelectedIndexJList(index-1);
+			else
+				setSelectedIndexJList(index);
 		} else if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
 			// Combo박스의 활성화 여부를 체크하여 설정한다.
 			renewConditionComboBox();
@@ -835,6 +845,9 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 			}
 		} else if(e.getSource() == ckb_ifDie) {
 			renewDieCondition();
+		} else if(e.getSource() == cb_selectedEventContent) {
+			int index = cb_selectedEventContent.getSelectedIndex();
+			setSelectedIndexJList(index);
 		}
 	}
 	@Override
