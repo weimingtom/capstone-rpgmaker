@@ -671,32 +671,102 @@ public class GameDisplay implements Runnable{
 	public void displayDialog(Graphics2D g)
 	{
 		GameUtilityInformation dialog = gameData.getDialogScreen();
-		if(dialog.getText() == null)
+		if(dialog== null || dialog.getText() == null)
 			return;
-		
-		if(gameData.getPlayer().getyPosition() < gameData.getGameMap().getM_Height()*GameData.mapCharArrayRatio)
-		{
-			g.setFont(dialog.getFont());
-			g.setColor(Color.WHITE);
-			g.fillRect((int)(screenWidth/10), (int)(screenHeight*(7.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
-			g.setColor(new Color(60,190,50,230));
-			g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
-			g.setColor(Color.BLACK);
-			g.drawString(dialog.getText(), (int)(screenWidth/10)+20, (int)(screenHeight*(8.0/10))-dialog.getFontSize());
+		try{
+			if(gameData.getPlayer().getyPosition() < gameData.getGameMap().getM_Height()*GameData.mapCharArrayRatio)
+			{
+				g.setFont(dialog.getFont());
+				g.setColor(Color.WHITE);
+				g.fillRect((int)(screenWidth/10), (int)(screenHeight*(7.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
+				g.setColor(new Color(60,190,50,230));
+				g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
+				g.setColor(Color.BLACK);
+				g.drawString(dialog.getText(), (int)(screenWidth/10)+20, (int)(screenHeight*(8.0/10))-dialog.getFontSize());
+			}
+			else
+			{
+				//플레이어가 아래에 있다면
+				g.setFont(dialog.getFont());
+				g.setColor(Color.WHITE);
+				g.fillRect((int)(screenWidth/10), (int)(screenHeight*(1.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
+				g.setColor(new Color(50,200,50,190));
+				g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(1.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
+				g.setColor(Color.white);
+				g.drawString(dialog.getText(), (int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10))-dialog.getFontSize());
+			}
 		}
-		else
+		catch(Exception e)
 		{
-			//플레이어가 아래에 있다면
-			g.setFont(dialog.getFont());
-			g.setColor(Color.WHITE);
-			g.fillRect((int)(screenWidth/10), (int)(screenHeight*(1.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
-			g.setColor(new Color(50,200,50,190));
-			g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(1.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
-			g.setColor(Color.white);
-			g.drawString(dialog.getText(), (int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10))-dialog.getFontSize());
+			System.out.println("GameDisplay displayDialog error");
+			return;
 		}
 	}
 	
+	//스위치 다이얼로그 출력
+	public void displaySwitchDialog(Graphics2D g)
+	{
+		GameUtilityInformation switchDlg = gameData.getSwitchDialog();
+		GameUtilityInformation cursorImage = gameData.getCursorImage();
+		
+		if(switchDlg == null || switchDlg.getText() == null)
+			return;
+		
+		try{
+			if(gameData.getPlayer().getyPosition() < gameData.getGameMap().getM_Height()*GameData.mapCharArrayRatio)
+			{
+				g.setFont(switchDlg.getFont());
+				g.setColor(Color.WHITE);
+				g.fillRect((int)(screenWidth/10), (int)(screenHeight*(7.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
+				g.setColor(new Color(60,190,50,230));
+				g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
+				g.setColor(Color.BLACK);
+				g.drawString(switchDlg.getText(), (int)(screenWidth/10)+20, (int)(screenHeight*(8.0/10))-switchDlg.getFontSize());
+				//커서 출력
+				for(int i = 0 ; i < switchDlg.getEndPosition(); i++)
+				{
+					if(switchDlg.getPosition() == i)
+					{
+						g.drawImage(cursorImage.getUtilImage(),
+								(int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10)),
+								(int)(cursorImage.getUtilImage().getWidth(null)*ratioX),
+								(int)(cursorImage.getUtilImage().getHeight(null)*ratioY),
+								null);
+						break;
+					}
+				}
+			}
+			else
+			{
+				//플레이어가 아래에 있다면
+				g.setFont(switchDlg.getFont());
+				g.setColor(Color.WHITE);
+				g.fillRect((int)(screenWidth/10), (int)(screenHeight*(1.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
+				g.setColor(new Color(50,200,50,190));
+				g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(1.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
+				g.setColor(Color.white);
+				g.drawString(switchDlg.getText(), (int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10))-switchDlg.getFontSize());
+				//커서 출력
+				for(int i = 0 ; i < switchDlg.getEndPosition(); i++)
+				{
+					if(switchDlg.getPosition() == i)
+					{
+						g.drawImage(cursorImage.getUtilImage(),
+								(int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10)),
+								(int)(cursorImage.getUtilImage().getWidth(null)*ratioX),
+								(int)(cursorImage.getUtilImage().getHeight(null)*ratioY),
+								null);
+						break;
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println("GameDisplay displayDialog error");
+			return;
+		}
+	}
 	
 	//GameRunning!!!!!!!
 	@Override
@@ -746,10 +816,10 @@ public class GameDisplay implements Runnable{
 					{
 						displayLevelUp(g, gameData.getPlayer());
 					}
+					displayDialog(g);
+					displaySwitchDialog(g);
 					g.dispose();
 					gameGraphics.drawImage(gameImage,0,0,null);
-					
-					displayDialog(gameGraphics);
 				} 
 				else if (gameState == GameData.GAMEOVER)
 				{

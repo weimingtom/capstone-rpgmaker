@@ -32,6 +32,8 @@ import eventEditor.eventContents.ChangeFlagEvent;
 import eventEditor.eventContents.ChangeMapEvent;
 import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
+import eventEditor.eventContents.Switch;
+import eventEditor.eventContents.SwitchDialogEvent;
 
 import bootstrap.Bootstrap;
 import bootstrap.BootstrapInfo;
@@ -82,6 +84,7 @@ public class GameData implements Runnable{
 	private GameUtilityInformation gameOver;
 	private GameUtilityInformation statusScreen;
 	private GameUtilityInformation levelUpImage;
+	private GameUtilityInformation switchDialog;
 	
 	/*********************************************************/
 	/****게임 액터들, 몬스터들, 플레이어******************************/
@@ -168,6 +171,10 @@ public class GameData implements Runnable{
 		statusScreen = new GameUtilityInformation();
 		//레벨업
 		levelUpImage = new GameUtilityInformation();
+		//스위치 다이얼로그
+		switchDialog = new GameUtilityInformation();
+		switchDialog.setText(null);
+		switchDialog.setPosition(0);
 		
 		gameWindow = null;
 		gameDisplay = null;
@@ -435,13 +442,12 @@ public class GameData implements Runnable{
 	//맵의 자동이벤트 찾기
 	private void computeMapAutoEvent()
 	{
-		//우선 자동이벤트 받아옴1
-		autoEventCalled = false;
 		//List<Event> autoEvents = null;
 		nowEventList = null;
-		eventContentListIndex = 0;
 		if(autoEvents != null && autoEvents.size() != 0)
 		{
+			//System.out.println("자동이벤트 계산 호출됨");
+			eventContentListIndex = 0;
 			//자동 이벤트 리스트중 실행 조건이 맞는거 받아옴
 			for(int i = 0 ; i < autoEvents.size(); i++)
 			{
@@ -469,15 +475,16 @@ public class GameData implements Runnable{
 			eventContentListIndex = 0;
 			this.eventStart = false;
 			nowEvent = null;
-			autoEvents = null;
+			//autoEvents = null;
 			autoEventCalled = false;
+			eventStart = false;
 		}
 		else
 		{
-			//이벤트 시작
-			eventStart = true;
-			//현재 선택된 리스트에서 하나 받아옴
-			nowEvent = nowEventList.getEventContentList().get(eventContentListIndex);
+				//이벤트 시작
+				eventStart = true;
+				//현재 선택된 리스트에서 하나 받아옴
+				nowEvent = nowEventList.getEventContentList().get(eventContentListIndex);
 		}
 	}
 	
@@ -487,59 +494,157 @@ public class GameData implements Runnable{
 		if(nowEvent == null)
 			return;
 		int type = nowEvent.getContentType();
+		//eventContentListIndex++랑 eventStart폴스 해줘야함
+		
 		//지금 이벤트가 뭔지 확인
 		if(type == EventContent.CHANGE_BGM_EVNET)
 		{
-			System.out.println("불렸음");
-			//음악시작
-			musicThread = null;
-			musicThread = new Thread(gameMusic);
-			musicThread.start();
-//			startMusic(null);
-			startMusic(((ChangeBGMEvent) nowEvent).getFileName());
-			eventContentListIndex++;
-			this.eventStart = false;
+			startMusicEvent();
 		}
 		else if(type == EventContent.DIALOG_EVNET)
 		{
+			//다이얼로그 출력 이벤트
 			startDialogEvent();
+		}
+		else if(type == EventContent.CHANGE_MAP_EVNET)
+		{
+			//맵 변환 이벤트
+			startChangeMapEvent();
+		}
+		else if(type == EventContent.CHANGE_FLAG_EVENT)
+		{
+			//플레그 변환 이벤트
+			startChangeFlagEvent();
+		}
+		else if(type == EventContent.GAMEOVER_EVNET)
+		{
+			//게임 종료
+			gameState = GameData.GAMEOVER;
+		}
+		else if(type == EventContent.SWITCH_DIALOG_EVNET)
+		{
+			//스위치 다이얼로그
+			startSwitchDialog();
+		}
+	}
+	
+	//스위치 다이얼로그
+	private void startSwitchDialog()
+	{
+		//캐릭터 상태 이벤트로 설정
+		player.setActorState(GameCharacter.EVENTSTATE);
+		//대화창 시작
+		SwitchDialogEvent switchDlgEv = (SwitchDialogEvent) nowEvent;
+//		switchDialog.setText(switchDlgEv.getQuestion());
+		List<Switch>switchList = switchDlgEv.getSwitchList();
+		int size = switchList.size();
+		switchDialog.setEndPosition(size);
+		String text = switchDlgEv.getQuestion();
+		for(int i = 0 ; i < size; i++)
+		{
+			text+="\n" + (i+1) + " " + switchDlgEv.getAnswer(i);
+		}
+		switchDialog.setText(text);
+		if(keyFlag.isUp())
+		{
+			if(switchDialog.getPosition() == 0) switchDialog.setPosition(size-1);
+			else switchDialog.setPosition(switchDialog.getPosition() - 1);
 			try {
-				Thread.sleep(SLOWTIMER);
+				Thread.sleep(FASTTIMER);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		else if(type == EventContent.CHANGE_MAP_EVNET)
+		else if(keyFlag.isDown())
 		{
-			gameState = GameData.LOADING;
-			ChangeMapEvent mapChange = (ChangeMapEvent) nowEvent;
-			startMusic(null);
-			loadMap(mapChange.getMapName());
-			autoEventCalled = false;
-			
-			Point next = mapChange.getStartPoint();
-			player.setxPosition(next.y*mapCharArrayRatio);
-			player.setyPosition(next.x*mapCharArrayRatio);
-			gameState = GameData.PLAY;
-			eventContentListIndex++;
-			this.eventStart = false;
-		}
-		else if(type == EventContent.CHANGE_FLAG_EVENT)
-		{
-			ChangeFlagEvent flagChange = (ChangeFlagEvent) nowEvent;
-			if(flagChange.isState())
-			{
-				conditionFlag[flagChange.getIndexFlag()+1] = true;
+			if(switchDialog.getPosition() == size-1) switchDialog.setPosition(0);
+			else switchDialog.setPosition(switchDialog.getPosition() + 1);
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else
-				conditionFlag[flagChange.getIndexFlag()+1] = false;
-						
-			eventContentListIndex++;
-			this.eventStart = false;
 		}
+		else if(keyFlag.isAction() || keyFlag.isEnter())
+		{
+			player.setActorState(GameCharacter.MOVESTATE);
+			for(int i = 0 ; i < size; i++)
+			{
+				if(switchDialog.getPosition() == i)
+				{
+					if(switchDlgEv.getSwitch(i).getState() == true)
+					{
+						conditionFlag[switchDlgEv.getSwitch(i).getFlagIndex()+1] = true;
+					}
+					else
+					{
+						conditionFlag[switchDlgEv.getSwitch(i).getFlagIndex()+1] = false;
+					}
+					try {
+						Thread.sleep(FASTTIMER);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					eventContentListIndex++;
+					this.eventStart = false;
+					switchDialog.setText(null);
+					switchDialog.setPosition(0);
+					break;
+				}
+			}
+		}
+		
+	
 	}
 	
+	//플래그 변환 이벤트
+	private void startChangeFlagEvent()
+	{
+		ChangeFlagEvent flagChange = (ChangeFlagEvent) nowEvent;
+		if(flagChange.isState())
+		{
+			conditionFlag[flagChange.getIndexFlag()+1] = true;
+		}
+		else
+			conditionFlag[flagChange.getIndexFlag()+1] = false;
+					
+		eventContentListIndex++;
+		this.eventStart = false;
+	}
+	
+	//음악 이벤트
+	private void startMusicEvent()
+	{
+//		System.out.println("불렸음");
+		//음악시작
+		musicThread = null;
+		musicThread = new Thread(gameMusic);
+		musicThread.start();
+//		startMusic(null);
+		startMusic(((ChangeBGMEvent) nowEvent).getFileName());
+		eventContentListIndex++;
+		this.eventStart = false;
+	}
+
+	//맵변환 이벤트
+	private void startChangeMapEvent()
+	{
+		gameState = GameData.LOADING;
+		ChangeMapEvent mapChange = (ChangeMapEvent) nowEvent;
+		startMusic(null);
+		loadMap(mapChange.getMapName());
+		autoEventCalled = false;
+		
+		Point next = mapChange.getStartPoint();
+		player.setxPosition(next.y*mapCharArrayRatio);
+		player.setyPosition(next.x*mapCharArrayRatio);
+		gameState = GameData.PLAY;
+		eventContentListIndex++;
+		this.eventStart = false;
+	}
 	
 	//다이얼로그 이벤트
 	private void startDialogEvent()
@@ -559,7 +664,20 @@ public class GameData implements Runnable{
 			eventContentListIndex++;
 			this.eventStart = false;
 			player.setActorState(GameCharacter.MOVESTATE);
+			
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return;
+		}
+		try {
+			Thread.sleep(FASTTIMER);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -809,7 +927,7 @@ public class GameData implements Runnable{
 				System.exit(-1);
 			}
 
-			if(player.getAnimActionClock() > error)
+			if(player.getAnimActionClock() > error/2)
 			{
 				actionAnimFlag = false;
 				player.setAnimActionClock(0);
@@ -829,14 +947,14 @@ public class GameData implements Runnable{
 		try{
 			//현재 맵에 정의된 npc들 출력
 			monsters = new Vector<GameCharacter>();
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(0).deployActor(0, 60, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(1).deployActor(0, 20, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(2).deployActor(0, 30, 60, null);
-			monsters.add(new Monster(gamePath));
-			monsters.elementAt(3).deployActor(0, 40, 60, null);
+//			monsters.add(new Monster(gamePath));
+//			monsters.elementAt(0).deployActor(0, 60, 60, null);
+//			monsters.add(new Monster(gamePath));
+//			monsters.elementAt(1).deployActor(0, 20, 60, null);
+//			monsters.add(new Monster(gamePath));
+//			monsters.elementAt(2).deployActor(0, 30, 60, null);
+//			monsters.add(new Monster(gamePath));
+//			monsters.elementAt(3).deployActor(0, 40, 60, null);
 		}
 		catch(Exception e)
 		{
@@ -916,6 +1034,7 @@ public class GameData implements Runnable{
 		//computeMapAutoEvent();
 		autoEvents = null;
 		autoEvents = eventDispatcher.getAutoEvents();
+		autoEventCalled = false;
 		eventContentListIndex = 0;
 		eventStart = false;
 	}
@@ -1003,6 +1122,7 @@ public class GameData implements Runnable{
 		statusScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/35 ));
 		titleScreen.setFont(new Font("Courier New", Font.BOLD , gameWindow.getWidth()/25));
 		dialogScreen.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/50));
+		switchDialog.setFont(new Font("굴림", Font.BOLD , gameWindow.getWidth()/50));
 	}
 
 	public GameWindow getGameWindow() {
@@ -1273,6 +1393,16 @@ public class GameData implements Runnable{
 	public void setGameMusic(GameMusic gameMusic) {
 		// TODO Auto-generated method stub
 		this.gameMusic = gameMusic;
+	}
+
+
+	public void setSwitchDialog(GameUtilityInformation switchDialog) {
+		this.switchDialog = switchDialog;
+	}
+
+
+	public GameUtilityInformation getSwitchDialog() {
+		return switchDialog;
 	}
 
 	
