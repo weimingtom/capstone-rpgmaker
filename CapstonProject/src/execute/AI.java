@@ -378,9 +378,11 @@ public class AI {
 			{
 				if(canAttack(player, monster) == true)
 				{
+					player.setActorState(GameCharacter.BATTLESTATE);
 					player.attack(player, monster);
 					if(monster.getNowStatus().getHP() <= 0)
 					{
+						player.setActorState(GameCharacter.MOVESTATE);
 						monsters.remove(i);
 						i = now;
 						//경험치 업
@@ -393,10 +395,11 @@ public class AI {
 					}
 				}
 			}
-			
+			//System.out.println("괴물 상태 " +monster.getActorState());
 			//몬스터가 플레이어 공격 가능하면
 			if (canAttack(monster, gameData.getPlayer()) == true) 
 			{
+				//player.setActorState(GameCharacter.BATTLESTATE);
 				//40%확률로 공격, 난이도때문
 				int p = (int)(Math.random()*100);
 				if(p > 60)
@@ -424,12 +427,14 @@ public class AI {
 					monster.setActionType(GameCharacter.MOVESTRAIGHT);
 					moveToPlayer(monster, player, gameMap, gameTile);
 					//System.out.println("플레이어한테 움직임");
+					player.setActorState(GameCharacter.BATTLESTATE);
 				}
 				else
 				{
 					//System.out.println("대기 혹은 움직임");
 					monster.setActorState(GameCharacter.MOVESTATE);
 					monster.setActionType(GameCharacter.MOVESTRAIGHT);
+					player.setActorState(GameCharacter.MOVESTATE);
 					//대기 혹은 랜덤 무브
 					int p = (int)(Math.random()*100);
 					//System.out.println(p);
