@@ -219,7 +219,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		int tmpObjectType = objectType;
 		objectType = -1;
 		renewActorMenu(tmpObjectType);
-//		setSelectedIndexActorMenu();
+		if(event.getActionType() != -1)
+			cb_actorMotionType.setSelectedIndex(event.getActionType());
 		setEventStartType();
 		lst_eventList.setSelectedIndex(0);
 		
@@ -548,13 +549,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 				cb_dieCondition.setEnabled(true);
 				cb_dieConditionState.setEnabled(true);
 			}
-			
-//			p_actorImg.revalidate();
-//			cb_actorIndex.revalidate();
-//			cb_actorMotionType.revalidate();
-//			ckb_ifDie.revalidate();
-//			cb_dieCondition.setEnabled(true);
-//			cb_dieConditionState.setEnabled(true);
 		}
 		
 		renewDieCondition();
