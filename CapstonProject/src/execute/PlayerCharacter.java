@@ -1,11 +1,13 @@
 package execute;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import characterEditor.Abilities;
 import characterEditor.Actors;
 import characterEditor.CharacterEditorSystem;
 import characterEditor.NPCEditorSystem;
+import eventEditor.Event;
 import eventEditor.EventTile;
 
 public class PlayerCharacter extends GameCharacter {
@@ -30,7 +32,7 @@ public class PlayerCharacter extends GameCharacter {
 	
 	//액터 배치
 	@Override
-	public void deployActor(int actorIndex, int xPosition, int yPosition, EventTile eventList)
+	public void deployActor(int actorIndex, int xPosition, int yPosition, Event eventList)
 	{
 		try {
 			actor.load(actorIndex);

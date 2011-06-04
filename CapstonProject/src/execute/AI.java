@@ -281,6 +281,41 @@ public class AI {
 			else if(alliance.getActionType() == GameCharacter.TOPLAYER)
 			{
 				//플레이어한테로
+				//플레이어가 시야에 들어오면
+				if(canWatch(alliance, gameData.getPlayer()) == true)
+				{
+					//플레이어한테로 무브
+					alliance.setActorState(GameCharacter.MOVESTATE);
+					alliance.setActionType(GameCharacter.MOVESTRAIGHT);
+					moveToPlayer(alliance, player, gameMap, gameTile);
+					//System.out.println("플레이어한테 움직임");
+				}
+				else
+				{
+					//System.out.println("대기 혹은 움직임");
+					alliance.setActorState(GameCharacter.MOVESTATE);
+					alliance.setActionType(GameCharacter.MOVESTRAIGHT);
+					//대기 혹은 랜덤 무브
+					int p = (int)(Math.random()*100);
+					//System.out.println(p);
+					//정지속성이 강함
+					if(p < 85)
+					{
+						//정지
+						alliance.setActionType(GameCharacter.STOP);
+						//System.out.println("몬스터 정지");
+					}
+					else
+					{
+						p = (int)(Math.random()*10)%4;
+						//p가 방향임
+						//System.out.println("몬스터 랜덤이동");
+						alliance.setNowDirection(p);
+						moveStraight(alliance, gameMap, gameTile);
+					}
+				}
+				
+				
 			}
 			else if(alliance.getActionType() == GameCharacter.STOP)
 			{

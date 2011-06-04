@@ -1,7 +1,10 @@
 package execute;
 
+import java.util.List;
+
 import characterEditor.Abilities;
 import characterEditor.Actors;
+import eventEditor.Event;
 import eventEditor.EventTile;
 
 public abstract class GameCharacter {
@@ -43,7 +46,7 @@ public abstract class GameCharacter {
 	protected int level;
 	protected boolean isLevelUp = false;
 
-	protected EventTile actorEvent;
+	protected Event actorEvent;
 	
 	//액터의 액션 타입. 대기냐 액션이
 
@@ -112,7 +115,7 @@ public abstract class GameCharacter {
 		
 	}
 	
-	public abstract void deployActor(int actorIndex, int xPosition, int yPosition, EventTile eventList);
+	public abstract void deployActor(int actorIndex, int xPosition, int yPosition, Event eventContentList);
 	
 	public int getxPosition() {
 		return xPosition;
@@ -186,14 +189,6 @@ public abstract class GameCharacter {
 		this.actorState = actorState;
 	}
 
-	public EventTile getActorEvent() {
-		return actorEvent;
-	}
-
-	public void setActorEvent(EventTile actorEvent) {
-		this.actorEvent = actorEvent;
-	}
-
 	
 	public abstract Actors getCharacter();
 
@@ -235,6 +230,14 @@ public abstract class GameCharacter {
 
 	public void setLevelUp(boolean isLevelUp) {
 		this.isLevelUp = isLevelUp;
+	}
+
+	public Event getActorEvent() {
+		return actorEvent;
+	}
+
+	public void setActorEvent(Event actorEvent) {
+		this.actorEvent = actorEvent;
 	}
 
 }
