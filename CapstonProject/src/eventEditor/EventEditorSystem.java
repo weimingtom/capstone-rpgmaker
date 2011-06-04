@@ -269,19 +269,39 @@ public class EventEditorSystem extends ObjectEditorSystem implements Serializabl
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void pasteEvents(Point startPointTarget) {
+		List<EventTile> tmpEventTiles = null;
+		try {
+			tmpEventTiles = (List<EventTile>)DeepCopier.deepCopy(eventTilesToPaste);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if(startPointToPaste.x != startPointTarget.x || startPointToPaste.y != startPointTarget.y) {
-			// 좌표를 보정한다.
+			// 좌표의 차이를 계산한다.
 			int diffX = startPointTarget.x - startPointToPaste.x;
 			int diffY = startPointTarget.y - startPointToPaste.y;
+
+			// 보정된 좌표로 설정하여 임시 리스트에 넣는다.
 			for (int i = 0; i < eventTilesToPaste.size(); i++) {
-				eventTilesToPaste.get(i).setInitRowLocation(eventTilesToPaste.get(i).getInitRowLocation() + diffX);
-				eventTilesToPaste.get(i).setInitColLocation(eventTilesToPaste.get(i).getInitColLocation() + diffY);
+				tmpEventTiles.get(i).setInitRowLocation(eventTilesToPaste.get(i).getInitRowLocation() + diffX);
+				tmpEventTiles.get(i).setInitColLocation(eventTilesToPaste.get(i).getInitColLocation() + diffY);
+			}
+			
+			int width = endPointToPaste.x - startPointToPaste.x;
+			int height = endPointToPaste.y - startPointToPaste.y;
+			
+			// 붙여넣기할 위치의 이벤트들을 모두 지운다.
+			for (int i = 0; i < eventTileList.size(); i++) {
+				if(getEventTile(i).getInitRowLocation() >= startPointTarget.x && getEventTile(i).getInitRowLocation() <= startPointTarget.x + width &&
+						getEventTile(i).getInitColLocation() >= startPointTarget.y && getEventTile(i).getInitColLocation() <= startPointTarget.y + height)
+					eventTileList.remove(i--);
 			}
 			
 			// 임시 리스트에 있는 EventTile 객체의 좌표를 수정하여 하나씩 삽입한다.
-			for (int i = 0; i < eventTilesToPaste.size(); i++) {
-				this.addEventTile(eventTilesToPaste.get(i));
+			for (int i = 0; i < tmpEventTiles.size(); i++) {
+				this.addEventTile(tmpEventTiles.get(i));
 			}
 		}
 	}
