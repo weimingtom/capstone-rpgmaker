@@ -28,6 +28,7 @@ import eventEditor.Event;
 import eventEditor.EventEditorSystem;
 import eventEditor.EventTile;
 import eventEditor.eventContents.ChangeBGMEvent;
+import eventEditor.eventContents.ChangeFlagEvent;
 import eventEditor.eventContents.ChangeMapEvent;
 import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
@@ -140,6 +141,12 @@ public class GameData implements Runnable{
 	private BufferedImage background;
 	private BufferedImage foreBackImage;
 	private BufferedImage foreForeImage;
+	private GameMusic gameMusic;
+
+	//음악 쓰레드
+	private Thread musicThread;
+	private boolean autoEventCalled;
+	private List<Event> autoEvents;
 	
 	//생성자
 	public GameData()
@@ -389,6 +396,9 @@ public class GameData implements Runnable{
 			//한꺼번에 배열에 움직임 작성
 			this.computeGameTile();
 
+			//자동이벤트 생성
+			if(autoEventCalled == false)
+				computeMapAutoEvent();
 			//실행중인 이벤트가 없다면
 			if(eventStart == false)
 			{
@@ -400,6 +410,9 @@ public class GameData implements Runnable{
 		{
 			this.animTimer++;
 			
+			//자동이벤트 생성
+			if(autoEventCalled == false)
+				computeMapAutoEvent();
 			//한꺼번에 배열에 움직임 작성
 			this.computeGameTile();
 			//실행중인 이벤트가 없다면
@@ -423,23 +436,26 @@ public class GameData implements Runnable{
 	private void computeMapAutoEvent()
 	{
 		//우선 자동이벤트 받아옴1
-		List<Event> autoEvents = null;
-		autoEvents = eventDispatcher.getAutoEvents();
-		if(autoEvents != null)
+		autoEventCalled = false;
+		//List<Event> autoEvents = null;
+		nowEventList = null;
+		eventContentListIndex = 0;
+		if(autoEvents != null && autoEvents.size() != 0)
 		{
 			//자동 이벤트 리스트중 실행 조건이 맞는거 받아옴
 			for(int i = 0 ; i < autoEvents.size(); i++)
 			{
-				nowEventList = autoEvents.get(i);
-				int [] conditionIndex = nowEventList.getPreconditionFlagArray();
-				if(this.conditionFlag[conditionIndex[0]+1] &&
-						this.conditionFlag[conditionIndex[1]+1] &&
-						this.conditionFlag[conditionIndex[2]+1])
+				int [] conditionIndex = autoEvents.get(i).getPreconditionFlagArray();
+				if(this.conditionFlag[conditionIndex[0]+1] == true&&
+						this.conditionFlag[conditionIndex[1]+1] == true&&
+						this.conditionFlag[conditionIndex[2]+1] == true)
 				{
+					nowEventList = autoEvents.get(i);
+					autoEvents.remove(i);
+					autoEventCalled = true;
 					break;
 				}
 			}
-			
 		}
 	}
 	
@@ -453,7 +469,8 @@ public class GameData implements Runnable{
 			eventContentListIndex = 0;
 			this.eventStart = false;
 			nowEvent = null;
-			return;
+			autoEvents = null;
+			autoEventCalled = false;
 		}
 		else
 		{
@@ -473,7 +490,12 @@ public class GameData implements Runnable{
 		//지금 이벤트가 뭔지 확인
 		if(type == EventContent.CHANGE_BGM_EVNET)
 		{
+			System.out.println("불렸음");
 			//음악시작
+			musicThread = null;
+			musicThread = new Thread(gameMusic);
+			musicThread.start();
+//			startMusic(null);
 			startMusic(((ChangeBGMEvent) nowEvent).getFileName());
 			eventContentListIndex++;
 			this.eventStart = false;
@@ -491,12 +513,30 @@ public class GameData implements Runnable{
 		else if(type == EventContent.CHANGE_MAP_EVNET)
 		{
 			gameState = GameData.LOADING;
-			eventContentListIndex++;
-			this.eventStart = false;
 			ChangeMapEvent mapChange = (ChangeMapEvent) nowEvent;
 			startMusic(null);
 			loadMap(mapChange.getMapName());
+			autoEventCalled = false;
+			
+			Point next = mapChange.getStartPoint();
+			player.setxPosition(next.y*mapCharArrayRatio);
+			player.setyPosition(next.x*mapCharArrayRatio);
 			gameState = GameData.PLAY;
+			eventContentListIndex++;
+			this.eventStart = false;
+		}
+		else if(type == EventContent.CHANGE_FLAG_EVENT)
+		{
+			ChangeFlagEvent flagChange = (ChangeFlagEvent) nowEvent;
+			if(flagChange.isState())
+			{
+				conditionFlag[flagChange.getIndexFlag()+1] = true;
+			}
+			else
+				conditionFlag[flagChange.getIndexFlag()+1] = false;
+						
+			eventContentListIndex++;
+			this.eventStart = false;
 		}
 	}
 	
@@ -873,7 +913,9 @@ public class GameData implements Runnable{
 		eventDispatcher.refrash();
 		eventDispatcher.setEventLoader(gameMap.getEventEditSys(), this);
 		eventDispatcher.makeMapEvent(gameMap.getM_Width(), gameMap.getM_Height());
-		computeMapAutoEvent();
+		//computeMapAutoEvent();
+		autoEvents = null;
+		autoEvents = eventDispatcher.getAutoEvents();
 		eventContentListIndex = 0;
 		eventStart = false;
 	}
@@ -1225,6 +1267,12 @@ public class GameData implements Runnable{
 
 	public Event getNowEventLost() {
 		return nowEventList;
+	}
+
+
+	public void setGameMusic(GameMusic gameMusic) {
+		// TODO Auto-generated method stub
+		this.gameMusic = gameMusic;
 	}
 
 	

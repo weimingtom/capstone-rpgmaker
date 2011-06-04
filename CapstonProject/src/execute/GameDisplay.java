@@ -10,6 +10,8 @@ import java.awt.image.Kernel;
 import java.awt.image.VolatileImage;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import characterEditor.CharacterEditorSystem;
 import characterEditor.MonsterEditorSystem;
 import characterEditor.NPCEditorSystem;
@@ -766,10 +768,14 @@ public class GameDisplay implements Runnable{
 				
 			} catch (NullPointerException e) {
 				// 게임 데이터가 먼저 종료된 경우
-				System.exit(0);
+				//JOptionPane.showMessageDialog(null, "게임을 종료합니다.");
+				e.printStackTrace();
+				//System.exit(0);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
+				//JOptionPane.showMessageDialog(null, "게임을 종료합니다.");
 				e.printStackTrace();
+				//System.exit(0);
 			}
 
 		}// end while
