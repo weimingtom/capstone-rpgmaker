@@ -7,22 +7,26 @@ public class ChangeBGMEvent extends EventContent implements Serializable {
 
 	private static final long serialVersionUID = 7153307307926449426L;
 	
-	
+	private String srcFileName;
 	private String fileName;
 	private int volumn;
 	
-	public ChangeBGMEvent(String fileName, int volumn) {
+	public ChangeBGMEvent(String srcFileName, String fileName, int volumn) {
 		if(volumn > 100)	volumn = 100;
 		else if(volumn < 0)	volumn = 0;
-
+		
+		this.srcFileName = srcFileName;
 		this.contentType = CHANGE_BGM_EVNET;
 		this.fileName = fileName;
 		this.volumn = volumn;
 	}
 
-	public String getFileName()					{	return fileName;			}
-	public void setFileName(String fileName)	{	this.fileName = fileName;	}
-	public int getVolumn()						{	return volumn;				}
+	
+	public String getSrcFileName()					{	return srcFileName;				}
+	public void setSrcFileName(String srcFileName) {	this.srcFileName = srcFileName;	}
+	public String getFileName()						{	return fileName;				}
+	public void setFileName(String fileName)		{	this.fileName = fileName;		}
+	public int getVolumn()							{	return volumn;					}
 
 	/**
 	 * 음량은 0~100의 값이다.
