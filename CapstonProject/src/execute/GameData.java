@@ -481,10 +481,10 @@ public class GameData implements Runnable{
 		}
 		else
 		{
-				//이벤트 시작
-				eventStart = true;
-				//현재 선택된 리스트에서 하나 받아옴
-				nowEvent = nowEventList.getEventContentList().get(eventContentListIndex);
+			//이벤트 시작
+			eventStart = true;
+			//현재 선택된 리스트에서 하나 받아옴
+			nowEvent = nowEventList.getEventContentList().get(eventContentListIndex);
 		}
 	}
 	
@@ -540,10 +540,7 @@ public class GameData implements Runnable{
 		int size = switchList.size();
 		switchDialog.setEndPosition(size);
 		String text = switchDlgEv.getQuestion();
-		for(int i = 0 ; i < size; i++)
-		{
-			text+="\n" + (i+1) + " " + switchDlgEv.getAnswer(i);
-		}
+
 		switchDialog.setText(text);
 		if(keyFlag.isUp())
 		{
@@ -569,7 +566,6 @@ public class GameData implements Runnable{
 		}
 		else if(keyFlag.isAction() || keyFlag.isEnter())
 		{
-			player.setActorState(GameCharacter.MOVESTATE);
 			for(int i = 0 ; i < size; i++)
 			{
 				if(switchDialog.getPosition() == i)
@@ -592,6 +588,7 @@ public class GameData implements Runnable{
 					this.eventStart = false;
 					switchDialog.setText(null);
 					switchDialog.setPosition(0);
+					player.setActorState(GameCharacter.MOVESTATE);
 					break;
 				}
 			}

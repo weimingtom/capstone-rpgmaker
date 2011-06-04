@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import characterEditor.CharacterEditorSystem;
 import characterEditor.MonsterEditorSystem;
 import characterEditor.NPCEditorSystem;
+import eventEditor.eventContents.SwitchDialogEvent;
 
 import animationEditor.Animations;
 
@@ -674,7 +675,7 @@ public class GameDisplay implements Runnable{
 		if(dialog== null || dialog.getText() == null)
 			return;
 		try{
-			if(gameData.getPlayer().getyPosition() < gameData.getGameMap().getM_Height()*GameData.mapCharArrayRatio)
+			if(gameData.getPlayer().getyPosition()/GameData.mapCharArrayRatio < gameData.getGameMap().getM_Height()/2)
 			{
 				g.setFont(dialog.getFont());
 				g.setColor(Color.WHITE);
@@ -690,15 +691,15 @@ public class GameDisplay implements Runnable{
 				g.setFont(dialog.getFont());
 				g.setColor(Color.WHITE);
 				g.fillRect((int)(screenWidth/10), (int)(screenHeight*(1.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
-				g.setColor(new Color(50,200,50,190));
+				g.setColor(new Color(60,190,50,230));
 				g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(1.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
-				g.setColor(Color.white);
+				g.setColor(Color.BLACK);
 				g.drawString(dialog.getText(), (int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10))-dialog.getFontSize());
 			}
 		}
 		catch(Exception e)
 		{
-			System.out.println("GameDisplay displayDialog error");
+			//System.out.println("GameDisplay displayDialog error");
 			return;
 		}
 	}
@@ -713,7 +714,8 @@ public class GameDisplay implements Runnable{
 			return;
 		
 		try{
-			if(gameData.getPlayer().getyPosition() < gameData.getGameMap().getM_Height()*GameData.mapCharArrayRatio)
+			SwitchDialogEvent forText = (SwitchDialogEvent)gameData.getNowEvent();
+			if(gameData.getPlayer().getyPosition()/GameData.mapCharArrayRatio < gameData.getGameMap().getM_Height()/2)
 			{
 				g.setFont(switchDlg.getFont());
 				g.setColor(Color.WHITE);
@@ -728,12 +730,18 @@ public class GameDisplay implements Runnable{
 					if(switchDlg.getPosition() == i)
 					{
 						g.drawImage(cursorImage.getUtilImage(),
-								(int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10)),
-								(int)(cursorImage.getUtilImage().getWidth(null)*ratioX),
-								(int)(cursorImage.getUtilImage().getHeight(null)*ratioY),
+								(int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10))+(i+1)*(int)(screenHeight*(1.0/18))+switchDlg.getFontSize()/2,
+										(int)(cursorImage.getUtilImage().getWidth(null)/ratioX),
+										(int)(cursorImage.getUtilImage().getHeight(null)/ratioY),
 								null);
 						break;
 					}
+				}
+				for(int i = 0 ; i < switchDlg.getEndPosition(); i++)
+				{
+					String text = forText.getAnswer(i);
+					g.drawString("  "+ (i+1)+ " " + text, (int)(screenWidth/10)+10, 
+							(int)(screenHeight*(7.0/10))+(int)(i *cursorImage.getUtilImage().getHeight(null)*ratioY + switchDlg.getFontSize()*3));
 				}
 			}
 			else
@@ -742,9 +750,9 @@ public class GameDisplay implements Runnable{
 				g.setFont(switchDlg.getFont());
 				g.setColor(Color.WHITE);
 				g.fillRect((int)(screenWidth/10), (int)(screenHeight*(1.0/10)), (int)(screenWidth*(8.0/10)), (int)(screenHeight*(3.0/10)));
-				g.setColor(new Color(50,200,50,190));
+				g.setColor(new Color(60,190,50,230));
 				g.fill3DRect((int)(screenWidth/10)+10, (int)(screenHeight*(1.0/10))+10, (int)(screenWidth*(8.0/10))-20, (int)(screenHeight*(3.0/10))-20, true);
-				g.setColor(Color.white);
+				g.setColor(Color.BLACK);
 				g.drawString(switchDlg.getText(), (int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10))-switchDlg.getFontSize());
 				//커서 출력
 				for(int i = 0 ; i < switchDlg.getEndPosition(); i++)
@@ -752,18 +760,23 @@ public class GameDisplay implements Runnable{
 					if(switchDlg.getPosition() == i)
 					{
 						g.drawImage(cursorImage.getUtilImage(),
-								(int)(screenWidth/10)+10, (int)(screenHeight*(2.0/10)),
-								(int)(cursorImage.getUtilImage().getWidth(null)*ratioX),
-								(int)(cursorImage.getUtilImage().getHeight(null)*ratioY),
+								(int)(screenWidth/10)+10, (int)(screenHeight*(7.0/10))+(i+1)*(int)(screenHeight*(1.0/18))+switchDlg.getFontSize()/2,
+										(int)(cursorImage.getUtilImage().getWidth(null)/ratioX),
+										(int)(cursorImage.getUtilImage().getHeight(null)/ratioY),
 								null);
 						break;
 					}
+				}
+				for(int i = 0 ; i < switchDlg.getEndPosition(); i++)
+				{
+					String text = forText.getAnswer(i);
+					g.drawString("  "+ (i+1)+ " " + text, (int)(screenWidth/10)+10, 
+							(int)(screenHeight*(7.0/10))+(int)(i *cursorImage.getUtilImage().getHeight(null)*ratioY + switchDlg.getFontSize()*3));
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			System.out.println("GameDisplay displayDialog error");
 			return;
 		}
 	}
