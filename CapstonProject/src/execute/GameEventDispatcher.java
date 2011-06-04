@@ -50,7 +50,8 @@ public class GameEventDispatcher {
 		{
 			for(int x = 0 ; x < width; x++)
 			{
-				if(eventLoader.hasEventOnTile(y, x) == true)
+				if(eventLoader.hasEventOnTile(y, x) == true && 
+						eventLoader.getEventTile(y, x).getObjectType() == EventEditorSystem.MAP_EVENT)
 				{
 					mapEventChecker[y][x] = true;
 				}
@@ -94,8 +95,12 @@ public class GameEventDispatcher {
 				//맵에 이벤트가 있다면
 				if(this.hasMapEvent(width, height))
 				{
-					mapEventTile = this.getEventTile(width, height);
+					mapEventTile = getEventTile(width, height);
+//					if(mapEventTile.getObjectType() != EventEditorSystem.MAP_EVENT)
+//						continue;
+					
 					eventList = mapEventTile.getEventList();
+
 					//자동이벤트가 있는지 확인
 					for(int length = 0 ; length < eventList.size(); length++)
 					{
