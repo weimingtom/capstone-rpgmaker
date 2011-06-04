@@ -2,7 +2,13 @@ package viewControl.editorDlg.eventContentDlg;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -66,7 +72,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
 		if(!isNew) {
-			tf_filePath.setText(((ChangeBGMEvent)(event.getEventContent(index))).getFileName());
+			tf_filePath.setText(((ChangeBGMEvent)(event.getEventContent(index))).getSrcFileName());
 			tf_volumn.setText(new Integer(((ChangeBGMEvent)(event.getEventContent(index))).getVolumn()).toString());
 		}
 
@@ -120,12 +126,13 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
 			// EventContent를 event에 삽입한다.
-			if(isNew)
-				event.getEventContentList().add(index, new ChangeBGMEvent(tf_filePath.getText(), (new Integer(tf_volumn.getText())).intValue()));
-			else {
+			if(!isNew)
 				event.getEventContentList().remove(index);
-				event.getEventContentList().add(index, new ChangeBGMEvent(tf_filePath.getText(), (new Integer(tf_volumn.getText())).intValue()));
-			}
+			
+			event.getEventContentList().add(index, new ChangeBGMEvent(tf_filePath.getText(),
+																	  ".DefaultData" + File.separator + "Musics" + File.separator + tf_filePath.getText().substring(tf_filePath.getText().lastIndexOf(File.separator)+1),
+																	  (new Integer(tf_volumn.getText())).intValue()));
+			fileCopy(tf_filePath.getText(), MainFrame.OWNER.ProjectFullPath + File.separator + ".DefaultData" + File.separator + "Musics" + File.separator + tf_filePath.getText().substring(tf_filePath.getText().lastIndexOf(File.separator)+1));
 			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {
@@ -156,5 +163,29 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				}
 			}
 		}
+	}
+	
+	private boolean fileCopy(String src, String dst) {
+		OutputStream out = null;
+		BufferedInputStream in = null;
+		try {
+			in = new BufferedInputStream(new FileInputStream(new File(src)));
+			out = new FileOutputStream(dst);
+
+			int data = -1;
+			while ((data = in.read()) != -1) {
+				out.write(data);
+			}
+			out.close();
+			in.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 }
