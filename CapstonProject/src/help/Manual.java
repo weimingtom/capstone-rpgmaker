@@ -141,15 +141,7 @@ public class Manual extends JPanel implements TreeSelectionListener,
 	}
 
 	private static void createAndShowGUI() {
-		if (useSystemLookAndFeel) {
-			try {
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
-				System.err.println("Couldn't use system look and feel.");
-			}
-		}
-
+	
 		JFrame frame = new JFrame("Manual");
 		frame.setBounds(0, 0, 800, 640);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

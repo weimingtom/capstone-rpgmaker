@@ -26,6 +26,7 @@ public class OpenProjChooerDlg extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
 		public OpenProjChooerDlg(OpenProjectDlg parant) {
 		super(parant);
+		setTitle("Choose Project Folder!");
 		owner = parant;
 		btn_ok = new JButton("O K");
 		btn_Cancel = new JButton("Cancel");

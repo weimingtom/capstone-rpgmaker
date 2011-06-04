@@ -27,7 +27,7 @@ public class NewProjFolderChooserDlg extends JDialog implements ActionListener {
 
 	public NewProjFolderChooserDlg(NewProjectDlg parant) {
 		super(parant);
-	
+		setTitle("Choose New Project Folder");
 		owner = parant;
 		Container cp = getContentPane();
 		cp.setLayout(new BorderLayout());

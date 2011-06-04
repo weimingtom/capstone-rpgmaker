@@ -34,6 +34,7 @@ public class NewMapDlg extends JDialog implements ActionListener {
 		setPreferredSize(new Dimension(580, 290));
 		setResizable(false);
 		setModal(true);
+		setTitle("New Map!");
 		initComponents();
 	}
 
