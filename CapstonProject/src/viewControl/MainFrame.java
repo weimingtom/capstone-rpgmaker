@@ -277,7 +277,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		toolBar.add(btnProjClose);
 		toolBar.add(btnSaveMap);
 		toolBar.add(btnSaveProj);
-		toolBar.addSeparator();
+		toolBar.add(getSeperator(true));
 		toolBar.add(btnExeProj);
 		toolBar.add(btnHelp);
 
@@ -325,13 +325,13 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasPanel.add(canvasToolbar, BorderLayout.NORTH);
 		canvasToolbar.setFloatable(false);
 		canvasToolbar.add(btnCanvasGrid);
-		canvasToolbar.addSeparator();
+		canvasToolbar.add(getSeperator(true));
 		canvasToolbar.add(btnBgOnly);
 		canvasToolbar.add(btnFgOnly);
 		canvasToolbar.add(btnSemitransparent);
-		canvasToolbar.addSeparator();
+		canvasToolbar.add(getSeperator(true));
 		canvasToolbar.add(btnEvent);
-		canvasToolbar.addSeparator();
+		canvasToolbar.add(getSeperator(true));
 		canvasToolbar.add(btnStamp);
 		canvasToolbar.add(btnPaint);
 
@@ -391,10 +391,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		westToolbar.setFloatable(false);
 		westToolbar.add(btnWestMin);
 		westToolbar.add(btnWestMax);
-		westToolbar.addSeparator();
+		westToolbar.add(getSeperator(false));
 		westToolbar.add(btnNewMap);
 		westToolbar.add(btnNewTileSet);
-		westToolbar.addSeparator();
+		westToolbar.add(getSeperator(false));
 		westToolbar.add(btnRefresh);
 		westToolbar.setRollover(true);
 
@@ -421,10 +421,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		eastToolbar.setFloatable(false);
 		eastToolbar.add(btnPaletteGrid);
-		eastToolbar.addSeparator();
+		eastToolbar.add(getSeperator(true));
 		eastToolbar.add(btnForePalette);
 		eastToolbar.add(btnBackPalette);
-		eastToolbar.addSeparator();
+		eastToolbar.add(getSeperator(true));
 		eastToolbar.add(btnMovable);
 		eastToolbar.add(btnUpperAble);
 
@@ -1243,9 +1243,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				mapEditSystem.makeForeTemplate(fforeList[i].getPath());
 				PalettePanel p = new PalettePanel(mapEditSystem, false,
 						foreTileSetTabCounter);
-				p
-						.setImage(mapEditSystem
-								.getForeTemplate(foreTileSetTabCounter));
+				p.setImage(mapEditSystem.getForeTemplate(foreTileSetTabCounter));
 				setTileSetTab(jp, p, foreTileSetTabCounter++, false);
 				xbtn.addMouseListener(new MouseAdapter() {
 					@Override
@@ -1269,9 +1267,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				mapEditSystem.makeBackTemplate(fbackList[i].getPath());
 				PalettePanel p = new PalettePanel(mapEditSystem, true,
 						backTileSetTabCounter);
-				p
-						.setImage(mapEditSystem
-								.getBackTemplate(backTileSetTabCounter));
+				p.setImage(mapEditSystem.getBackTemplate(backTileSetTabCounter));
 				setTileSetTab(jp, p, backTileSetTabCounter++, true);
 				xbtn.addMouseListener(new MouseAdapter() {
 					@Override
@@ -1302,9 +1298,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				mapEditSystem.makeForeTemplate(fforeList[i].getPath());
 				PalettePanel p = new PalettePanel(mapEditSystem, false,
 						foreTileSetTabCounter);
-				p
-						.setImage(mapEditSystem
-								.getForeTemplate(foreTileSetTabCounter));
+				p.setImage(mapEditSystem.getForeTemplate(foreTileSetTabCounter));
 				setTileSetTab(jp, p, foreTileSetTabCounter++, false);
 				xbtn.addMouseListener(new MouseAdapter() {
 					@Override
@@ -1328,9 +1322,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				mapEditSystem.makeBackTemplate(fbackList[i].getPath());
 				PalettePanel p = new PalettePanel(mapEditSystem, true,
 						backTileSetTabCounter);
-				p
-						.setImage(mapEditSystem
-								.getBackTemplate(backTileSetTabCounter));
+				p.setImage(mapEditSystem.getBackTemplate(backTileSetTabCounter));
 				setTileSetTab(jp, p, backTileSetTabCounter++, true);
 				xbtn.addMouseListener(new MouseAdapter() {
 					@Override
@@ -1957,4 +1949,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		this.coordinateY.setText((p.y / DrawingTemplate.pixel) + 1 + "");
 	}
 
+	private JLabel getSeperator(boolean isVertical) {
+		JLabel l = null;
+		if (isVertical)
+			l = new JLabel(new ImageIcon(
+					"src\\resouce\\btnImg\\menu_separator_v.PNG"));
+		else
+			l = new JLabel(new ImageIcon(
+					"src\\resouce\\btnImg\\menu_separator_h.PNG"));
+		return l;
+	}
 }
