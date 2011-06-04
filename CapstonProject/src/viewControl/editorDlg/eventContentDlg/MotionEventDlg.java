@@ -17,37 +17,27 @@ import javax.swing.WindowConstants;
 
 import viewControl.MainFrame;
 import eventEditor.Event;
+import eventEditor.eventContents.DialogEvent;
+import eventEditor.eventContents.MotionEvent;
 
-public class MotionEventDlg extends JDialog implements ActionListener, MouseListener {
+public class MotionEventDlg extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	
-	// cb_actorType
-	public static final int CHARACTER = 0;
-	public static final int NPC = 1;
-	public static final int MONSTER = 2;
-	// cb_direction
-	public static final int EAST = 0;
-	public static final int WEST = 1;
-	public static final int SOUTH = 2;
-	public static final int NORTH = 3;
 	
 	// Variables declaration - do not modify
 	private JButton btn_OK;
 	private JButton btn_cancel;
-	private JComboBox cb_actorIndex;
 	private JComboBox cb_actorType;
 	private JComboBox cb_direction;
 	private JLabel jLabel1;
 	private JLabel jLabel2;
 	private JLabel jLabel3;
 	private JLabel jLabel4;
-	private JLabel jLabel5;
 	private JTextField tf_MotionDistance;
 	private JTextField tf_speed;
 	// End of variables declaration
 	
-	private MainFrame owner;
+//	private MainFrame owner;
 	private Event event;
 	private boolean isNew;
 	private int index;
@@ -69,12 +59,10 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 	private void initComponents() {
 		// 컨포넌트 정의 
 		jLabel1 = new JLabel("Actor Type:");
-		jLabel2 = new JLabel("Actor Index:");
-		jLabel3 = new JLabel("Direction:");
-		jLabel4 = new JLabel("Motion Distance:");
-		jLabel5 = new JLabel("Speed:");
-		cb_actorType = new JComboBox(new DefaultComboBoxModel(new String[] { "Character", "NPC", "Monster" }));
-//		cb_actorIndex = new JComboBox();
+		jLabel2 = new JLabel("Direction:");
+		jLabel3 = new JLabel("Motion Distance:");
+		jLabel4 = new JLabel("Speed:");
+		cb_actorType = new JComboBox(new DefaultComboBoxModel(new String[] { "Character", "Self" }));
 		cb_direction = new JComboBox(new DefaultComboBoxModel(new String[] { "East", "West", "South", "North" }));
 		tf_MotionDistance = new JTextField(3);
 		tf_speed = new JTextField("1", 2);
@@ -84,52 +72,44 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 		// 액션 이벤트
 		btn_OK.addActionListener(this);
 		btn_cancel.addActionListener(this);
-		cb_actorType.addActionListener(this);
-		
-		// 마우스 이벤트
-		cb_actorType.addMouseListener(this);
 		
 		// isNew가 false면 event의 index번 데이터로 초기화
-//		if(!isNew) {
-//			int selectedIndex = 0;
-//			cb_actorType.setSelectedIndex(selectedIndex);
-//			cb_actorIndex = new JComboBox(getActorNames(selectedIndex));
-//		} else {
-//			cb_actorType.setSelectedIndex(0);
-//			cb_actorIndex = new JComboBox(getActorNames(CHARACTER));
-//		}
+		if(!isNew) {
+			int selectedIndex = 0;
+			cb_actorType.setSelectedIndex(((MotionEvent)(event.getEventContent(index))).getActorType());
+			tf_MotionDistance.setText((new Integer(((MotionEvent)(event.getEventContent(index))).getCountMove())).toString());
+			tf_speed.setText((new Integer(((MotionEvent)(event.getEventContent(index))).getSpeed())).toString());
+		} else
+			cb_actorType.setSelectedIndex(0);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		
-		cb_actorIndex.setModel(new DefaultComboBoxModel(new String[] { "Item 1" }));
 
+		// 레이아웃 구성
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(
 			layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 			.addGroup(layout.createSequentialGroup()
+				.addContainerGap()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-					.addGroup(layout.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-							.addComponent(jLabel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(jLabel4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-							.addComponent(tf_MotionDistance, GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-							.addComponent(tf_speed)
-							.addComponent(cb_actorType, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(cb_actorIndex, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(cb_direction, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-						.addContainerGap()
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 94, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btn_OK, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(btn_cancel)))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(btn_cancel))
+					.addGroup(layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+							.addComponent(jLabel1, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(jLabel2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(jLabel4, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(jLabel3, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(tf_MotionDistance, GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+							.addComponent(tf_speed, GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+							.addComponent(cb_direction, 0, 138, Short.MAX_VALUE)
+							.addComponent(cb_actorType, GroupLayout.Alignment.TRAILING, 0, 138, Short.MAX_VALUE))))
+				.addContainerGap())
 		);
 		layout.setVerticalGroup(
 			layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -141,18 +121,14 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 					.addComponent(jLabel2)
-					.addComponent(cb_actorIndex, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(jLabel3)
 					.addComponent(cb_direction, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(jLabel4)
+					.addComponent(jLabel3)
 					.addComponent(tf_MotionDistance, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(jLabel5)
+					.addComponent(jLabel4)
 					.addComponent(tf_speed, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -163,31 +139,27 @@ public class MotionEventDlg extends JDialog implements ActionListener, MouseList
 
 		pack();
 	}
-	
-//	private String[] getActorNames(int actorType) {
-//	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_OK) {
+
+			if(isNew)
+				event.getEventContentList().add(index, new MotionEvent(cb_actorType.getSelectedIndex(),
+																	   cb_direction.getSelectedIndex(),
+																	   new Integer(tf_MotionDistance.getText()),
+																	   new Integer(tf_speed.getText())));
+			else {
+				event.getEventContentList().remove(index);
+				event.getEventContentList().add(index, new MotionEvent(cb_actorType.getSelectedIndex(),
+																	   cb_direction.getSelectedIndex(),
+																	   new Integer(tf_MotionDistance.getText()),
+																	   new Integer(tf_speed.getText())));
+			}
+			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {
 			this.dispose();
-		} else if(e.getSource() == cb_actorType) {
-		}
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-	@Override
-	public void mouseExited(MouseEvent e) {}
-	@Override
-	public void mousePressed(MouseEvent e) {}
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		if(e.getSource() == cb_actorType) {
 		}
 	}
 }
