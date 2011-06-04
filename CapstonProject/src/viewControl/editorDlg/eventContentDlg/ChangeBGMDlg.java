@@ -151,7 +151,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 			int volumn = (new Integer(tf_volumn.getText())).intValue();
 			
 			// 파일이 프로젝트 폴더 내에 존재하지 않으면 복사한다.
-			if(!isExistingBGMFile(srcFileName)) {
+			if(isExistingBGMFile(srcFileName)) {
 				File srcFile = new File(srcFileName);
 				if(srcFile.exists()) {
 					if(!copyFile(srcFileName, dstFileName))
@@ -289,12 +289,14 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	    }
 	}
 	
-	private boolean isExistingBGMFile(String fileName) {
-		int index = fileName.lastIndexOf(MainFrame.OWNER.ProjectFullPath+File.separator+".DefaultData"+File.separator+"Musics");
-		if(index != -1)
-			return true;
-		else
-			return false;
+	private boolean isExistingBGMFile(String srcFleFullName) {
+		File[] musicFiles = (new File(MainFrame.OWNER.ProjectFullPath+File.separator+".DefaultData"+File.separator+"Musics")).listFiles();
+		String srcFileName = srcFleFullName.substring(srcFleFullName.lastIndexOf(File.separator));
+		for (int i = 0; i < musicFiles.length; i++) {
+			if(srcFileName.equals(musicFiles[i].getName()))
+				return true;
+		}
+		return false;
 	}
 	
 	// BGM을 실행하기 위한 클래스
