@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -25,6 +27,8 @@ import javax.swing.JSeparator;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import viewControl.MainFrame;
 
@@ -56,7 +60,7 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 		btn_ok = new JButton("O K");
 		btn_cancel = new JButton("Cancel");
 		cb_workspace = new JComboBox();
-
+		changedIndex=0;
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		textPanel.setBackground(new Color(255, 255, 255));
@@ -205,7 +209,13 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 			e.printStackTrace();
 			pathStr = new String[]{""};
 		}
-
+		cb_workspace.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				changedIndex = cb_workspace.getSelectedIndex();
+			}
+		});
 		btn_browser.addActionListener(this);
 		btn_cancel.addActionListener(this);
 		btn_ok.addActionListener(this);
@@ -226,10 +236,12 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 	private JPanel textPanel;
 	private String pathStr[];
 	private File saveData;
+	private int changedIndex;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btn_ok) {
+			btn_ok.setEnabled(false);
 			try {
 				File fproj = new File((String) (cb_workspace.getSelectedItem()));
 				MainFrame.OWNER.ProjectName = fproj.getName();
@@ -244,7 +256,12 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 					l_state.setText("Please, choose right path!");
 					return;
 				}
-
+				
+				if(changedIndex!=0){
+					String temp = pathStr[0];
+					pathStr[0] = pathStr[changedIndex];
+					pathStr[changedIndex] = temp;
+				}
 				FileWriter fw = new FileWriter(saveData);
 				for (int i = pathStr.length - 1; i != -1; i--) {
 					fw.write(pathStr[i] + "$");
@@ -259,6 +276,7 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 				MainFrame.OWNER.setAllUserTileSet();
 				MainFrame.OWNER.syncProjOpenCloseBtn();
 				dispose();
+				btn_ok.setEnabled(true);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			} catch (Exception e2) {
