@@ -115,6 +115,8 @@ public class TileSetChooserDlg extends JDialog {
 					JLabel title = new JLabel(fileName);
 					jp.add(title);
 					jp.setOpaque(false);
+					
+					MainFrame.OWNER.setSubState(fileName+"is loaded!");
 
 					if (!isFore.isSelected()) {
 						MainFrame.OWNER.mapEditSystem

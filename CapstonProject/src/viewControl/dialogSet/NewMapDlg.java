@@ -319,6 +319,7 @@ public class NewMapDlg extends JDialog implements ActionListener {
 							MainFrame.OWNER.tempCanvasName,
 							MainFrame.OWNER.currentCanvasSize);
 					MainFrame.OWNER.enableNewMapMenu(true);
+					MainFrame.OWNER.setSubState(mapName+" is created!");
 					dispose();
 				}
 			} catch (NumberFormatException e1) {

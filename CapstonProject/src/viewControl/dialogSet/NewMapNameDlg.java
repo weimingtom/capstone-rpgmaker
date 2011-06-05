@@ -174,6 +174,7 @@ public class NewMapNameDlg extends JDialog{
 					l_state.setText("Map name is duplicated or emtpy!!");
 				} else {
 					MainFrame.OWNER.saveCurrentCanvas(title);
+					MainFrame.OWNER.setSubState(title);
 					dispose();
 				}
 			}
