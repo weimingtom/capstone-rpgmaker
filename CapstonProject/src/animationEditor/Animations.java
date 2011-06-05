@@ -30,8 +30,8 @@ public class Animations extends ObjectEditorSystem implements Serializable {
 	private ImageIcon baseImgIcon;
 	private int callIndex;
 	
-	public Animations(String projectPath) {
-		super(projectPath, "Animation");
+	public Animations(String projectFullPath) {
+		super(projectFullPath, "Animation");
 		extension = "ani";
 		
 		this.name = "New_Animation";

@@ -18,18 +18,18 @@ public abstract class ObjectEditorSystem implements Serializable {
 
 	private static final long serialVersionUID = 2240259562916301291L;
 	
-	protected String projectPath;		// 프로젝트 경로
+	protected String projectFullPath;		// 프로젝트 경로
 	protected int index;				// 객체의 인덱스
 	protected String name;				// 객체의 이름
 	protected String folderName;
 	protected String baseFolderPath;	// 기본 저장 폴더
 	protected String extension;			// 객체의 확장자
 	
-	public ObjectEditorSystem(String projectPath, String folderName) {
-		this.projectPath = projectPath;;
+	public ObjectEditorSystem(String projectFullPath, String folderName) {
+		this.projectFullPath = projectFullPath;;
 		index = 0;
 		this.folderName = folderName;
-		baseFolderPath = this.projectPath + File.separator + folderName;
+		baseFolderPath = this.projectFullPath + File.separator + folderName;
 	}
 	
 	// load() 시 불러온 객체의 내용을 복사하기 위한 함수. 하위 클래스에서 구현해주어야함.
@@ -52,7 +52,7 @@ public abstract class ObjectEditorSystem implements Serializable {
 			// ois에 전달된 객체를 저장한다.
 			ObjectEditorSystem data = (ObjectEditorSystem)ois.readObject();
 			this.copyObject(data);
-			this.projectPath = data.projectPath;
+//			this.projectPath = data.projectPath;
 			this.index = data.index;
 			this.name = data.name;
 			this.folderName = data.folderName;
@@ -100,7 +100,7 @@ public abstract class ObjectEditorSystem implements Serializable {
 			try {
 				ObjectEditorSystem data = (ObjectEditorSystem)ois.readObject();
 				this.copyObject(data);
-				this.projectPath = data.projectPath;
+				this.projectFullPath = data.projectFullPath;
 				this.index = data.index;
 				this.name = data.name;
 				this.folderName = data.folderName;
@@ -184,8 +184,8 @@ public abstract class ObjectEditorSystem implements Serializable {
 		return resultStr;
 	}
 
-	public String getProjectPath()					{	return projectPath;						}
-	public void setProjectPath(String projectPath)	{	this.projectPath = projectPath;			}
+	public String getProjectFullPath()					{	return projectFullPath;						}
+	public void setProjectFullPath(String projectPath)	{	this.projectFullPath = projectPath;			}
 	public int getIndex()							{	return index;							}
 	public void setIndex(int index)					{	this.index = index;						}
 	public String getName()							{	return name;							}
