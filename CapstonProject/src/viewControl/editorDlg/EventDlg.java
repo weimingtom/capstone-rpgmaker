@@ -267,6 +267,19 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		}
 	}
 	
+	private void renewEventBtn() {
+		if(cb_objectType.getSelectedIndex() == EventEditorSystem.MONSTER_EVENT) {
+			clearEvents();
+			renewTabPanels(0);
+			btn_addEvent.setEnabled(false);
+			btn_deleteEvent.setEnabled(false);
+		} else {
+			btn_addEvent.setEnabled(true);
+			btn_deleteEvent.setEnabled(true);
+		}
+			
+	}
+	
 	private Event getEventInTapPanel(int index) {
 		return eventTabPanelList.get(index).getEvent();
 	}
@@ -285,6 +298,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 					for (int k = 0; k < eventTabPanelList.size(); k++) {
 						try {
 							getEventInTapPanel(k).setActionType(getTapPanel(k).getActionType());
+							System.out.println(getEventInTapPanel(k).getActionType());
 							getEventInTapPanel(k).setActorIndex(getTapPanel(k).getActorIndex());
 							getEventInTapPanel(k).setStartType(getTapPanel(k).getStartType());
 							getEventInTapPanel(k).setPreconditionFlag(0, getTapPanel(k).getCondition1());
@@ -336,7 +350,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 			
 		} else if(e.getSource() == cb_objectType) {
 			renewActorMenu();
-			
+			renewEventBtn();
 		}
 	}
 	
@@ -356,6 +370,7 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 	public void mouseReleased(MouseEvent e) {
 		if(e.getSource() == cb_objectType) {
 			renewActorMenu();
+			renewEventBtn();
 		}
 	}
 }
