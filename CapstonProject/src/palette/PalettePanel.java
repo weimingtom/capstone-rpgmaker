@@ -183,10 +183,9 @@ public class PalettePanel extends JPanel implements MouseListener,
 	public void setImage(BufferedImage thisImage) {
 		// 이미지를 그리드 크기에 맞게 자른다.
 		BufferedImage buffimage = new BufferedImage(thisImage.getWidth()
-				- thisImage.getWidth() % DrawingTemplate.pixel, thisImage
-				.getHeight()
-				- thisImage.getHeight() % DrawingTemplate.pixel,
-				BufferedImage.TYPE_4BYTE_ABGR);
+				- thisImage.getWidth() % DrawingTemplate.pixel,
+				thisImage.getHeight() - thisImage.getHeight()
+						% DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
 		// 이제 잘린 이미지에 그려서 크기를 맞춘다.
 		Graphics2D g = buffimage.createGraphics();
 		g.drawImage(thisImage, 0, 0, null);
@@ -285,8 +284,8 @@ public class PalettePanel extends JPanel implements MouseListener,
 		if (isGrid == true) {
 			g2d.setColor(new Color(0, 0, 0, 100));
 			for (int i = 0; i < imageGround.getHeight() / DrawingTemplate.pixel; i++) {
-				g2d.drawLine(0, i * DrawingTemplate.pixel, imageGround
-						.getWidth(), i * DrawingTemplate.pixel);
+				g2d.drawLine(0, i * DrawingTemplate.pixel,
+						imageGround.getWidth(), i * DrawingTemplate.pixel);
 
 			}
 			for (int j = 0; j < imageGround.getWidth() / DrawingTemplate.pixel; j++) {
@@ -320,8 +319,8 @@ public class PalettePanel extends JPanel implements MouseListener,
 			for (int row = 0; row < imageGround.getWidth()
 					/ DrawingTemplate.pixel; row++) {
 				try {
-					if (mapSys.getPalette(paletteIndex, back).getM_Tile(col,
-							row).getIsMove())
+					if (mapSys.getPalette(paletteIndex, back)
+							.getM_Tile(col, row).getIsMove())
 						drawO(g2d, row * DrawingTemplate.pixel, col
 								* DrawingTemplate.pixel);
 					// g2d.drawString("O", row*DrawingTemplate.pixel,
@@ -360,8 +359,8 @@ public class PalettePanel extends JPanel implements MouseListener,
 			for (int row = 0; row < imageGround.getWidth()
 					/ DrawingTemplate.pixel; row++) {
 				try {
-					if (mapSys.getPalette(paletteIndex, back).getM_Tile(col,
-							row).getIsUpper())
+					if (mapSys.getPalette(paletteIndex, back)
+							.getM_Tile(col, row).getIsUpper())
 						drawUp(g2d, row * DrawingTemplate.pixel, col
 								* DrawingTemplate.pixel);
 					// g2d.drawString("O", row*DrawingTemplate.pixel,
@@ -432,13 +431,9 @@ public class PalettePanel extends JPanel implements MouseListener,
 		Color tmp = g2d.getColor();
 
 		g2d.setColor(new Color(0, 255, 0, 100));
-		g2d
-				.fillOval(x, y, DrawingTemplate.pixel / 3,
-						DrawingTemplate.pixel / 3);
+		g2d.fillOval(x, y, DrawingTemplate.pixel / 3, DrawingTemplate.pixel / 3);
 		g2d.setColor(new Color(0, 0, 0, 100));
-		g2d
-				.drawOval(x, y, DrawingTemplate.pixel / 3,
-						DrawingTemplate.pixel / 3);
+		g2d.drawOval(x, y, DrawingTemplate.pixel / 3, DrawingTemplate.pixel / 3);
 		g2d.setColor(tmp);
 	}
 
@@ -550,6 +545,10 @@ public class PalettePanel extends JPanel implements MouseListener,
 					* DrawingTemplate.pixel;
 			this.rectWidth = (Math.abs(endRow - startRow) + 1)
 					* DrawingTemplate.pixel;
+
+			MainFrame.OWNER.setMainStateEast("Palette " + rectWidth
+					/ DrawingTemplate.pixel + " x " + rectHeight
+					/ DrawingTemplate.pixel + " block");
 		}
 		repaint();
 	}
@@ -589,16 +588,16 @@ public class PalettePanel extends JPanel implements MouseListener,
 					}
 				} else if (this.moveMode == true) {
 					try {
-						mapSys.getPalette(paletteIndex, back).getM_Tile(
-								startCol, startRow).setIsMove();
+						mapSys.getPalette(paletteIndex, back)
+								.getM_Tile(startCol, startRow).setIsMove();
 					} catch (IllegalTileIndex e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else if (this.upperMode == true) {
 					try {
-						mapSys.getPalette(paletteIndex, back).getM_Tile(
-								startCol, startRow).setIsUpper();
+						mapSys.getPalette(paletteIndex, back)
+								.getM_Tile(startCol, startRow).setIsUpper();
 					} catch (IllegalTileIndex e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -621,6 +620,7 @@ public class PalettePanel extends JPanel implements MouseListener,
 	public void mousePressed(MouseEvent me) {
 		if ((me.getModifiers() & InputEvent.BUTTON1_MASK) != 0) { // 왼쪽
 			clickPoint = me.getPoint();
+			MainFrame.OWNER.setMainStateEast("Palette 1 x 1 block");
 		}
 	}
 
