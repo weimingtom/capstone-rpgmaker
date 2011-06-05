@@ -151,7 +151,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 			int volumn = (new Integer(tf_volumn.getText())).intValue();
 			
 			// 파일이 프로젝트 폴더 내에 존재하지 않으면 복사한다.
-			if(isExistingBGMFile(srcFileName)) {
+			if(!isExistingBGMFile(srcFileName)) {
 				File srcFile = new File(srcFileName);
 				if(srcFile.exists()) {
 					if(!copyFile(srcFileName, dstFileName))
@@ -166,9 +166,6 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				event.getEventContentList().remove(index);
 			event.getEventContentList().add(index, new ChangeBGMEvent(srcFileName, saveFileName, volumn));
 			
-			
-
-			
 			// BGM이 재생중이거나 일시정지중이면 정지시킨다.
 			if(bgmPlayer != null) {
 				bgmPlayer.setPlayState(BGMPlayer.STOP);
@@ -176,8 +173,6 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 				bgmPlayer = null;
 				btn_playBGM.setText("▷");
 			}
-			
-			
 			
 			this.dispose();
 		} else if(e.getSource() == btn_cancel) {
@@ -291,7 +286,7 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 	
 	private boolean isExistingBGMFile(String srcFleFullName) {
 		File[] musicFiles = (new File(MainFrame.OWNER.ProjectFullPath+File.separator+".DefaultData"+File.separator+"Musics")).listFiles();
-		String srcFileName = srcFleFullName.substring(srcFleFullName.lastIndexOf(File.separator));
+		String srcFileName = srcFleFullName.substring(srcFleFullName.lastIndexOf(File.separator)+1);
 		for (int i = 0; i < musicFiles.length; i++) {
 			if(srcFileName.equals(musicFiles[i].getName()))
 				return true;
