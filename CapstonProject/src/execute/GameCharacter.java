@@ -9,6 +9,7 @@ import eventEditor.EventTile;
 
 public abstract class GameCharacter {
 	
+	protected String gamePath;
 	
 	//현재 액터의 상태가 어떤가? 정지, 이동중/데미지 입는중/스킬사용중/죽음..이 플래그에 따라 출력 애니메이션이 달라짐
 	protected int actorState = 0;
@@ -47,9 +48,9 @@ public abstract class GameCharacter {
 	protected boolean isLevelUp = false;
 
 	protected Event actorEvent;
+	protected EventTile totalEvent;
 	
 	//액터의 액션 타입. 대기냐 액션이
-
 	protected int actionType;
 	
 	//액션 타입
@@ -96,7 +97,11 @@ public abstract class GameCharacter {
 	public void attack(GameCharacter attack, GameCharacter defender)
 	{
 		Abilities now = defender.getNowStatus();
+//		if(now == null)
+//			System.out.println("플레이어 널");
 		Abilities nowActor = attack.getNowStatus();
+//		if(nowActor == null)
+//			System.out.println("몬스터 널");
 		if(now.getHP() <= nowActor.getStrength())
 			now.setHP(0);
 		else
@@ -116,6 +121,10 @@ public abstract class GameCharacter {
 	}
 	
 	public abstract void deployActor(int actorIndex, int xPosition, int yPosition, Event eventContentList);
+	
+	public abstract void changeActor(int actorIndex, int xPosition, int yPosition );
+	
+	
 	
 	public int getxPosition() {
 		return xPosition;
@@ -238,6 +247,14 @@ public abstract class GameCharacter {
 
 	public void setActorEvent(Event actorEvent) {
 		this.actorEvent = actorEvent;
+	}
+
+	public EventTile getTotalEvent() {
+		return totalEvent;
+	}
+
+	public void setTotalEvent(EventTile totalEvent) {
+		this.totalEvent = totalEvent;
 	}
 
 }

@@ -36,10 +36,14 @@ public class PlayerCharacter extends GameCharacter {
 	{
 		try {
 			actor.load(actorIndex);
+			speed = actor.getSpeed();
+			if(speed == 0 )
+				speed = 1;
 			this.setxPosition(xPosition);
 			this.setyPosition(yPosition);
 			this.setActorEvent(eventList);
 			maxStatus = actor.getInitAbility();
+			nowStatus = new Abilities();
 			nowStatus.setAgility(maxStatus.getAgility());
 			nowStatus.setEXP(maxStatus.getEXP());
 			nowStatus.setHP(maxStatus.getHP());
@@ -60,6 +64,12 @@ public class PlayerCharacter extends GameCharacter {
 	public Actors getCharacter() {
 		// TODO Auto-generated method stub
 		return actor;
+	}
+
+	@Override
+	public void changeActor(int actorIndex, int xPosition, int yPosition) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
