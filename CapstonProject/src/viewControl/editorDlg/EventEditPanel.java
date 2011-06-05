@@ -13,7 +13,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -23,7 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle;
 
 import viewControl.MainFrame;
 import viewControl.editorDlg.eventContentDlg.ChangeBGMDlg;
@@ -544,7 +542,14 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	
 				p_actorImg.setEnabled(true);
 				cb_actorIndex.setEnabled(true);
-				cb_actorMotionType.setEnabled(true);
+				
+				if(objectType == EventEditorSystem.NPC_EVENT) {
+					cb_actorMotionType.setEnabled(true);
+				} else {
+					cb_actorMotionType.setSelectedIndex(EventEditorSystem.ATTACK_PLAYER);
+					cb_actorMotionType.setEnabled(false);
+				}
+				
 				ckb_ifDie.setEnabled(true);
 				cb_dieCondition.setEnabled(true);
 				cb_dieConditionState.setEnabled(true);
@@ -730,7 +735,10 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	}
 	
 	public int getActionType() {
-		return cb_actorMotionType.getSelectedIndex();
+		if(objectType != EventEditorSystem.MONSTER_EVENT)
+			return cb_actorMotionType.getSelectedIndex();
+		else
+			return EventEditorSystem.ATTACK_PLAYER;
 	}
 	
 	public int getDieConditionIndex() {
