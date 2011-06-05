@@ -6,8 +6,8 @@ public class CharacterEditorSystem extends Actors implements Serializable {
 
 	private static final long serialVersionUID = -2431463333231656973L;
 	
-	public CharacterEditorSystem(String projectPath) {
-		super(projectPath, "Character");
+	public CharacterEditorSystem(String projectFullPath) {
+		super(projectFullPath, "Character");
 		
 		name = "New_Character";
 		extension = "char";

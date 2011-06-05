@@ -334,7 +334,6 @@ public class ChangeBGMDlg extends JDialog implements ActionListener {
 						e.printStackTrace();
 					}
 				}
-//				player.close();
 			}
 			
 			player.close();

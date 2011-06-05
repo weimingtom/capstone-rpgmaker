@@ -54,9 +54,9 @@ public abstract class Actors extends ObjectEditorSystem implements Serializable 
 	protected int speed;
 	
 	
-	public Actors(String projectPath, String folderName) {
-		super(projectPath, folderName);
-		defaultDataFolderPath = projectPath+File.separator+".DefaultData";
+	public Actors(String projectFullPath, String folderName) {
+		super(projectFullPath, folderName);
+		defaultDataFolderPath = projectFullPath+File.separator+".DefaultData";
 
 		initLevel = 1;
 		maxLevel = 99;
@@ -67,24 +67,24 @@ public abstract class Actors extends ObjectEditorSystem implements Serializable 
 		growthCurve = new Abilities(3, 3, 3, 3, 3, 3, 3, 3);
 		
 		// 애니메이션 초기화
-		moveUpAnimation = new Animations("MoveUp", projectPath);
-		moveDownAnimation = new Animations("MoveDown", projectPath);
-		moveRightAnimation = new Animations("MoveRight", projectPath);
-		moveLeftAnimation = new Animations("MoveLeft", projectPath);
-		battleMoveUpAni = new Animations("BattleMoveUp", projectPath);
-		battleMoveDownAni = new Animations("BattleMoveDown", projectPath);
-		battleMoveRightAni = new Animations("BattleMoveRight", projectPath);
-		battleMoveLeftAni = new Animations("BattleMoveLeft", projectPath);
-		attackUpAnimation = new Animations("AtackUp", projectPath);
-		attackDownAnimation = new Animations("AtackDown", projectPath);
-		attackRightAnimation = new Animations("AtackRigh", projectPath);
-		attackLeftAnimation = new Animations("AtackLeftt", projectPath);
-		damageUpAnimation = new Animations("DamageUp", projectPath);
-		damageDownAnimation = new Animations("DamageDown", projectPath);
-		damageRightAnimation = new Animations("DamageRight", projectPath);
-		damageLeftAnimation = new Animations("DamageLeft", projectPath);
-		skillAnimation = new Animations("Skill", projectPath);
-		dieAnimation = new Animations("Die", projectPath);
+		moveUpAnimation = new Animations("MoveUp", projectFullPath);
+		moveDownAnimation = new Animations("MoveDown", projectFullPath);
+		moveRightAnimation = new Animations("MoveRight", projectFullPath);
+		moveLeftAnimation = new Animations("MoveLeft", projectFullPath);
+		battleMoveUpAni = new Animations("BattleMoveUp", projectFullPath);
+		battleMoveDownAni = new Animations("BattleMoveDown", projectFullPath);
+		battleMoveRightAni = new Animations("BattleMoveRight", projectFullPath);
+		battleMoveLeftAni = new Animations("BattleMoveLeft", projectFullPath);
+		attackUpAnimation = new Animations("AtackUp", projectFullPath);
+		attackDownAnimation = new Animations("AtackDown", projectFullPath);
+		attackRightAnimation = new Animations("AtackRigh", projectFullPath);
+		attackLeftAnimation = new Animations("AtackLeftt", projectFullPath);
+		damageUpAnimation = new Animations("DamageUp", projectFullPath);
+		damageDownAnimation = new Animations("DamageDown", projectFullPath);
+		damageRightAnimation = new Animations("DamageRight", projectFullPath);
+		damageLeftAnimation = new Animations("DamageLeft", projectFullPath);
+		skillAnimation = new Animations("Skill", projectFullPath);
+		dieAnimation = new Animations("Die", projectFullPath);
 		eventAnimationList = new ArrayList<Animations>(countEventAnimationList);
 		
 		// 장비 초기화
@@ -104,127 +104,193 @@ public abstract class Actors extends ObjectEditorSystem implements Serializable 
 	
 	public void initImgData() {
 		try {
+			String animationFolderPath = defaultDataFolderPath + File.separator + folderName + File.separator;
+			
 			// 각 Animations 변수를 Default 이미지로 설정.
-			moveUpAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveUpBase.png");
-			moveUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveUp00.png", 0);
-			moveUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveUp01.png", 1);
-			moveUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveUp02.png", 2);
-			moveUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveUp03.png", 3);
 			
-			moveDownAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveDownBase.png");
-			moveDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveDown00.png", 0);
-			moveDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveDown01.png", 1);
-			moveDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveDown02.png", 2);
-			moveDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveDown03.png", 3);
+			// MoveUp
+			File[] MoveUpAniFiles = (new File(animationFolderPath+"MoveUp")).listFiles();
+			for (int i = 0; i < MoveUpAniFiles.length; i++) {
+				if(i!=MoveUpAniFiles.length-1)
+					moveUpAnimation.setAnimationImage(MoveUpAniFiles[i].getAbsolutePath(), i);
+				else
+					moveUpAnimation.setBaseImage(MoveUpAniFiles[i].getAbsolutePath());
+			}
 			
-			moveRightAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveRightBase.png");
-			moveRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveRight00.png", 0);
-			moveRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveRight01.png", 1);
-			moveRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveRight02.png", 2);
-			moveRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveRight03.png", 3);
+			// MoveDown
+			File[] MoveDownAniFiles = (new File(animationFolderPath+"MoveDown")).listFiles();
+			for (int i = 0; i < MoveDownAniFiles.length; i++) {
+				if(i!=MoveDownAniFiles.length-1)
+					moveDownAnimation.setAnimationImage(MoveDownAniFiles[i].getAbsolutePath(), i);
+				else
+					moveDownAnimation.setBaseImage(MoveDownAniFiles[i].getAbsolutePath());
+			}
 			
-			moveLeftAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveLeftBase.png");
-			moveLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveLeft00.png", 0);
-			moveLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveLeft01.png", 1);
-			moveLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveLeft02.png", 2);
-			moveLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "MoveLeft03.png", 3);
+			// MoveRight
+			File[] MoveRightAniFiles = (new File(animationFolderPath+"MoveRight")).listFiles();
+			for (int i = 0; i < MoveRightAniFiles.length; i++) {
+				if(i!=MoveRightAniFiles.length-1)
+					moveRightAnimation.setAnimationImage(MoveRightAniFiles[i].getAbsolutePath(), i);
+				else
+					moveRightAnimation.setBaseImage(MoveRightAniFiles[i].getAbsolutePath());
+			}
 			
-			battleMoveUpAni.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveUpBase.png");
-			battleMoveUpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveUp00.png", 0);
-			battleMoveUpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveUp01.png", 1);
-			battleMoveUpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveUp02.png", 2);
-			battleMoveUpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveUp03.png", 3);
+			// MoveLeft
+			File[] MoveLeftAniFiles = (new File(animationFolderPath+"MoveLeft")).listFiles();
+			for (int i = 0; i < MoveLeftAniFiles.length; i++) {
+				if(i!=MoveLeftAniFiles.length-1)
+					moveLeftAnimation.setAnimationImage(MoveLeftAniFiles[i].getAbsolutePath(), i);
+				else
+					moveLeftAnimation.setBaseImage(MoveLeftAniFiles[i].getAbsolutePath());
+			}
 			
-			battleMoveDownAni.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveDownBase.png");
-			battleMoveDownAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveDown00.png", 0);
-			battleMoveDownAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveDown01.png", 1);
-			battleMoveDownAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveDown02.png", 2);
-			battleMoveDownAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveDown03.png", 3);
+			// BattleMoveUp
+			File[] BattleMoveUpAniFiles = (new File(animationFolderPath+"BattleMoveUp")).listFiles();
+			for (int i = 0; i < BattleMoveUpAniFiles.length; i++) {
+				if(i!=BattleMoveUpAniFiles.length-1)
+					battleMoveUpAni.setAnimationImage(BattleMoveUpAniFiles[i].getAbsolutePath(), i);
+				else
+					battleMoveUpAni.setBaseImage(BattleMoveUpAniFiles[i].getAbsolutePath());
+			}
 			
-			battleMoveRightAni.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveRightBase.png");
-			battleMoveRightAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveRight00.png", 0);
-			battleMoveRightAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveRight01.png", 1);
-			battleMoveRightAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveRight02.png", 2);
-			battleMoveRightAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveRight03.png", 3);
+			// BattleMoveDown
+			File[] BattleMoveDownAniFiles = (new File(animationFolderPath+"BattleMoveDown")).listFiles();
+			for (int i = 0; i < BattleMoveDownAniFiles.length; i++) {
+				if(i!=BattleMoveDownAniFiles.length-1)
+					battleMoveDownAni.setAnimationImage(BattleMoveDownAniFiles[i].getAbsolutePath(), i);
+				else
+					battleMoveDownAni.setBaseImage(BattleMoveDownAniFiles[i].getAbsolutePath());
+			}
 			
-			battleMoveLeftAni.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveLeftBase.png");
-			battleMoveLeftAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveLeft00.png", 0);
-			battleMoveLeftAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveLeft01.png", 1);
-			battleMoveLeftAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveLeft02.png", 2);
-			battleMoveLeftAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "BattleMoveLeft03.png", 3);
+			// BattleMoveRight
+			File[] BattleMoveRightAniFiles = (new File(animationFolderPath+"BattleMoveRight")).listFiles();
+			for (int i = 0; i < BattleMoveRightAniFiles.length; i++) {
+				if(i!=BattleMoveRightAniFiles.length-1)
+					battleMoveRightAni.setAnimationImage(BattleMoveRightAniFiles[i].getAbsolutePath(), i);
+				else
+					battleMoveRightAni.setBaseImage(BattleMoveRightAniFiles[i].getAbsolutePath());
+			}
 			
-			attackUpAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackUpBase.png");
-			attackUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackUp00.png", 0);
-			attackUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackUp01.png", 1);
-			attackUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackUp02.png", 2);
-			attackUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackUp03.png", 3);
+			// BattleMoveLeft
+			File[] BattleMoveLeftAniFiles = (new File(animationFolderPath+"BattleMoveLeft")).listFiles();
+			for (int i = 0; i < BattleMoveLeftAniFiles.length; i++) {
+				if(i!=BattleMoveLeftAniFiles.length-1)
+					battleMoveLeftAni.setAnimationImage(BattleMoveLeftAniFiles[i].getAbsolutePath(), i);
+				else
+					battleMoveLeftAni.setBaseImage(BattleMoveLeftAniFiles[i].getAbsolutePath());
+			}
 			
-			attackDownAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackDownBase.png");
-			attackDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackDown00.png", 0);
-			attackDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackDown01.png", 1);
-			attackDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackDown02.png", 2);
-			attackDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackDown03.png", 3);
+			// AttackUp
+			File[] AttackUpAniFiles = (new File(animationFolderPath+"AttackUp")).listFiles();
+			for (int i = 0; i < AttackUpAniFiles.length; i++) {
+				if(i!=AttackUpAniFiles.length-1)
+					attackUpAnimation.setAnimationImage(AttackUpAniFiles[i].getAbsolutePath(), i);
+				else
+					attackUpAnimation.setBaseImage(AttackUpAniFiles[i].getAbsolutePath());
+			}
 			
-			attackRightAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackRightBase.png");
-			attackRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackRight00.png", 0);
-			attackRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackRight01.png", 1);
-			attackRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackRight02.png", 2);
-			attackRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackRight03.png", 3);
+			// AttackDown
+			File[] AttackDownAniFiles = (new File(animationFolderPath+"AttackDown")).listFiles();
+			for (int i = 0; i < AttackDownAniFiles.length; i++) {
+				if(i!=AttackDownAniFiles.length-1)
+					attackDownAnimation.setAnimationImage(AttackDownAniFiles[i].getAbsolutePath(), i);
+				else
+					attackDownAnimation.setBaseImage(AttackDownAniFiles[i].getAbsolutePath());
+			}
 			
-			attackLeftAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackLeftBase.png");
-			attackLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackLeft00.png", 0);
-			attackLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackLeft01.png", 1);
-			attackLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackLeft02.png", 2);
-			attackLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "AttackLeft03.png", 3);
+			// AttackRight
+			File[] AttackRightAniFiles = (new File(animationFolderPath+"AttackRight")).listFiles();
+			for (int i = 0; i < AttackRightAniFiles.length; i++) {
+				if(i!=AttackRightAniFiles.length-1)
+					attackRightAnimation.setAnimationImage(AttackRightAniFiles[i].getAbsolutePath(), i);
+				else
+					attackRightAnimation.setBaseImage(AttackRightAniFiles[i].getAbsolutePath());
+			}
 			
-			damageUpAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageUpBase.png");
-			damageUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageUp00.png", 0);
-			damageUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageUp01.png", 1);
-			damageUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageUp02.png", 2);
-			damageUpAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageUp03.png", 3);
+			// AttackLeft
+			File[] AttackLeftAniFiles = (new File(animationFolderPath+"AttackLeft")).listFiles();
+			for (int i = 0; i < AttackLeftAniFiles.length; i++) {
+				if(i!=AttackLeftAniFiles.length-1)
+					attackLeftAnimation.setAnimationImage(AttackLeftAniFiles[i].getAbsolutePath(), i);
+				else
+					attackLeftAnimation.setBaseImage(AttackLeftAniFiles[i].getAbsolutePath());
+			}
 			
-			damageDownAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageDownBase.png");
-			damageDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageDown00.png", 0);
-			damageDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageDown01.png", 1);
-			damageDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageDown02.png", 2);
-			damageDownAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageDown03.png", 3);
+			// DamageUp
+			File[] DamageUpAniFiles = (new File(animationFolderPath+"DamageUp")).listFiles();
+			for (int i = 0; i < DamageUpAniFiles.length; i++) {
+				if(i!=DamageUpAniFiles.length-1)
+					damageUpAnimation.setAnimationImage(DamageUpAniFiles[i].getAbsolutePath(), i);
+				else
+					damageUpAnimation.setBaseImage(DamageUpAniFiles[i].getAbsolutePath());
+			}
 			
-			damageRightAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageRightBase.png");
-			damageRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageRight00.png", 0);
-			damageRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageRight01.png", 1);
-			damageRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageRight02.png", 2);
-			damageRightAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageRight03.png", 3);
+			// DamageDown
+			File[] DamageDownAniFiles = (new File(animationFolderPath+"DamageDown")).listFiles();
+			for (int i = 0; i < DamageDownAniFiles.length; i++) {
+				if(i!=DamageDownAniFiles.length-1)
+					damageDownAnimation.setAnimationImage(DamageDownAniFiles[i].getAbsolutePath(), i);
+				else
+					damageDownAnimation.setBaseImage(DamageDownAniFiles[i].getAbsolutePath());
+			}
 			
-			damageLeftAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageLeftBase.png");
-			damageLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageLeft00.png", 0);
-			damageLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageLeft01.png", 1);
-			damageLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageLeft02.png", 2);
-			damageLeftAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DamageLeft03.png", 3);
+			// DamageRight
+			File[] DamageRightAniFiles = (new File(animationFolderPath+"DamageRight")).listFiles();
+			for (int i = 0; i < DamageDownAniFiles.length; i++) {
+				if(i!=DamageRightAniFiles.length-1)
+					damageRightAnimation.setAnimationImage(DamageRightAniFiles[i].getAbsolutePath(), i);
+				else
+					damageRightAnimation.setBaseImage(DamageRightAniFiles[i].getAbsolutePath());
+			}
 			
-			skillAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "SkillBase.png");
-			skillAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Skill00.png", 0);
-			skillAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Skill01.png", 1);
-			skillAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Skill02.png", 2);
-			skillAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Skill03.png", 3);
+			// DamageLeft
+			File[] DamageLeftAniFiles = (new File(animationFolderPath+"DamageLeft")).listFiles();
+			for (int i = 0; i < DamageLeftAniFiles.length; i++) {
+				if(i!=DamageLeftAniFiles.length-1)
+					damageLeftAnimation.setAnimationImage(DamageLeftAniFiles[i].getAbsolutePath(), i);
+				else
+					damageLeftAnimation.setBaseImage(DamageLeftAniFiles[i].getAbsolutePath());
+			}
 			
-			dieAnimation.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "DieBase.png");
-			dieAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Die00.png", 0);
-			dieAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Die01.png", 1);
-			dieAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Die02.png", 2);
-			dieAnimation.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Die03.png", 3);
-
+			// Skill
+			File[] SkillAniFiles = (new File(animationFolderPath+"Skill")).listFiles();
+			for (int i = 0; i < SkillAniFiles.length; i++) {
+				if(i!=SkillAniFiles.length-1)
+					skillAnimation.setAnimationImage(SkillAniFiles[i].getAbsolutePath(), i);
+				else
+					skillAnimation.setBaseImage(SkillAniFiles[i].getAbsolutePath());
+			}
+			
+			// Die
+			File[] DieAniFiles = (new File(animationFolderPath+"Die")).listFiles();
+			for (int i = 0; i < DieAniFiles.length; i++) {
+				if(i!=DieAniFiles.length-1)
+					dieAnimation.setAnimationImage(DieAniFiles[i].getAbsolutePath(), i);
+				else
+					dieAnimation.setBaseImage(DieAniFiles[i].getAbsolutePath());
+			}
+			
 			// eventAnimationList 초기화
+			
 			for (int i = 0; i < countEventAnimationList; i++) {
 				String indexEvent = "";
 				if (i < 10) 		indexEvent = "0" + i;
 				else if (i < 100)	indexEvent = "" + i;
 				
-				Animations tmpAni = new Animations("Event"+indexEvent, projectPath);
-				tmpAni.setBaseImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Event" + File.separator + "Event" + indexEvent + "-Base.png");
-				tmpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Event" + File.separator + "Event" + indexEvent + "-00.png", 0);
-				tmpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Event" + File.separator + "Event" + indexEvent + "-01.png", 1);
-				tmpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Event" + File.separator + "Event" + indexEvent + "-02.png", 2);
-				tmpAni.setAnimationImage(defaultDataFolderPath + File.separator + folderName + File.separator + "Event" + File.separator + "Event" + indexEvent + "-03.png", 3);
+				Animations tmpAni = new Animations("Event"+indexEvent, projectFullPath);
+				
+				File[] EventAniFiles = (new File(animationFolderPath+"Event")).listFiles();
+				for (int j = 0; j < EventAniFiles.length; j++) {
+					if(j!=EventAniFiles.length-1)
+						tmpAni.setAnimationImage(EventAniFiles[j].getAbsolutePath(), j);
+					else
+						tmpAni.setBaseImage(EventAniFiles[j].getAbsolutePath());
+				}
+//				tmpAni.setBaseImage(animationFolderPath + "Event" + File.separator + "Event" + indexEvent + "-Base.png");
+//				tmpAni.setAnimationImage(animationFolderPath + "Event" + File.separator + "Event" + indexEvent + "-00.png", 0);
+//				tmpAni.setAnimationImage(animationFolderPath + "Event" + File.separator + "Event" + indexEvent + "-01.png", 1);
+//				tmpAni.setAnimationImage(animationFolderPath + "Event" + File.separator + "Event" + indexEvent + "-02.png", 2);
+//				tmpAni.setAnimationImage(animationFolderPath + "Event" + File.separator + "Event" + indexEvent + "-03.png", 3);
 				eventAnimationList.add(tmpAni);
 			}
 		} catch (NullBufferedImage e) {
