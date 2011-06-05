@@ -702,23 +702,25 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				endEventPoint = e.getPoint();
 			}
 		} else { // Äµ¹ö½º ¸ðµå
-			if (drawTool == STAMP_TOOL) {
-				pressPoint = e.getPoint();
-				int mapCol = mousePoint.y / DrawingTemplate.pixel;
-				int mapRow = mousePoint.x / DrawingTemplate.pixel;
+			if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
+				if (drawTool == STAMP_TOOL) {
+					pressPoint = e.getPoint();
+					int mapCol = mousePoint.y / DrawingTemplate.pixel;
+					int mapRow = mousePoint.x / DrawingTemplate.pixel;
 
-				if (this.paletteInfo == null)
-					return;
-				if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) { // ¿ÞÂÊ
-					if (paletteInfo.isBackground()) {
-						this.insertTileToBack(mapCol, mapRow);
-					} else
-						this.insertTileToFore(mapCol, mapRow);
+					if (this.paletteInfo == null)
+						return;
+					if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) { // ¿ÞÂÊ
+						if (paletteInfo.isBackground()) {
+							this.insertTileToBack(mapCol, mapRow);
+						} else
+							this.insertTileToFore(mapCol, mapRow);
+					}
+				} else if (drawTool == PAINT_TOOL) {
+					pressPoint = e.getPoint();
+					dragPoint = e.getPoint();
+					MainFrame.OWNER.setMainStateCenter("Canvas 1 x 1 block");
 				}
-			} else if (drawTool == PAINT_TOOL) {
-				pressPoint = e.getPoint();
-				dragPoint = e.getPoint();
-				MainFrame.OWNER.setMainStateCenter("Canvas 1 x 1 block");
 			}
 		}
 
