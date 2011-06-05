@@ -61,6 +61,7 @@ public class GameDisplay implements Runnable{
 	private KeyFlags keyFlag;
 	
 	private byte[][] gameTile;
+	private int actionTimer;
 
 	
 	//생성자
@@ -394,23 +395,29 @@ public class GameDisplay implements Runnable{
 		int positionY = actor.getyPosition();
 
 		BufferedImage actorImage = null;
+		
+		actionTimer++;
+		if(actionTimer < 0 ) actionTimer = 0;
 
-//		if(attackAnim < GameDisplay.TIMER)
-//		{
-//			attackAnim++;
-//			try
-//			{
+
+//		try{
 //			actorImage = actorAnim.getCurrentImage();
-//			}
-//			catch (ArrayIndexOutOfBoundsException e)
-//			{actorImage = actorAnim.getNextImage();}
-//		}
-//		else
+//		}catch(ArrayIndexOutOfBoundsException e)
 //		{
-//			attackAnim = 0;
-			actorImage = actorAnim.getNextImage();
+//			try{
+//				actorImage = actorAnim.getNextImage();
+//			}
+//			catch(ArithmeticException e1)
+//			{
+//				//e1.printStackTrace();
+//				return;
+//			}
 //		}
-
+//		if(actionTimer > 10)
+//		{
+			actorImage = actorAnim.getNextImage();
+//			actionTimer++;
+//		}
 
 		// 출력 기준점 확인
 		int charX = actorAnim.getPointX(actorAnim.getCallIndex());
