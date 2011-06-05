@@ -6,6 +6,7 @@ public class GameExecution {
 	//더블 버퍼링모드
 	public static int DOUBLEBUFFERMODE = 2;
 	
+	//여기에 에디터 프로젝트 폴더 적어줘....ㅇㅋㅇ?ㅇㅋㅇㅋ
 	private String gamePath = "D:\\ca";
 	
 	//게임 데이터, 디스플레이, 윈도우
@@ -40,11 +41,6 @@ public class GameExecution {
 		gameDisplay.computeRatio();
 		gameData.setGameDisplay(gameDisplay);
 		
-		//게임 뮤직객체 생성
-		gameMusic = new GameMusic(gameData);
-		gameData.setGameMusic(gameMusic);
-		
-		
 		//키보드 입력을 위한 객체
 		keyFlag = new KeyFlags();
 		//키 플레그 주입
@@ -54,10 +50,9 @@ public class GameExecution {
 		
 		//게임의 상태를 초기상태로 설정한다.
 		gameData.setGameState(GameData.LOGOSCREEN);
-		
+		gameMusic = new GameMusic(gameData);
+		gameData.setGameMusic(gameMusic);
 		//그리고 초기에 게임 데이터에서 이벤트 로드를 실행한다.
-//		System.out.println(gameWindow.getWidth());
-//		System.out.println(gameWindow.getHeight());
 	}
 	
 	
@@ -66,10 +61,10 @@ public class GameExecution {
 	{
 		Thread displayThread = new Thread(this.gameDisplay);
 		Thread dataThread = new Thread(this.gameData);
-//		Thread musicThread = new Thread(gameMusic);
+		Thread musicThread = new Thread(gameMusic);
 		dataThread.start();
 		displayThread.start();
-//		musicThread.start();
+		musicThread.start();
 		
 	}
 	

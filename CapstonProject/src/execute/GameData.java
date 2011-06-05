@@ -30,6 +30,7 @@ import eventEditor.eventContents.ChangeFlagEvent;
 import eventEditor.eventContents.ChangeMapEvent;
 import eventEditor.eventContents.DialogEvent;
 import eventEditor.eventContents.EventContent;
+import eventEditor.eventContents.MotionEvent;
 import eventEditor.eventContents.Switch;
 import eventEditor.eventContents.SwitchDialogEvent;
 
@@ -107,7 +108,6 @@ public class GameData implements Runnable{
 	private Event nowEventList = null;
 	private EventContent nowEvent = null;
 	private int eventContentListIndex = -1;
-	private boolean firstEvent = false;
 	private boolean charEnterMap = false;
 	private boolean charActionMap = false;
 	/****************************************************/
@@ -144,8 +144,7 @@ public class GameData implements Runnable{
 	private BufferedImage foreForeImage;
 	private GameMusic gameMusic;
 
-	//음악 쓰레드
-	private Thread musicThread;
+
 	private boolean autoEventCalled = false;
 	private boolean autoAllianceEventCalled = false;
 	private boolean autoMonsterEventCalled = false;
@@ -153,6 +152,16 @@ public class GameData implements Runnable{
 	private List<EventTile> actorEventTiles;
 	private int charOnMapX;
 	private int charOnMapY;
+	private boolean moveEventCalled;
+	private int moveEventSpeed;
+	private int moveEventDirection;
+	private int moveEventDestination;
+
+	private int moveEventcounter;
+	private EventTile nowEventTile;
+	private GameCharacter moveEventActor;
+	private boolean playerAutoMove;
+	private boolean musicStartFlag;
 	
 	//생성자
 	public GameData()
@@ -188,6 +197,7 @@ public class GameData implements Runnable{
 			conditionFlag[i] = false;
 		conditionFlag[0] = true;
 		eventDispatcher = new GameEventDispatcher();
+		gameMusic = null;
 	}
 	
 	
@@ -309,9 +319,6 @@ public class GameData implements Runnable{
 			e.printStackTrace();
 			System.exit(0);
 		}
-		//loadAlliances();
-		//loadMonsters();
-//		loadAlliances();
 		//startMusic("D:\\Download\\Music\\Gamma Ray - Discography\\2001 - No World Order!\\01 - Introduction.mp3");
 		/****************************************************/
 		this.computeGameTile();
@@ -397,6 +404,14 @@ public class GameData implements Runnable{
 			player.setActorState(GameCharacter.DEATH);
 			this.fadeTimer = 0;
 			gameState = GameData.GAMEOVER;
+		}
+		if(player.getNowStatus().getHP() < player.getMaxStatus().getHP() && player.getNowStatus().getHP() > 0 )
+		{
+			player.getNowStatus().setHP(player.getNowStatus().getHP() + player.level);
+		}
+		if(player.getNowStatus().getHP() > player.getMaxStatus().getHP())
+		{
+			player.getNowStatus().setHP(player.getMaxStatus().getHP());
 		}
 		//플레이어의 액션상태확인, 무브거나 배틀이면
 		if (player.getActorState() == player.MOVESTATE
@@ -496,12 +511,10 @@ public class GameData implements Runnable{
 			runEvent();
 		}
 		//캐릭터 체력 채워줌
-		if(player.getNowStatus().getHP() < player.getMaxStatus().getHP() && player.getNowStatus().getHP() > 0 )
-			player.getNowStatus().setHP(player.getNowStatus().getHP() + player.level);
-		if(player.getNowStatus().getHP() > player.getMaxStatus().getHP())
-		{
-			player.getNowStatus().setHP(player.getMaxStatus().getHP());
-		}
+		//player.getNowStatus().getHP() 
+//		System.out.println(player.getNowStatus().getHP());
+//		System.out.println(player.getMaxStatus().getHP());
+
 	}
 	
 	//타일 위에 있는 맵이벤트 실행
@@ -517,8 +530,8 @@ public class GameData implements Runnable{
 			//this.charEnterMap = true;
 			
 			//이벤트 받아올 테니 초기화
-			EventTile mapEvent = eventDispatcher.getEventTile(charOnMapX, charOnMapY);
-			List<Event> eventList = mapEvent.getEventList();
+			nowEventTile = eventDispatcher.getEventTile(charOnMapX, charOnMapY);
+			List<Event> eventList = nowEventTile.getEventList();
 			//이벤트들 중에 조건에 맞는거 찾기
 			for(int i = 0 ; i < eventList.size(); i++)
 			{
@@ -552,8 +565,8 @@ public class GameData implements Runnable{
 		if(eventDispatcher.hasMapEvent(charX, charY))
 		{
 			//이벤트 받아올 테니 초기화
-			EventTile mapEvent = eventDispatcher.getEventTile(charX, charY);
-			List<Event> eventList = mapEvent.getEventList();
+			nowEventTile = eventDispatcher.getEventTile(charX, charY);
+			List<Event> eventList = nowEventTile.getEventList();
 			//이벤트들 중에 조건에 맞는거 찾기
 			for(int i = 0 ; i < eventList.size(); i++)
 			{
@@ -614,9 +627,10 @@ public class GameData implements Runnable{
 			eventStart = false;
 			autoAllianceEventCalled = false;
 			autoMonsterEventCalled = false;
+			moveEventCalled = false;
 			//charActionMap = false;
 			//charEnterMap = false;
-			player.setActorState(GameCharacter.MOVESTATE);
+//			player.setActorState(GameCharacter.MOVESTATE);
 		}
 		else
 		{
@@ -670,11 +684,106 @@ public class GameData implements Runnable{
 			//스위치 다이얼로그
 			startSwitchDialog();
 		}
+		else if(type == EventContent.MOTION_EVNET)
+		{
+			startMoveEvent();
+		}
 		else
 		{
 			nowEventList = null;
 			eventContentListIndex++;
 		}
+	}
+	
+	//강제 이동 이벤트
+	private void startMoveEvent()
+	{
+		player.setActorState(GameCharacter.MOVEEVENTSTATE);
+		MotionEvent moveEvent = (MotionEvent)nowEvent;
+		//처음 불렷나?
+		if(moveEventCalled == false)
+		{
+			moveEventSpeed = moveEvent.getSpeed();
+			moveEventDirection = moveEvent.getDirection();
+			moveEventDestination = moveEvent.getCountMove()*mapCharArrayRatio;
+			moveEventcounter=0;
+		}
+		//플레이어가 움직여야할지 고민
+		if(moveEvent.getActorType() == MotionEvent.PLAYER)
+		{
+			if(moveEventCalled == false)
+			{
+				playerAutoMove = true;
+				moveEventCalled = true;
+			}
+			
+			player.setNowDirection(moveEventDirection);
+			//player.setSpeed(moveEventSpeed);
+			if(player.getNowDirection() == GameCharacter.UP)
+				player.setyPosition(player.getyPosition()-moveEventSpeed);
+			else if(player.getNowDirection() == GameCharacter.DOWN)
+				player.setyPosition(player.getyPosition()+moveEventSpeed);
+			else if(player.getNowDirection() == GameCharacter.LEFT)
+				player.setxPosition(player.getxPosition()-moveEventSpeed);
+			else if(player.getNowDirection() == GameCharacter.RIGHT)
+				player.setxPosition(player.getxPosition()+moveEventSpeed);
+			moveEventcounter++;
+			if(moveEventcounter >= moveEventDestination)
+			{
+				player.setActorState(GameCharacter.MOVESTATE);
+				eventContentListIndex++;
+				eventStart = false;
+				playerAutoMove = false;
+			}
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		else
+		{
+			if(moveEventCalled == false)
+			{
+				moveEventActor = null;
+				for(int i = 0 ; i < sortedCharacters.size(); i++)
+				{
+					if(nowEventTile.equals(sortedCharacters.elementAt(i).getTotalEvent()))
+					{
+						moveEventActor = sortedCharacters.elementAt(i);
+						break;
+					}
+				}
+				moveEventCalled = true;
+			}
+			moveEventActor.setNowDirection(moveEventDirection);
+			if(moveEventActor.getNowDirection() == GameCharacter.UP)
+				moveEventActor.setyPosition(moveEventActor.getyPosition()-moveEventSpeed);
+			else if(moveEventActor.getNowDirection() == GameCharacter.DOWN)
+				moveEventActor.setyPosition(moveEventActor.getyPosition()+moveEventSpeed);
+			else if(moveEventActor.getNowDirection() == GameCharacter.LEFT)
+				moveEventActor.setxPosition(moveEventActor.getxPosition()-moveEventSpeed);
+			else if(moveEventActor.getNowDirection() == GameCharacter.RIGHT)
+				moveEventActor.setxPosition(moveEventActor.getxPosition()+moveEventSpeed);
+			moveEventcounter++;
+			
+			if(moveEventcounter >= moveEventDestination)
+			{
+				player.setActorState(GameCharacter.MOVESTATE);
+				eventContentListIndex++;
+				eventStart = false;
+			}
+			try {
+				Thread.sleep(FASTTIMER);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+		
+		player.setActorState(GameCharacter.MOVESTATE);
 	}
 	
 	//스위치 다이얼로그
@@ -739,7 +848,7 @@ public class GameData implements Runnable{
 					this.eventStart = false;
 					switchDialog.setText(null);
 					switchDialog.setPosition(0);
-					player.setActorState(GameCharacter.MOVESTATE);
+//					player.setActorState(GameCharacter.MOVESTATE);
 					break;
 				}
 			}
@@ -776,13 +885,11 @@ public class GameData implements Runnable{
 	{
 		ChangeBGMEvent bgm = (ChangeBGMEvent) nowEvent;
 		
-		//Thread musicThread = new Thread(gameMusic);
-//		gameMusic = new GameMusic(this);
-//		gameMusic.setFilePathAndName(gamePath+"\\"+bgm.getFileName());
-//		gameMusic.setFilePathAndName(bgm.get);
-		//musicThread.start();
+		gameMusic.startMusic(null);
+		gameMusic.startMusic(bgm.getSrcFileName());
+		
 		eventContentListIndex++;
-		this.eventStart = false;
+		eventStart = false;
 	}
 
 	//맵변환 이벤트
@@ -790,13 +897,13 @@ public class GameData implements Runnable{
 	{
 		gameState = GameData.LOADING;
 		ChangeMapEvent mapChange = (ChangeMapEvent) nowEvent;
-		startMusic(null);
+//		startMusic(null);
 		loadMap(mapChange.getMapName());
 		autoEventCalled = false;
 		
 		Point next = mapChange.getStartPoint();
-		player.setxPosition(next.y*mapCharArrayRatio);
-		player.setyPosition(next.x*mapCharArrayRatio);
+		player.setxPosition(next.x*mapCharArrayRatio);
+		player.setyPosition(next.y*mapCharArrayRatio);
 		gameState = GameData.PLAY;
 		eventContentListIndex++;
 		this.eventStart = false;
@@ -812,7 +919,7 @@ public class GameData implements Runnable{
 //		System.out.println("다이얼1");
 		dialogScreen.setText(dialog.getText());
 		try {
-			Thread.sleep(FASTTIMER*2);
+			Thread.sleep(FASTTIMER);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -1164,6 +1271,7 @@ public class GameData implements Runnable{
 				
 				monsters.add(new Monster(gamePath));
 				monsters.elementAt(count).setTotalEvent(actorEventTile);
+				monsters.elementAt(count).setActorState(GameCharacter.EVENTSTATE);
 				monsters.elementAt(count).setActionType(GameCharacter.TOPLAYER);
 				count++;
 			}
@@ -1188,9 +1296,9 @@ public class GameData implements Runnable{
 			for(int i = 0 ; i < alliances.size(); i++)
 			{
 				//타일 하나를 가져옴
-				EventTile actorEventTile = alliances.elementAt(i).getTotalEvent();
+				nowEventTile = alliances.elementAt(i).getTotalEvent();
 				//타일에 있는 여러 이벤트 리스트 중에서
-				List<Event> actorEventList = actorEventTile.getEventList();
+				List<Event> actorEventList = nowEventTile.getEventList();
 				for(int j = 0 ; j < actorEventList.size(); j++)
 				{
 					Event eventList = actorEventList.get(j);
@@ -1242,9 +1350,9 @@ public class GameData implements Runnable{
 			for(int i = 0 ; i < monsters.size(); i++)
 			{
 				//타일 하나를 가져옴
-				EventTile actorEventTile = monsters.elementAt(i).getTotalEvent();
+				nowEventTile = monsters.elementAt(i).getTotalEvent();
 				//타일에 있는 여러 이벤트 리스트 중에서
-				List<Event> actorEventList = actorEventTile.getEventList();
+				List<Event> actorEventList = nowEventTile.getEventList();
 				for(int j = 0 ; j < actorEventList.size(); j++)
 				{
 					Event eventList = actorEventList.get(j);
@@ -1256,6 +1364,7 @@ public class GameData implements Runnable{
 					{
 						monsters.elementAt(i).changeActor(eventList.getActorIndex(),
 								monsters.elementAt(i).getxPosition(), monsters.elementAt(i).getyPosition());
+						monsters.elementAt(i).setActorState(GameCharacter.MOVESTATE);
 						break;
 					}
 				}
@@ -1282,12 +1391,12 @@ public class GameData implements Runnable{
 			for(int i = 0 ; i < alliances.size(); i++)
 			{
 				//타일 하나를 가져옴
-				EventTile actorEventTile = alliances.elementAt(i).getTotalEvent();
+				nowEventTile = alliances.elementAt(i).getTotalEvent();
 				//몬스터이면 리턴
-				if(actorEventTile.getObjectType() != EventEditorSystem.NPC_EVENT)
+				if(nowEventTile.getObjectType() != EventEditorSystem.NPC_EVENT)
 					continue;
 				//타일에 있는 여러 이벤트 리스트 중에서
-				List<Event> actorEventList = actorEventTile.getEventList();
+				List<Event> actorEventList = nowEventTile.getEventList();
 				//자동실행 이벤트를 확인
 				for(int j = 0 ; j < actorEventList.size(); j++)
 				{
@@ -1343,16 +1452,18 @@ public class GameData implements Runnable{
 			//현재 맵에 정의된 npc들 출력
 			//nowEventList = null;
 			eventContentListIndex = 0;
+			if(monsters == null)
+				return;
 			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
 			for(int i = 0 ; i < monsters.size(); i++)
 			{
 				//타일 하나를 가져옴
-				EventTile actorEventTile = monsters.elementAt(i).getTotalEvent();
+				nowEventTile = monsters.elementAt(i).getTotalEvent();
 				//몬스터이면 리턴
-				if(actorEventTile.getObjectType() != EventEditorSystem.MONSTER_EVENT)
+				if(nowEventTile.getObjectType() != EventEditorSystem.MONSTER_EVENT)
 					continue;
 				//타일에 있는 여러 이벤트 리스트 중에서
-				List<Event> actorEventList = actorEventTile.getEventList();
+				List<Event> actorEventList = nowEventTile.getEventList();
 				//자동실행 이벤트를 확인
 				for(int j = 0 ; j < actorEventList.size(); j++)
 				{
@@ -1366,7 +1477,8 @@ public class GameData implements Runnable{
 					{
 						//System.out.println("여기 불림");
 						monsters.elementAt(i).changeActor(eventList.getActorIndex(),
-								monsters.elementAt(i).getxPosition(), alliances.elementAt(i).getyPosition());
+								monsters.elementAt(i).getxPosition(), monsters.elementAt(i).getyPosition());
+						monsters.elementAt(i).setActorState(GameCharacter.MOVESTATE);
 						//선택한 이벤트 지움
 						nowEventList = eventList;
 						actorEventList.remove(j);
@@ -1386,12 +1498,6 @@ public class GameData implements Runnable{
 		}
 	}
 	
-	//음악시작
-	private void startMusic(String string) {
-		// TODO Auto-generated method stub
-		this.musicFile = string;
-	}
-
 	//맵로드
 	public void loadMap(String mapName)
 	{
@@ -1468,8 +1574,8 @@ public class GameData implements Runnable{
 			int startY = startPoint.y*mapCharArrayRatio-mapCharArrayRatio/2;
 			
 			player.deployActor(charIndex, startX+5, startY+5, null);
-			player.setNowEXP(1909);
-			player.getMaxStatus().setEXP(10);
+//			player.setNowEXP(1909);
+//			player.getMaxStatus().setEXP(10);
 		}
 		catch(Exception e)
 		{
@@ -1514,6 +1620,8 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
+		//여기가 이거저거 유틸이미지 경로인데 동규꺼에서는 저렇게 하니까 안되더라고..
+		//혹시나 안되면 여기 절대경로로 잡아줘..ㅇㅇㅇㅋㅇㅋ실행해본다.
 		utilPath = gamePath+"\\.DefaultData\\UtillImages";
 		try 
 		{
@@ -1874,6 +1982,14 @@ public class GameData implements Runnable{
 		return conditionFlag;
 	}
 
+
+	public boolean isPlayerAutoMove() {
+		return playerAutoMove;
+	}
 	
+	public boolean isMusicStart()
+	{
+		return this.musicStartFlag;
+	}
 	
 }

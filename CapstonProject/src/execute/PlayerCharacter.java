@@ -45,7 +45,7 @@ public class PlayerCharacter extends GameCharacter {
 			maxStatus = actor.getInitAbility();
 			nowStatus = new Abilities();
 			nowStatus.setAgility(maxStatus.getAgility());
-			nowStatus.setEXP(maxStatus.getEXP());
+			nowStatus.setEXP(0);
 			nowStatus.setHP(maxStatus.getHP());
 			nowStatus.setIntelligence(maxStatus.getIntelligence());
 			nowStatus.setKnowledge(maxStatus.getKnowledge());

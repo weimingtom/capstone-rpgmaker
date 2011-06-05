@@ -433,7 +433,7 @@ public class AI {
 				if(canWatch(alliance, gameData.getPlayer()) == true)
 				{
 					//플레이어한테로 무브
-					alliance.setActorState(GameCharacter.MOVESTATE);
+//					alliance.setActorState(GameCharacter.MOVESTATE);
 					alliance.setActionType(GameCharacter.MOVESTRAIGHT);
 					moveToPlayer(alliance, player, gameMap, gameTile);
 					//System.out.println("플레이어한테 움직임");
@@ -441,7 +441,7 @@ public class AI {
 				else
 				{
 					//System.out.println("대기 혹은 움직임");
-					alliance.setActorState(GameCharacter.MOVESTATE);
+//					alliance.setActorState(GameCharacter.MOVESTATE);
 					alliance.setActionType(GameCharacter.MOVESTRAIGHT);
 					//대기 혹은 랜덤 무브
 					int p = (int)(Math.random()*100);
@@ -519,6 +519,8 @@ public class AI {
 		for(int i = 0 ; i < monsters.size(); i++)
 		{	
 			GameCharacter monster = monsters.elementAt(i);
+			if(monster.getActorState() == GameCharacter.EVENTSTATE)
+				continue;
 			int now = i;
 			
 			/****************************플레이ㅇ어 액션시************************************/
@@ -526,7 +528,6 @@ public class AI {
 			{
 				if(canAttack(player, monster) == true)
 				{
-					player.setActorState(GameCharacter.BATTLESTATE);
 					player.attack(player, monster);
 					if(monster.getNowStatus().getHP() <= 0)
 					{
@@ -565,11 +566,10 @@ public class AI {
 					}
 				}
 			}
-			//System.out.println("괴물 상태 " +monster.getActorState());
 			//몬스터가 플레이어 공격 가능하면
 			if (canAttack(monster, gameData.getPlayer()) == true) 
 			{
-				//player.setActorState(GameCharacter.BATTLESTATE);
+				player.setActorState(GameCharacter.BATTLESTATE);
 				//40%확률로 공격, 난이도때문
 				int p = (int)(Math.random()*100);
 				if(p > 60)
@@ -597,14 +597,14 @@ public class AI {
 					monster.setActionType(GameCharacter.MOVESTRAIGHT);
 					moveToPlayer(monster, player, gameMap, gameTile);
 					//System.out.println("플레이어한테 움직임");
-					player.setActorState(GameCharacter.BATTLESTATE);
+//					player.setActorState(GameCharacter.BATTLESTATE);
 				}
 				else
 				{
 					//System.out.println("대기 혹은 움직임");
-					monster.setActorState(GameCharacter.MOVESTATE);
+//					monster.setActorState(GameCharacter.MOVESTATE);
 					monster.setActionType(GameCharacter.MOVESTRAIGHT);
-					player.setActorState(GameCharacter.MOVESTATE);
+//					player.setActorState(GameCharacter.MOVESTATE);
 					//대기 혹은 랜덤 무브
 					int p = (int)(Math.random()*100);
 					//System.out.println(p);

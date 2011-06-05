@@ -27,6 +27,7 @@ public class GameDisplay implements Runnable{
 
 	private static int TIMER = 30;
 	private static int animTimer = 0;
+	private static int attackAnim = 0;
 	private static int SLOWTIMER = 60;
 	private static int FASTTIMER = 30;
 	//페이드 아웃 페이드 인을 위해
@@ -394,16 +395,19 @@ public class GameDisplay implements Runnable{
 
 		BufferedImage actorImage = null;
 
-//		try{
+//		if(attackAnim < GameDisplay.TIMER)
+//		{
+//			attackAnim++;
+//			try
+//			{
 //			actorImage = actorAnim.getCurrentImage();
+//			}
+//			catch (ArrayIndexOutOfBoundsException e)
+//			{actorImage = actorAnim.getNextImage();}
 //		}
-//		catch(Exception e)
+//		else
 //		{
-//			actorImage = actorAnim.getNextImage();
-//		}
-//		
-//		if(gameData.getGameRobot().canIchangeImage(actor, actorAnim, GameDisplay.TIMER))
-//		{
+//			attackAnim = 0;
 			actorImage = actorAnim.getNextImage();
 //		}
 
@@ -424,68 +428,78 @@ public class GameDisplay implements Runnable{
 	//npc들 출력
 	public void displayAlliance(Graphics2D g,GameCharacter alliance)
 	{
-		if(alliance == null)
+		if (alliance == null)
 			return;
 		// 애니메이션 정보 얻기
 		NPCEditorSystem allianceAnim = (NPCEditorSystem) alliance
 				.getCharacter();
+		// 움직임 애니메이션 출력
+		if(gameData.getPlayer().getActorState() == GameCharacter.MOVEEVENTSTATE && 
+				gameData.isPlayerAutoMove() == false) 
+		{
+			// 이동 상태일때
+			if (alliance.getNowDirection() == GameCharacter.UP)
+				displayActorMoveMotion(g, allianceAnim.getMoveUpAnimation(),
+						false, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.DOWN)
+				displayActorMoveMotion(g, allianceAnim.getMoveDownAnimation(),
+						false, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.LEFT)
+				displayActorMoveMotion(g, allianceAnim.getMoveLeftAnimation(),
+						false, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.RIGHT)
+				displayActorMoveMotion(g, allianceAnim.getMoveRightAnimation(),
+						false, alliance);
+		}
 		// 경우에 따른 애니메이션 출력, 움직임이냐 전투냐
-		if(gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE)
+		else if (gameData.getPlayer().getActorState() == GameCharacter.EVENTSTATE
+				|| alliance.getActionType() == GameCharacter.STOP
+				|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
+			if (alliance.getNowDirection() == GameCharacter.UP)
+				displayActorMoveMotion(g, allianceAnim.getMoveUpAnimation(),
+						true, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.DOWN)
+				displayActorMoveMotion(g, allianceAnim.getMoveDownAnimation(),
+						true, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.LEFT)
+				displayActorMoveMotion(g, allianceAnim.getMoveLeftAnimation(),
+						true, alliance);
+			else if (alliance.getNowDirection() == GameCharacter.RIGHT)
+				displayActorMoveMotion(g, allianceAnim.getMoveRightAnimation(),
+						true, alliance);
+		}
+//		} else if (alliance.getActionType() == GameCharacter.STOP
+//				|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
+//			if (alliance.getNowDirection() == GameCharacter.UP)
+//				displayActorMoveMotion(g, allianceAnim.getMoveUpAnimation(),
+//						true, alliance);
+//			else if (alliance.getNowDirection() == GameCharacter.DOWN)
+//				displayActorMoveMotion(g, allianceAnim.getMoveDownAnimation(),
+//						true, alliance);
+//			else if (alliance.getNowDirection() == GameCharacter.LEFT)
+//				displayActorMoveMotion(g, allianceAnim.getMoveLeftAnimation(),
+//						true, alliance);
+//			else if (alliance.getNowDirection() == GameCharacter.RIGHT)
+//				displayActorMoveMotion(g, allianceAnim.getMoveRightAnimation(),
+//						true, alliance);
+//		}
+		else
 		{
 			if (alliance.getNowDirection() == GameCharacter.UP)
-				displayActorMoveMotion(g,
-						allianceAnim.getMoveUpAnimation(), true, alliance);
+				displayActorMoveMotion(g, allianceAnim.getMoveUpAnimation(),
+						false, alliance);
 			else if (alliance.getNowDirection() == GameCharacter.DOWN)
-				displayActorMoveMotion(g,
-						allianceAnim.getMoveDownAnimation(), true, alliance);
+				displayActorMoveMotion(g, allianceAnim.getMoveDownAnimation(),
+						false, alliance);
 			else if (alliance.getNowDirection() == GameCharacter.LEFT)
-				displayActorMoveMotion(g,
-						allianceAnim.getMoveLeftAnimation(), true, alliance);
+				displayActorMoveMotion(g, allianceAnim.getMoveLeftAnimation(),
+						false, alliance);
 			else if (alliance.getNowDirection() == GameCharacter.RIGHT)
-				displayActorMoveMotion(g,
-						allianceAnim.getMoveRightAnimation(), true,
-						alliance);
-			return ;
+				displayActorMoveMotion(g, allianceAnim.getMoveRightAnimation(),
+						false, alliance);
 		}
-		if (gameData.getPlayer().getActorState() == GameCharacter.MOVESTATE) {
-			if (alliance.getActionType() == GameCharacter.STOP
-					|| alliance.getActionType() == GameCharacter.STOPAFTERRANDOM) {
-				if (alliance.getNowDirection() == GameCharacter.UP)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveUpAnimation(), true, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.DOWN)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveDownAnimation(), true, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.LEFT)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveLeftAnimation(), true, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.RIGHT)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveRightAnimation(), true,
-							alliance);
-			}
-			// 움직임 애니메이션 출력
-			else {
-				// 이동 상태일때
-				if (alliance.getNowDirection() == GameCharacter.UP)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveUpAnimation(), false, alliance);
-				else if (alliance.getNowDirection() == GameCharacter.DOWN)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveDownAnimation(), false,
-							alliance);
-				else if (alliance.getNowDirection() == GameCharacter.LEFT)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveLeftAnimation(), false,
-							alliance);
-				else if (alliance.getNowDirection() == GameCharacter.RIGHT)
-					displayActorMoveMotion(g,
-							allianceAnim.getMoveRightAnimation(), false,
-							alliance);
-			}
-		}
-
 	}
+	
 	
 	//전체 캐릭터들의 체력 표시
 	public void displayPlayer(Graphics2D g)
@@ -496,122 +510,129 @@ public class GameDisplay implements Runnable{
 		CharacterEditorSystem playerAnim = (CharacterEditorSystem) gameData.getPlayer().getCharacter();
 		/********플레이어 출력****************************************************************/
 		//세팅정보 필요
-		if(player.getActorState() == GameCharacter.MOVESTATE || player.getActorState() == GameCharacter.EVENTSTATE)
-		{
-			if(player.getActorState() == GameCharacter.EVENTSTATE)
+//		if(player.getActorState() == GameCharacter.MOVESTATE || player.getActorState() == GameCharacter.EVENTSTATE)
+		
+			if(player.getActorState() == GameCharacter.EVENTSTATE || player.getActorState() == GameCharacter.MOVEEVENTSTATE)
 			{
+				boolean flag = gameData.isPlayerAutoMove();
+				if(flag == false)
+					flag = true;
+				else
+					flag = false;
 				//정지 애니메이션 출력
 				if(player.getNowDirection() == GameCharacter.UP)
 				{
-					displayActorMoveMotion(g, playerAnim.getMoveUpAnimation(), true,player);
+					displayActorMoveMotion(g, playerAnim.getMoveUpAnimation(), flag,player);
 				}
 				else if(player.getNowDirection() == GameCharacter.DOWN)
 				{
-					displayActorMoveMotion(g, playerAnim.getMoveDownAnimation(), true,player);
+					displayActorMoveMotion(g, playerAnim.getMoveDownAnimation(), flag,player);
 				}
 				else if(player.getNowDirection() == GameCharacter.LEFT)
 				{
-					displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), true,player);
+					displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), flag,player);
 				}
 				else if(player.getNowDirection() == GameCharacter.RIGHT)
 				{
-					displayActorMoveMotion(g, playerAnim.getMoveRightAnimation(), true,player);
+					displayActorMoveMotion(g, playerAnim.getMoveRightAnimation(), flag,player);
 				}
 			}
 			//이동 상태일때
-			if(keyFlag.isUp() == true)
-			{	
-				displayActorMoveMotion(g, playerAnim.getMoveUpAnimation(), false, player);			
-			}
-			else if(keyFlag.isDown() == true)
+			else if(player.getActorState() == GameCharacter.MOVESTATE)
 			{
-				displayActorMoveMotion(g, playerAnim.getMoveDownAnimation(), false,player);
-			}
-			else if(keyFlag.isRight() == true)
-			{	
-				displayActorMoveMotion(g, playerAnim.getMoveRightAnimation(), false,player);
-			}
-			else if(keyFlag.isLeft() == true)
-			{	
-				displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), false,player);
-			}
-			else if(keyFlag.isUp() == false && keyFlag.isDown() == false &&
-					keyFlag.isRight() == false && keyFlag.isLeft() == false)
-			{
-				//정지 애니메이션 출력
-				if(player.getNowDirection() == GameCharacter.UP)
+				if(keyFlag.isUp() == true)
+				{	
+					displayActorMoveMotion(g, playerAnim.getMoveUpAnimation(), false, player);			
+				}
+				else if(keyFlag.isDown() == true)
 				{
-					displayActorMoveMotion(g, playerAnim.getMoveUpAnimation(), true,player);
+					displayActorMoveMotion(g, playerAnim.getMoveDownAnimation(), false,player);
 				}
-				else if(player.getNowDirection() == GameCharacter.DOWN)
-				{
-					displayActorMoveMotion(g, playerAnim.getMoveDownAnimation(), true,player);
+				else if(keyFlag.isRight() == true)
+				{	
+					displayActorMoveMotion(g, playerAnim.getMoveRightAnimation(), false,player);
 				}
-				else if(player.getNowDirection() == GameCharacter.LEFT)
-				{
-					displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), true,player);
+				else if(keyFlag.isLeft() == true)
+				{	
+					displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), false,player);
 				}
-				else if(player.getNowDirection() == GameCharacter.RIGHT)
-				{
-					displayActorMoveMotion(g, playerAnim.getMoveRightAnimation(), true,player);
-				}
-			}
-			
-		}//무브애니와 어택 애니 나눠야함, 무브쪽 앤드
-		if(player.getActorState() == GameCharacter.BATTLESTATE)
-		{
-			//액션버튼이 눌렷다면
-			if ( gameData.isActionAnimFlag()) 
-			{
-				if (player.getNowDirection() == GameCharacter.UP) {
-					displayActorAttackMotion(g, playerAnim.getAttackUpAnimation(), player);
-				} else if (player.getNowDirection() == GameCharacter.DOWN) {
-					displayActorAttackMotion(g, playerAnim.getAttackDownAnimation(),player);
-				} else if (player.getNowDirection() == GameCharacter.LEFT) {
-					displayActorAttackMotion(g, playerAnim.getAttackLeftAnimation(),player);
-				} else if (player.getNowDirection() == GameCharacter.RIGHT) {
-					displayActorAttackMotion(g, playerAnim.getAttackRightAnimation(),player);
-				}
-			}
-			else{
-				if(keyFlag.isUp() == false && keyFlag.isDown() == false &&
+				else if(keyFlag.isUp() == false && keyFlag.isDown() == false &&
 						keyFlag.isRight() == false && keyFlag.isLeft() == false)
 				{
 					//정지 애니메이션 출력
 					if(player.getNowDirection() == GameCharacter.UP)
 					{
-						displayActorMoveMotion(g, playerAnim.getBattleMoveUpAni(), true,player);
+						displayActorMoveMotion(g, playerAnim.getMoveUpAnimation(), true,player);
 					}
 					else if(player.getNowDirection() == GameCharacter.DOWN)
 					{
-						displayActorMoveMotion(g, playerAnim.getBattleMoveDownAni(), true,player);
+						displayActorMoveMotion(g, playerAnim.getMoveDownAnimation(), true,player);
 					}
 					else if(player.getNowDirection() == GameCharacter.LEFT)
 					{
-						displayActorMoveMotion(g, playerAnim.getBattleMoveLeftAni(), true,player);
+						displayActorMoveMotion(g, playerAnim.getMoveLeftAnimation(), true,player);
 					}
 					else if(player.getNowDirection() == GameCharacter.RIGHT)
 					{
-						displayActorMoveMotion(g, playerAnim.getBattleMoveRightAni(), true,player);
+						displayActorMoveMotion(g, playerAnim.getMoveRightAnimation(), true,player);
 					}
 				}
-				else 
-				{
-						if (player.getNowDirection() == GameCharacter.UP) {
-							displayActorMoveMotion(g,
-									playerAnim.getBattleMoveUpAni(), false, player);
-						} else if (player.getNowDirection() == GameCharacter.DOWN) {
-							displayActorMoveMotion(g,
-									playerAnim.getBattleMoveDownAni(), false, player);
-						} else if (player.getNowDirection() == GameCharacter.LEFT) {
-							displayActorMoveMotion(g,
-									playerAnim.getBattleMoveLeftAni(), false, player);
-						} else if (player.getNowDirection() == GameCharacter.RIGHT) {
-							displayActorMoveMotion(g,
-									playerAnim.getBattleMoveRightAni(), false,
-									player);
-						}
+			}
+			
+		//전투 모드
+		else if (player.getActorState() == GameCharacter.BATTLESTATE) {
+			// 액션버튼이 눌렷다면
+			if (gameData.isActionAnimFlag()) {
+				if (player.getNowDirection() == GameCharacter.UP) {
+					displayActorAttackMotion(g,
+							playerAnim.getAttackUpAnimation(), player);
+				} else if (player.getNowDirection() == GameCharacter.DOWN) {
+					displayActorAttackMotion(g,
+							playerAnim.getAttackDownAnimation(), player);
+				} else if (player.getNowDirection() == GameCharacter.LEFT) {
+					displayActorAttackMotion(g,
+							playerAnim.getAttackLeftAnimation(), player);
+				} else if (player.getNowDirection() == GameCharacter.RIGHT) {
+					displayActorAttackMotion(g,
+							playerAnim.getAttackRightAnimation(), player);
+				}
+			} else {
+				if (keyFlag.isUp() == false && keyFlag.isDown() == false
+						&& keyFlag.isRight() == false
+						&& keyFlag.isLeft() == false) {
+					// 정지 애니메이션 출력
+					if (player.getNowDirection() == GameCharacter.UP) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveUpAni(), true, player);
+					} else if (player.getNowDirection() == GameCharacter.DOWN) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveDownAni(), true, player);
+					} else if (player.getNowDirection() == GameCharacter.LEFT) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveLeftAni(), true, player);
+					} else if (player.getNowDirection() == GameCharacter.RIGHT) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveRightAni(), true,
+								player);
 					}
+				} else {
+					if (player.getNowDirection() == GameCharacter.UP) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveUpAni(), false, player);
+					} else if (player.getNowDirection() == GameCharacter.DOWN) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveDownAni(), false,
+								player);
+					} else if (player.getNowDirection() == GameCharacter.LEFT) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveLeftAni(), false,
+								player);
+					} else if (player.getNowDirection() == GameCharacter.RIGHT) {
+						displayActorMoveMotion(g,
+								playerAnim.getBattleMoveRightAni(), false,
+								player);
+					}
+				}
 			}
 		}
 		
@@ -723,6 +744,7 @@ public class GameDisplay implements Runnable{
 			{
 				//몬스터 출력
 				displayMonster(g, (GameCharacter)actors.elementAt(i));
+				displayHealthBar(g, (GameCharacter)actors.elementAt(i));
 			}
 		}
 	}
@@ -1042,14 +1064,3 @@ public class GameDisplay implements Runnable{
 
 	
 }// end class
-
-
-
-
-
-
-
-
-
-
-

@@ -49,9 +49,6 @@ public class GameDemoExecution {
 		gameDisplay.computeRatio();
 		gameData.setGameDisplay(gameDisplay);
 		
-		//게임 뮤직객체 생성
-		gameMusic = new GameMusic(gameData);
-		
 		
 		//키보드 입력을 위한 객체
 		keyFlag = new KeyFlags();
@@ -72,10 +69,10 @@ public class GameDemoExecution {
 	{
 		Thread displayThread = new Thread(this.gameDisplay);
 		Thread dataThread = new Thread(this.gameData);
-		Thread musicThread = new Thread(gameMusic);
+//		Thread musicThread = new Thread(gameMusic);
 		dataThread.start();
 		displayThread.start();
-		musicThread.start();
+//		musicThread.start();
 		
 	}
 	
