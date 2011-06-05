@@ -492,7 +492,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 
 			MainFrame.OWNER.setSubState(ProjectName + " is made");
 			MainFrame.OWNER.setMainState(projectPath+File.separator + ProjectName);
-			MainFrame.OWNER.setTitle(ProjectName);
+			MainFrame.OWNER.setTitle(projectPath+File.separator + ProjectName);
 
 
 

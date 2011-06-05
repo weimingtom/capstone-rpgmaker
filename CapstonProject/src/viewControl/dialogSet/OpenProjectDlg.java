@@ -269,7 +269,7 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 				MainFrame.OWNER.setSubState(MainFrame.OWNER.ProjectName
 						+ " is made");
 				MainFrame.OWNER.setMainState(MainFrame.OWNER.projectPath+File.separator+MainFrame.OWNER.ProjectName);
-				MainFrame.OWNER.setTitle(MainFrame.OWNER.ProjectName);
+				MainFrame.OWNER.setTitle(MainFrame.OWNER.projectPath+File.separator+MainFrame.OWNER.ProjectName);
 				MainFrame.OWNER.setNewProject();
 				MainFrame.OWNER.setAllUserTileSet();
 				MainFrame.OWNER.syncProjOpenCloseBtn();
