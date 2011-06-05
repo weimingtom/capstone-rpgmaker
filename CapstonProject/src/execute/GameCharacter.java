@@ -22,12 +22,13 @@ public abstract class GameCharacter {
 	public static final int EVENTSTATE = 5;
 	public static final int DELETECHARACTER = 6;
 	public static final int STATUSCALLED = 7;
+	public static final int MOVEEVENTSTATE = 8;
 	
 
-	public static final int UP = 0;
-	public static final int DOWN = 1;
-	public static final int LEFT = 2;
-	public static final int RIGHT = 3;
+	public static final int UP = 3;
+	public static final int DOWN = 2;
+	public static final int LEFT = 1;
+	public static final int RIGHT = 0;
 	
 	// x == col, y == row
 	//캐릭터의 현재 위치
@@ -76,14 +77,13 @@ public abstract class GameCharacter {
 		this.speed = 1;
 		this.attackRange = 1;
 		this.canFight = false;
-		this.actorState = GameCharacter.MOVESTATE;
+//		this.actorState = GameCharacter.MOVESTATE;
 		this.actorEvent = null;
 		this.actionType = GameCharacter.RANDOM;
 		nowEXP= 0;
 		
 	}
 	
-	//피해를 입었을 경우
 	public void dagamed(int damage, int direction)
 	{
 		
@@ -96,19 +96,19 @@ public abstract class GameCharacter {
 	
 	public void attack(GameCharacter attack, GameCharacter defender)
 	{
-		Abilities now = defender.getNowStatus();
+		Abilities def = defender.getNowStatus();
 //		if(now == null)
 //			System.out.println("플레이어 널");
-		Abilities nowActor = attack.getNowStatus();
+		Abilities att = attack.getNowStatus();
 //		if(nowActor == null)
 //			System.out.println("몬스터 널");
-		if(now.getHP() <= nowActor.getStrength())
-			now.setHP(0);
+		if(def.getHP() <= att.getStrength())
+			def.setHP(0);
 		else
 		{
-			now.setHP(now.getHP() - nowActor.getStrength());
+			def.setHP(def.getHP() - att.getStrength());
 		}
-		defender.setNowStatus(now);
+	//	defender.setNowStatus(def);
 	}
 	
 	public void skillOrMagic(int direction, int flag)
