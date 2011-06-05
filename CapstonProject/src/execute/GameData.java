@@ -162,6 +162,7 @@ public class GameData implements Runnable{
 	private GameCharacter moveEventActor;
 	private boolean playerAutoMove;
 	private boolean musicStartFlag;
+	private Thread musicThread;
 	
 	//생성자
 	public GameData()
@@ -469,7 +470,6 @@ public class GameData implements Runnable{
 			}
 			runEvent();
 		}
-//		else if(player.getActorState() == GameCharacter.EVENTSTATE)
 		else if(player.getActorState() == GameCharacter.EVENTSTATE)
 		{
 			this.animTimer++;
@@ -685,17 +685,10 @@ public class GameData implements Runnable{
 			//스위치 다이얼로그
 			startSwitchDialog();
 		}
-<<<<<<< .mine
-		else if(type == EventContent.MOTION_EVNET)
-		{
-			
-		}
-=======
 		else if(type == EventContent.MOTION_EVNET)
 		{
 			startMoveEvent();
 		}
->>>>>>> .r131
 		else
 		{
 			nowEventList = null;
@@ -893,8 +886,26 @@ public class GameData implements Runnable{
 	{
 		ChangeBGMEvent bgm = (ChangeBGMEvent) nowEvent;
 		
-		gameMusic.startMusic(null);
+		if(gameMusic != null)
+		{
+			gameMusic.setIsMusicStart(false);
+			gameMusic.startMusic(null);
+			
+		}
+
+		//gameMusic.startMusic(null);
+		gameMusic = new GameMusic(this);
+		gameMusic.setIsMusicStart(false);
 		gameMusic.startMusic(bgm.getSrcFileName());
+		musicThread = new Thread(gameMusic);
+		try {
+			Thread.sleep(SLOWTIMER*2);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		musicThread.start();
+//		gameMusic.startMusic(bgm.getSrcFileName());
 		
 		eventContentListIndex++;
 		eventStart = false;

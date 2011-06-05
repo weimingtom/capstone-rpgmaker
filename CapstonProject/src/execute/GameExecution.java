@@ -51,7 +51,7 @@ public class GameExecution {
 		//게임의 상태를 초기상태로 설정한다.
 		gameData.setGameState(GameData.LOGOSCREEN);
 		gameMusic = new GameMusic(gameData);
-		gameData.setGameMusic(gameMusic);
+		//gameData.setGameMusic(gameMusic);
 		//그리고 초기에 게임 데이터에서 이벤트 로드를 실행한다.
 	}
 	
@@ -61,10 +61,10 @@ public class GameExecution {
 	{
 		Thread displayThread = new Thread(this.gameDisplay);
 		Thread dataThread = new Thread(this.gameData);
-		Thread musicThread = new Thread(gameMusic);
+//		Thread musicThread = new Thread(gameMusic);
 		dataThread.start();
 		displayThread.start();
-		musicThread.start();
+//		musicThread.start();
 		
 	}
 	

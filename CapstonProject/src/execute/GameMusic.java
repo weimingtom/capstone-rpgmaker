@@ -33,18 +33,21 @@ public class GameMusic implements Runnable{
 	
 	@Override
 	public void run() {
-		while(gameData.getGameState() != GameData.EXIT)
-		{
-			while(filePathAndName != null)
+//		while(gameData.getGameState() != GameData.EXIT)
+//		{
+			while(isMusicPlay == true)
 			{
 				try {
 					if(filePathAndName == null)
 					{
-						player.close();
 						break;
 					}
 					if(player != null)
 						player.play();
+					if(player.isComplete())
+					{
+						startMusic(filePathAndName);
+					}
 					Thread.sleep(GameData.SLOWTIMER);
 				} catch (JavaLayerException e) {
 					// TODO Auto-generated catch block
@@ -53,25 +56,49 @@ public class GameMusic implements Runnable{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			}
-			try {
-				Thread.sleep(GameData.SLOWTIMER);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(player != null)
-				player.close();
-		}
+			if(player!=null)player.close();
+			if(bis != null)
+				try {
+					bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if(fis != null)
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	}
+
+//	}
 
 
 	public void startMusic(String filePathAndName) {
 
 		this.filePathAndName = filePathAndName;
 		if(filePathAndName == null)
+		{
+			if(player!=null)player.close();
+			if(bis != null)
+				try {
+					bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if(fis != null)
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			return;
+		}
 
 		//파일 스트림 생성
 		try {
@@ -95,6 +122,9 @@ public class GameMusic implements Runnable{
 		return filePathAndName;
 	}
 	
-	
+	public void setIsMusicStart(boolean flag)
+	{
+		this.isMusicPlay = flag;
+	}
 	
 }
