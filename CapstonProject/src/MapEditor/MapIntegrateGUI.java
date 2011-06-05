@@ -390,23 +390,28 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	private void drawDragedRect(Graphics2D g, Color color, Point startPoint,
 			Point endPoint) {
+		int temp;
 		Color tmp = g.getColor();
-		int sx = (startPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-		int sy = (startPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-		int ex = (endPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-		int ey = (endPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-		if (sx <= ex)
-			ex += DrawingTemplate.pixel;
-		else
-			sx += DrawingTemplate.pixel;
-		if (sy <= ey)
-			ey += DrawingTemplate.pixel;
-		else {
-			sy += DrawingTemplate.pixel;
-		}
+		int sx = (startPoint.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
+		int sy = (startPoint.y / DrawingTemplate.pixel) * DrawingTemplate.pixel;
+		int ex = (endPoint.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
+		int ey = (endPoint.y / DrawingTemplate.pixel) * DrawingTemplate.pixel;
 
-		int w = Math.abs(ex - sx);
-		int h = Math.abs(ey - sy);
+		if (ex < sx) {
+			temp = sx;
+			sx = ex;
+			ex = temp;
+		}
+		if (ey < sy) {
+			temp = sy;
+			sy = ey;
+			ey = temp;
+		}
+		ex += DrawingTemplate.pixel;
+		ey += DrawingTemplate.pixel;
+
+		int w = ex - sx;
+		int h = ey - sy;
 		g.draw3DRect(sx, sy, w, h, false);
 		g.setColor(tmp);
 	}
@@ -601,11 +606,15 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			else if (drawTool == PAINT_TOOL) {
 				isDrag = true;
 				dragPoint = e.getPoint();
-				
-				int sx = (pressPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-				int sy = (pressPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-				int ex = (dragPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
-				int ey = (dragPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+
+				int sx = (pressPoint.x / DrawingTemplate.pixel)
+						* DrawingTemplate.pixel;
+				int sy = (pressPoint.y / DrawingTemplate.pixel)
+						* DrawingTemplate.pixel;
+				int ex = (dragPoint.x / DrawingTemplate.pixel)
+						* DrawingTemplate.pixel;
+				int ey = (dragPoint.y / DrawingTemplate.pixel)
+						* DrawingTemplate.pixel;
 				if (sx <= ex)
 					ex += DrawingTemplate.pixel;
 				else
@@ -615,9 +624,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				else {
 					sy += DrawingTemplate.pixel;
 				}
-				int w = Math.abs(ex - sx)/DrawingTemplate.pixel;
-				int h = Math.abs(ey - sy)/DrawingTemplate.pixel;
-				MainFrame.OWNER.setMainStateCenter("Canvas " + w +" x " + h + " block");
+				int w = Math.abs(ex - sx) / DrawingTemplate.pixel;
+				int h = Math.abs(ey - sy) / DrawingTemplate.pixel;
+				MainFrame.OWNER.setMainStateCenter("Canvas " + w + " x " + h
+						+ " block");
 			}
 		}
 		repaint();
@@ -765,17 +775,20 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 								/ DrawingTemplate.pixel;
 						int heightBlock = paletteInfo.getRectHeight()
 								/ DrawingTemplate.pixel;
-						for (int i = 0; i < rowLength / widthBlock; i++) {
-							for (int j = 0; j < colLength / heightBlock; j++) {
-								if (paletteInfo.isBackground()) {
-									this.insertTileToBack(sc + j * heightBlock,
-											sr + i * widthBlock);
-								} else {
-									this.insertTileToFore(sc + j * heightBlock,
-											sr + i * widthBlock);
+						if (widthBlock != 0)
+							for (int i = 0; i < rowLength / widthBlock; i++) {
+								for (int j = 0; j < colLength / heightBlock; j++) {
+									if (paletteInfo.isBackground()) {
+										this.insertTileToBack(sc + j
+												* heightBlock, sr + i
+												* widthBlock);
+									} else {
+										this.insertTileToFore(sc + j
+												* heightBlock, sr + i
+												* widthBlock);
+									}
 								}
 							}
-						}
 					}
 				}
 			} else {
