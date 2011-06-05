@@ -179,7 +179,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		toolGroup.add(popupPaintTool);
 		popupStampTool.setSelected(true);
 
-		
 		popupmenuCanvas.add(popupStampTool);
 		popupmenuCanvas.add(popupPaintTool);
 		popupmenuCanvas.addSeparator();
@@ -241,8 +240,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		}
 		background = mapSys.drawBackground(0, 0);
 		foreground = mapSys.drawForeground(0, 0);
-		setPreferredSize(new Dimension(background.getWidth(), background
-				.getHeight()));
+		setPreferredSize(new Dimension(background.getWidth(),
+				background.getHeight()));
 
 		repaint();
 	}
@@ -335,6 +334,15 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	// 출력순서를 설정/출력옵션설정
 	public void setOutputFlag(int outputFlag) {
 		this.outputFlag = outputFlag;
+		if (outputFlag == BACKGROUND_ONLY) {
+			MainFrame.OWNER.setMainStateWest("View background");
+		} else if (outputFlag == FOREGROUND_ONLY) {
+			MainFrame.OWNER.setMainStateWest("View foreground");
+		} else if (outputFlag == SEMITRANSPARENT) {
+			MainFrame.OWNER.setMainStateWest("View semitransparent");
+		} else {
+			MainFrame.OWNER.setMainStateWest("View all");
+		}
 	}
 
 	// 그리드 모드
@@ -383,10 +391,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	private void drawDragedRect(Graphics2D g, Color color, Point startPoint,
 			Point endPoint) {
 		Color tmp = g.getColor();
-		int sx = (startPoint.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
-		int sy = (startPoint.y / DrawingTemplate.pixel) * DrawingTemplate.pixel;
-		int ex = (endPoint.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
-		int ey = (endPoint.y / DrawingTemplate.pixel) * DrawingTemplate.pixel;
+		int sx = (startPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+		int sy = (startPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+		int ex = (endPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+		int ey = (endPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
 		if (sx <= ex)
 			ex += DrawingTemplate.pixel;
 		else
@@ -397,15 +405,10 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			sy += DrawingTemplate.pixel;
 		}
 
-		int w = ex - sx;
-		int h = ey - sy;
+		int w = Math.abs(ex - sx);
+		int h = Math.abs(ey - sy);
 		g.draw3DRect(sx, sy, w, h, false);
 		g.setColor(tmp);
-	}
-
-	private void fillRectFromPalette(Graphics2D g, Color color,
-			Point startPoint, Point endPoint) {
-
 	}
 
 	// 그리드를 화면에 출력
@@ -467,8 +470,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			// 그리드 모드 삽입
 			g2d.setColor(new Color(255, 255, 255, 100));
 			for (int i = 0; i < background.getHeight() / DrawingTemplate.pixel; i++) {
-				g2d.drawLine(0, i * DrawingTemplate.pixel, background
-						.getWidth(), i * DrawingTemplate.pixel);
+				g2d.drawLine(0, i * DrawingTemplate.pixel,
+						background.getWidth(), i * DrawingTemplate.pixel);
 			}
 			for (int j = 0; j < background.getWidth() / DrawingTemplate.pixel; j++) {
 				g2d.drawLine(j * DrawingTemplate.pixel, 0, j
@@ -598,6 +601,23 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			else if (drawTool == PAINT_TOOL) {
 				isDrag = true;
 				dragPoint = e.getPoint();
+				
+				int sx = (pressPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+				int sy = (pressPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+				int ex = (dragPoint.x/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+				int ey = (dragPoint.y/DrawingTemplate.pixel)*DrawingTemplate.pixel;
+				if (sx <= ex)
+					ex += DrawingTemplate.pixel;
+				else
+					sx += DrawingTemplate.pixel;
+				if (sy <= ey)
+					ey += DrawingTemplate.pixel;
+				else {
+					sy += DrawingTemplate.pixel;
+				}
+				int w = Math.abs(ex - sx)/DrawingTemplate.pixel;
+				int h = Math.abs(ey - sy)/DrawingTemplate.pixel;
+				MainFrame.OWNER.setMainStateCenter("Canvas " + w +" x " + h + " block");
 			}
 		}
 		repaint();
@@ -688,6 +708,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			} else if (drawTool == PAINT_TOOL) {
 				pressPoint = e.getPoint();
 				dragPoint = e.getPoint();
+				MainFrame.OWNER.setMainStateCenter("Canvas 1 x 1 block");
 			}
 		}
 
@@ -703,8 +724,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				if (!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 					return;
 				if (e.isPopupTrigger()) {
-					popupmenuEvent.show(e.getComponent(), e.getX() + 10, e
-							.getY() + 10);
+					popupmenuEvent.show(e.getComponent(), e.getX() + 10,
+							e.getY() + 10);
 				}
 			}
 		} else { // 캔버스 모드
@@ -761,8 +782,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				if (!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 					return;
 				if (e.isPopupTrigger()) {
-					popupmenuCanvas.show(e.getComponent(), e.getX() + 10, e
-							.getY() + 10);
+					popupmenuCanvas.show(e.getComponent(), e.getX() + 10,
+							e.getY() + 10);
 				}
 			}
 		}
@@ -862,8 +883,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		int startCol = startEventPoint.y / DrawingTemplate.pixel;
 		int endRow = endEventPoint.x / DrawingTemplate.pixel;
 		int endCol = endEventPoint.y / DrawingTemplate.pixel;
-		
-		new EventDlg(MainFrame.OWNER, new Point(startRow,startCol), new Point(endRow,endCol), mapSys.getEventEditSys());
+
+		new EventDlg(MainFrame.OWNER, new Point(startRow, startCol), new Point(
+				endRow, endCol), mapSys.getEventEditSys());
 	}
 
 	public void deleteEvent() {
@@ -875,8 +897,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			int startCol = startEventPoint.y / DrawingTemplate.pixel;
 			int endRow = endEventPoint.x / DrawingTemplate.pixel;
 			int endCol = endEventPoint.y / DrawingTemplate.pixel;
-			
-			mapSys.getEventEditSys().deleteEvents(new Point(startRow,startCol), new Point(endRow,endCol));
+
+			mapSys.getEventEditSys().deleteEvents(
+					new Point(startRow, startCol), new Point(endRow, endCol));
 		}
 	}
 
@@ -888,16 +911,17 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		int startCol = startEventPoint.y / DrawingTemplate.pixel;
 		int endRow = endEventPoint.x / DrawingTemplate.pixel;
 		int endCol = endEventPoint.y / DrawingTemplate.pixel;
-		
-		mapSys.getEventEditSys().copyEvents(new Point(startRow,startCol), new Point(endRow,endCol));
+
+		mapSys.getEventEditSys().copyEvents(new Point(startRow, startCol),
+				new Point(endRow, endCol));
 		MainFrame.OWNER.getEventItem_paste().setEnabled(syncEventPasteBtn());
 	}
 
 	public void pasteEvent() {
 		int startRow = startEventPoint.x / DrawingTemplate.pixel;
 		int startCol = startEventPoint.y / DrawingTemplate.pixel;
-		
-		mapSys.getEventEditSys().pasteEvents(new Point(startRow,startCol));
+
+		mapSys.getEventEditSys().pasteEvents(new Point(startRow, startCol));
 	}
 
 	// 이벤트 붙여 넣기 버튼에 불을 넣거나 빼고

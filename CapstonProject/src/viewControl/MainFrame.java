@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -123,7 +124,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		// SOUTH
 		southPanel = new JPanel(new BorderLayout());
 		subState = new JLabel("WELCOME!");
-		mainState = new JLabel("BAESSAGONG RPG MAKER ALPA 0.1");
+		mainStatePanel =new  JPanel(new GridLayout());
+		mainStateWest = new JLabel();
+		mainStateCenter = new JLabel("BAESSAGONG RPG MAKER ALPA 0.1");
+		mainStateEest = new JLabel();
 		coordinatePanel = new JPanel(new FlowLayout());
 		coordinateXlabel = new JLabel("X : ");
 		coordinateYlabel = new JLabel("Y : ");
@@ -296,11 +300,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		getContentPane().add(toolBar, BorderLayout.PAGE_START);
 		// SOUTH
+		mainStatePanel.add(mainStateWest);
+		mainStatePanel.add(mainStateCenter);
+		mainStatePanel.add(mainStateEest);
 		subState.setHorizontalAlignment(SwingConstants.CENTER);
 		subState.setPreferredSize(new Dimension(150, 20));
-		mainState.setHorizontalAlignment(SwingConstants.CENTER);
-		mainState.setPreferredSize(new Dimension(40, 20));
-		southPanel.add(mainState, BorderLayout.CENTER);
+		mainStateWest.setHorizontalAlignment(SwingConstants.CENTER);
+		mainStateWest.setPreferredSize(new Dimension(40, 20));
+		southPanel.add(mainStatePanel, BorderLayout.CENTER);
 		southPanel.add(southSeparator, BorderLayout.PAGE_START);
 		southPanel.add(subState, BorderLayout.LINE_START);
 
@@ -771,7 +778,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private EstyleButton btnRefresh;
 
 	// SOUTH
-	private JLabel mainState;
+	private JPanel mainStatePanel;
+	private JLabel mainStateWest;
+	private JLabel mainStateCenter;
+	private JLabel mainStateEest;
 	private JLabel subState;
 	private JPanel coordinatePanel;
 	private JLabel coordinateXlabel;
@@ -1122,10 +1132,18 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	 */
 
 	// 기본 스테이터스
-	public void setMainState(String str) {
-		mainState.setText(str);
+	public void setMainStateWest(String str) {
+		mainStateWest.setText(str);
 	}
-
+	
+	public void setMainStateCenter(String str) {
+		mainStateCenter.setText(str);
+	}
+	
+	public void setMainStateEast(String str) {
+		mainStateEest.setText(str);
+	}
+	
 	public void setSubState(String str) {
 		subState.setText(str);
 	}
