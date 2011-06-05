@@ -14,11 +14,12 @@ import eventEditor.EventEditorSystem;
 
 public class MapEditorSystem {
 
+	private static final long serialVersionUID = 4612091568244227383L;
 	/************* 멤버 변수들 ***************/
 	// 맵을 그릴때 사용한 그림파일 이름을 가질 변수
-	//GUI에서 처리함
-	//private Vector<String> backgroundFile;
-	//private Vector<String> foregroundFile;
+	// GUI에서 처리함
+	// private Vector<String> backgroundFile;
+	// private Vector<String> foregroundFile;
 	// 사용자가 드래그 앤 클릭으로 선택한 맵타일들을 저장하는 변수
 	// private Vector m_template;
 	private Tile[][] m_selectedTile;
@@ -29,7 +30,8 @@ public class MapEditorSystem {
 	// 전경 템플릿
 	private Vector<ForegroundTemplate> m_foreTemplate;
 
-	/****************/
+	// 언두
+
 
 	/*************
 	 * 멤버 함수들
@@ -40,7 +42,7 @@ public class MapEditorSystem {
 	public MapEditorSystem() throws IOException {
 		this.m_backTemplate = null;
 		this.m_foreTemplate = null;
-		//this.m_Map = new Map();
+		// this.m_Map = new Map();
 
 		// this.m_template = null;
 		this.m_selectedTile = null;
@@ -59,79 +61,75 @@ public class MapEditorSystem {
 		m_Map = new Map(mapName, mapHeight, mapWidth);
 		m_backTemplate = new Vector<BackgroundTemplate>();
 		m_foreTemplate = new Vector<ForegroundTemplate>();
-		//this.backgroundFile = new Vector<String>();
-		//this.foregroundFile = new Vector<String>();
-
+		// this.backgroundFile = new Vector<String>();
+		// this.foregroundFile = new Vector<String>();
 	}
 
 	// 미구현 : 맵을 저장할때
 	public void save(String fileName) throws IOException {
-		
+
 		FileOutputStream fos = new FileOutputStream(fileName);
 		ObjectOutput oos = new ObjectOutputStream(fos);
 
 		oos.writeObject(this.m_Map);
 		oos.close();
 		fos.close();
-		
-		
+
 	}
 
 	// 미구현 : 맵을 다른이름으로 저장
-	public void saveAs(String filePath, String mapName) throws IOException, ClassNotFoundException {
+	public void saveAs(String filePath, String mapName) throws IOException,
+			ClassNotFoundException {
 		this.m_Map.setM_MapName(mapName);
 		FileOutputStream fos = new FileOutputStream(filePath);
 		ObjectOutput oos = new ObjectOutputStream(fos);
-			
+
 		oos.writeObject(this.m_Map);
 		oos.close();
 		fos.close();
-				
+
 	}
 
-	//  파일에 저장된 맵을 불러온다
-	public void load(String fileName)throws IOException, ClassNotFoundException  {
+	// 파일에 저장된 맵을 불러온다
+	public void load(String fileName) throws IOException,
+			ClassNotFoundException {
 		FileInputStream fis = new FileInputStream(fileName);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 
-		this.m_Map = (Map)ois.readObject();
-		
+		this.m_Map = (Map) ois.readObject();
+
 		ois.close();
 		fis.close();
-		
+
 		Tile t[][] = null;
 		t = m_Map.getM_BackgroundTile();
 
-		BufferedImage tmp = new BufferedImage(m_Map.getM_Width()*DrawingTemplate.pixel,
-				m_Map.getM_Height()*DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
-		
+		BufferedImage tmp = new BufferedImage(m_Map.getM_Width()
+				* DrawingTemplate.pixel, m_Map.getM_Height()
+				* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
+
 		Graphics2D g = tmp.createGraphics();
-		
-		for(int i = 0 ; i < m_Map.getM_Height(); i++)
-		{
-			for(int j = 0 ; j < m_Map.getM_Width(); j++)
-			{
-				g.drawImage(t[i][j].getM_TileIcon(), 
-						j*DrawingTemplate.pixel, i*DrawingTemplate.pixel,
-						null);
+
+		for (int i = 0; i < m_Map.getM_Height(); i++) {
+			for (int j = 0; j < m_Map.getM_Width(); j++) {
+				g.drawImage(t[i][j].getM_TileIcon(), j * DrawingTemplate.pixel,
+						i * DrawingTemplate.pixel, null);
 			}
 		}
 		this.m_Map.setM_Background(tmp);
-		
+
 		t = m_Map.getM_ForegroundTile();
-		
-		tmp = new BufferedImage(m_Map.getM_Width()*DrawingTemplate.pixel,
-				m_Map.getM_Height()*DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
-		
+
+		tmp = new BufferedImage(m_Map.getM_Width() * DrawingTemplate.pixel,
+				m_Map.getM_Height() * DrawingTemplate.pixel,
+				BufferedImage.TYPE_4BYTE_ABGR);
+
 		g = tmp.createGraphics();
-		
-		for(int i = 0 ; i < m_Map.getM_Height(); i++)
-		{
-			for(int j = 0 ; j < m_Map.getM_Width(); j++)
-			{
-				g.drawImage(t[i][j].getM_TileIcon(), 
-						j*DrawingTemplate.pixel, i*DrawingTemplate.pixel,
-						null);
+
+		for (int i = 0; i < m_Map.getM_Height(); i++) {
+			for (int j = 0; j < m_Map.getM_Width(); j++) {
+				g.drawImage(t[i][j].getM_TileIcon(), j * DrawingTemplate.pixel,
+						i * DrawingTemplate.pixel, null);
 			}
 		}
 		this.m_Map.setM_Foreground(tmp);
@@ -140,7 +138,7 @@ public class MapEditorSystem {
 
 	// 이미지로부터 백그라운드 템플릿을 생성한다.
 	public void makeBackTemplate(String imageFileName) {
-		//this.backgroundFile.add(imageFileName);
+		// this.backgroundFile.add(imageFileName);
 		// 벡터에 집어넣을 백그라운드 템플릿 선언
 		BackgroundTemplate bg = new BackgroundTemplate();
 
@@ -156,7 +154,7 @@ public class MapEditorSystem {
 
 	// 이미지로부터 포어그라운드 템플릿을 생성한다.
 	public void makeForeTemplate(String imageFileName) {
-		//this.foregroundFile.add(imageFileName);
+		// this.foregroundFile.add(imageFileName);
 		// 벡터에 집어넣을 포어그라운드 템플릿 선언
 		ForegroundTemplate bg = new ForegroundTemplate();
 
@@ -173,28 +171,27 @@ public class MapEditorSystem {
 	// 백그라운데 템플릿에서 이미지 정보를 삭제한다.
 	public void deleteBackTemplate(int index) {
 		this.m_backTemplate.removeElementAt(index);
-		//this.backgroundFile.removeElementAt(index);
+		// this.backgroundFile.removeElementAt(index);
 	}
 
 	// 백그라운데 템플릿에서 이미지 정보를 삭제한다.
 	public void deleteForeTemplate(int index) {
 		this.m_foreTemplate.removeElementAt(index);
-		//this.foregroundFile.removeElementAt(index);
+		// this.foregroundFile.removeElementAt(index);
 	}
 
 	// 사용자가 드래그한 위치 정보를 이 클래스에 알려줌
 	// 드래그 위치정보. 배경, 전경템플릿의 벡터에 저장된 인덱스정보
 	// 지금 클릭한 부분이 배경인가, 전경인가 하는 정보
 	public void setTiles(int startCol, int startRow, int endCol, int endRow,
-			int vectorIndex, boolean back) throws IllegalTileIndex{
+			int vectorIndex, boolean back) throws IllegalTileIndex {
 		// 백그라운드 템플릿이 클릭된거면
 		m_selectedTile = null;
 		if (back == true) {
 			// 백그라운드 템플릿에서 선택한 타일셋을 받아온다.
-			if(m_backTemplate.size()<0)
-			{
+			if (m_backTemplate.size() < 0) {
 				System.out.println("error in mapeditorSystem.java");
-				//System.exit(-1);
+				// System.exit(-1);
 			}
 			m_selectedTile = m_backTemplate.elementAt(vectorIndex).getTileSet(
 					startCol, startRow, endCol, endRow);
@@ -242,55 +239,58 @@ public class MapEditorSystem {
 		// return null;
 		return fg;
 	}
-	//백그라운드 이미지를 리턴합니다.
+
+	// 백그라운드 이미지를 리턴합니다.
 	public BufferedImage getBackTemplate(int numberOfTab) {
 		// TODO Auto-generated method stub
 		return this.m_backTemplate.elementAt(numberOfTab).getM_Image();
 	}
-	//포어그라운드 이미지를 리턴합니다.
+
+	// 포어그라운드 이미지를 리턴합니다.
 	public BufferedImage getForeTemplate(int numberOfTab) {
 		// TODO Auto-generated method stub
 		return this.m_foreTemplate.elementAt(numberOfTab).getM_Image();
 	}
-	//맵 에디터 클래스가 가지고 있는 맵정보를 리턴
-	public Map getMapInfo()
-	{
+
+	// 맵 에디터 클래스가 가지고 있는 맵정보를 리턴
+	public Map getMapInfo() {
 		return m_Map;
 	}
-	public DrawingTemplate getPalette(int index, boolean back)
-	{
-		if(back == true)
+
+	public DrawingTemplate getPalette(int index, boolean back) {
+		if (back == true)
 			return this.m_backTemplate.elementAt(index);
 		else
 			return this.m_foreTemplate.elementAt(index);
 	}
-	public Vector<BackgroundTemplate> getBackPalettes()
-	{
+
+	public Vector<BackgroundTemplate> getBackPalettes() {
 		return this.m_backTemplate;
 	}
-	public Vector<ForegroundTemplate> getForePalettes()
-	{
+
+	public Vector<ForegroundTemplate> getForePalettes() {
 		return this.m_foreTemplate;
 	}
-	public void setBackPaletteVector(Vector<BackgroundTemplate> v)
-	{
-//		this.m_backTemplate = new Vector<BackgroundTemplate>();
-//		for(int i = 0 ; i < v.size(); i++)
-//		{
-//			m_backTemplate.add(v.elementAt(i));
-//		}
+
+	public void setBackPaletteVector(Vector<BackgroundTemplate> v) {
+		// this.m_backTemplate = new Vector<BackgroundTemplate>();
+		// for(int i = 0 ; i < v.size(); i++)
+		// {
+		// m_backTemplate.add(v.elementAt(i));
+		// }
 		this.m_backTemplate = v;
-	}	
-	public void setForePaletteVector(Vector<ForegroundTemplate> v)
-	{
-//		this.m_foreTemplate = new Vector<ForegroundTemplate>();
-//		for(int i = 0 ; i < v.size(); i++)
-//		{
-//			m_foreTemplate.add(v.elementAt(i));
-//		}
+	}
+
+	public void setForePaletteVector(Vector<ForegroundTemplate> v) {
+		// this.m_foreTemplate = new Vector<ForegroundTemplate>();
+		// for(int i = 0 ; i < v.size(); i++)
+		// {
+		// m_foreTemplate.add(v.elementAt(i));
+		// }
 		this.m_foreTemplate = v;
 	}
-	
+
+
 	public EventEditorSystem getEventEditSys() {
 		return m_Map.getEventEditSys();
 	}

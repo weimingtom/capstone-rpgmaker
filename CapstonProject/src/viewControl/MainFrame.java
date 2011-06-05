@@ -234,6 +234,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasToolGroup = new ButtonGroup();
 		canvasItem_paintTool = new JRadioButtonMenuItem("Paint tool");
 		canvasItem_stampTool = new JRadioButtonMenuItem("Stamp tool");
+		canvasItem_undo = new JMenuItem("Undo");
+		canvasItem_redo = new JMenuItem("Redo");
 
 		eventItem_viewOnEvent = new EstyleCheckBoxItem("Event mode");
 		eventItem_copy = new JMenuItem("Copy event");
@@ -582,6 +584,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasToolGroup.add(canvasItem_paintTool);
 		canvasToolGroup.add(canvasItem_stampTool);
 
+		menuCanvas.add(canvasItem_undo);
+		menuCanvas.add(canvasItem_redo);
+		menuCanvas.addSeparator();
 		menuCanvas.add(canvasItem_stampTool);
 		menuCanvas.add(canvasItem_paintTool);
 		menuCanvas.addSeparator();
@@ -590,6 +595,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		menuCanvas.add(canvasItem_Semitransparent);
 		menuCanvas.addSeparator();
 		menuCanvas.add(canvasItem_grid);
+		//canvasItem_undo.setEnabled(false);
+		//canvasItem_redo.setEnabled(false);
 		canvasItem_stampTool.setEnabled(false);
 		canvasItem_paintTool.setEnabled(false);
 		canvasItem_backgroundOnly.setEnabled(false);
@@ -598,6 +605,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasItem_grid.setEnabled(false);
 		canvasItem_stampTool.setSelected(true);
 
+		canvasItem_undo.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_Z, Event.CTRL_MASK));
+		canvasItem_redo.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_Y, Event.CTRL_MASK));
 		canvasItem_stampTool.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_S, Event.ALT_MASK));
 		canvasItem_paintTool.setAccelerator(KeyStroke.getKeyStroke(
@@ -611,6 +622,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		canvasItem_grid.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
 				Event.CTRL_MASK));
 
+		canvasItem_undo.addActionListener(this);
+		canvasItem_redo.addActionListener(this);
 		canvasItem_stampTool.addActionListener(this);
 		canvasItem_paintTool.addActionListener(this);
 		canvasItem_backgroundOnly.addActionListener(this);
@@ -812,6 +825,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private JMenuItem fileItem_projectClose;
 	private JMenuItem fileItem_exit;
 
+	private JMenuItem canvasItem_undo;
+	private JMenuItem canvasItem_redo;
 	private EstyleCheckBoxItemGroup canvasItemGroup;
 	private EstyleCheckBoxItem canvasItem_backgroundOnly;
 	private EstyleCheckBoxItem canvasItem_foregroundOnly;
@@ -941,6 +956,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			syncBetweenCanvasTabsMode(MapIntegrateGUI.PAINT_TOOL);
 		} else if (e.getSource() == canvasItem_stampTool) {
 			syncBetweenCanvasTabsMode(MapIntegrateGUI.STAMP_TOOL);
+		}else if (e.getSource() == canvasItem_undo) {
+			getSelectedCanvasFromCanvasTab().undo();
+		}else if (e.getSource() == canvasItem_redo) {
+			getSelectedCanvasFromCanvasTab().redo();
 		}
 
 		// event

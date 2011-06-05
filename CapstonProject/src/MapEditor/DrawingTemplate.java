@@ -6,9 +6,11 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 
-public class DrawingTemplate {
+public class DrawingTemplate  {
+
 
 	public static final int pixel = 16;
 	protected BufferedImage m_Image; // 타일화할 이미지를 가진다.
