@@ -205,6 +205,8 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		DefaultMutableTreeNode n = (DefaultMutableTreeNode) p
 				.getLastPathComponent();
 		setSelectedFile((File) n.getUserObject());
+		checkType();
+		MainFrame.OWNER.setSubState(folderType);
 	}
 
 	protected class CellRenderer extends DefaultTreeCellRenderer {
@@ -367,34 +369,15 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 				popup.show(e.getComponent(), e.getX() + 10, e.getY() + 10);
 			}
 		}
-
+		
+		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			int selRow = getRowForLocation(e.getX(), e.getY());
 			// TreePath selPath = getPathForLocation(e.getX(), e.getY());
 			if (selRow != -1) {
 				if (e.getClickCount() == 1) { // 한번 클릭
-					// 어떤 속성의 파일을 선택 했는가?
-					File fnode = getSelectedFile();
-					if (fnode == null)
-						return;
-					if (fnode.isFile()) {
-						for (int d = 0; d < root.getDepth(); d++) {
-							String fileList[] = fnode.getParentFile().list();
-							for (int i = 0; i < fileList.length; i++) {
-								if (fileList[i].charAt(0) == '.') {
-									folderType = fileList[i];
-									break;
-								}
-							}
-							if (folderType == null) {
-								fnode = fnode.getParentFile();
-							}
-						}
-					} else {
-						folderType = null;
-					}
-				} else if (e.getClickCount() >= 2) { // 더블 클릭
+					} else if (e.getClickCount() >= 2) { // 더블 클릭
 
 					if (folderType == null) {
 						return; // 폴더가 선택됨
@@ -440,6 +423,31 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 
 				}
 			}
+		}
+
+	
+	}
+	
+	private void checkType() {
+		// 어떤 속성의 파일을 선택 했는가?
+		File fnode = getSelectedFile();
+		if (fnode == null)
+			return;
+		if (fnode.isFile()) {
+			for (int d = 0; d < root.getDepth(); d++) {
+				String fileList[] = fnode.getParentFile().list();
+				for (int i = 0; i < fileList.length; i++) {
+					if (fileList[i].charAt(0) == '.') {
+						folderType = fileList[i];
+						break;
+					}
+				}
+				if (folderType == null) {
+					fnode = fnode.getParentFile();
+				}
+			}
+		} else {
+			folderType = null;
 		}
 	}
 
@@ -656,4 +664,6 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		DefaultMutableTreeNode n = searchTreeNode(root, fnode);
 		setSelectionRow(getRowForPath(new TreePath(n.getPath())));
 	}
+	
+	
 }
