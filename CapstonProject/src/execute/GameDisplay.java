@@ -338,7 +338,14 @@ public class GameDisplay implements Runnable{
 				actorImage = actorAnim.getCurrentImage();
 			}catch(ArrayIndexOutOfBoundsException e)
 			{
-				actorImage = actorAnim.getNextImage();
+				try{
+					actorImage = actorAnim.getNextImage();
+				}
+				catch(ArithmeticException e1)
+				{
+					//e1.printStackTrace();
+					return;
+				}
 			}
 
 			if(gameData.isChangeCharacterAnim(playerTimer, actorAnim.getCountImg()))
@@ -417,6 +424,8 @@ public class GameDisplay implements Runnable{
 	//npc들 출력
 	public void displayAlliance(Graphics2D g,GameCharacter alliance)
 	{
+		if(alliance == null)
+			return;
 		// 애니메이션 정보 얻기
 		NPCEditorSystem allianceAnim = (NPCEditorSystem) alliance
 				.getCharacter();
@@ -687,23 +696,34 @@ public class GameDisplay implements Runnable{
 		//우선 정렬이 필요함
 		Vector<GameCharacter> actors = gameData.getSortedCharacters();
 		
+		//System.out.println(actors.size());
 		for(int i = 0 ; i < actors.size(); i++)
 		{
+			if(actors.elementAt(i).getCharacter() == null)
+				continue;
+			
 			//주인공 받아옴
 			if(actors.elementAt(i).equals(gameData.getPlayer()))
 			{
 				displayPlayer(g);
+				displayHealthBar(g, gameData.getPlayer());
 			}
 			else if( actors.elementAt(i) instanceof Alliance )
 			{
+				try{
 				displayAlliance(g, (GameCharacter)actors.elementAt(i));
+				}
+				catch(NullPointerException e)
+				{
+					e.printStackTrace();
+					return;
+				}
 			}
 			else if( actors.elementAt(i) instanceof Monster)
 			{
 				//몬스터 출력
 				displayMonster(g, (GameCharacter)actors.elementAt(i));
 			}
-			displayHealthBar(g, actors.elementAt(i));
 		}
 	}
 	

@@ -1,8 +1,12 @@
 package execute;
 
+import java.util.List;
 import java.util.Vector;
 
 import characterEditor.Abilities;
+import eventEditor.Event;
+import eventEditor.EventEditorSystem;
+import eventEditor.EventTile;
 
 import animationEditor.Animations;
 
@@ -127,7 +131,80 @@ public class AI {
 		return false;
 	}
 	
-
+	//액션이 가능하면
+	public boolean canAction(GameCharacter actor1, GameCharacter actor2)
+	{
+		//거리가 사거리에 닫으면
+		int direction = actor1.getNowDirection();
+		int ratio = GameData.mapCharArrayRatio;
+		//ratio/=2;
+		int range = GameData.mapCharArrayRatio+ratio;
+		
+		//두 지점사이의 거리가 사거리보다 적어야함
+		
+		int difX = Math.abs(actor1.getxPosition() - actor2.getxPosition())+ratio/2;
+		int difY = Math.abs(actor1.getyPosition() - actor2.getyPosition())+ratio/2;
+		
+		if(direction == GameCharacter.UP)
+		{
+			if(difY <= ratio+range && difX <= ratio*2 && actor2.getyPosition()<=actor1.getyPosition())
+				return true;
+		}
+		else if(direction == GameCharacter.DOWN)
+		{
+			if(difY <= ratio+range && difX <= ratio*2 && actor2.getyPosition()>=actor1.getyPosition())
+				return true;		
+		}
+		else if(direction == GameCharacter.LEFT)
+		{
+			if(difX <= ratio+range && difY <= ratio*2 && actor2.getxPosition()<=actor1.getxPosition())
+				return true;
+		}
+		else if(direction == GameCharacter.RIGHT)
+		{
+			if(difX <= ratio+range && difY <= ratio*2 && actor2.getxPosition()>=actor1.getxPosition())
+				return true;		
+		}	
+		return false;
+	}
+	
+	//두 캐릭터가 접촉했다면
+	public boolean isAttached(GameCharacter actor1, GameCharacter actor2)
+	{
+		//거리가 사거리에 닫으면
+		int direction = actor1.getNowDirection();
+		int ratio = GameData.mapCharArrayRatio;
+		ratio/=2;
+		int range = GameData.mapCharArrayRatio+ratio;
+		
+		//두 지점사이의 거리가 사거리보다 적어야함
+		
+		int difX = Math.abs(actor1.getxPosition() - actor2.getxPosition())+ratio/2;
+		int difY = Math.abs(actor1.getyPosition() - actor2.getyPosition())+ratio/2;
+		
+		if(direction == GameCharacter.UP)
+		{
+			if(difY <= ratio+range && difX <= ratio*2 && actor2.getyPosition()<=actor1.getyPosition())
+				return true;
+		}
+		else if(direction == GameCharacter.DOWN)
+		{
+			if(difY <= ratio+range && difX <= ratio*2 && actor2.getyPosition()>=actor1.getyPosition())
+				return true;		
+		}
+		else if(direction == GameCharacter.LEFT)
+		{
+			if(difX <= ratio+range && difY <= ratio*2 && actor2.getxPosition()<=actor1.getxPosition())
+				return true;
+		}
+		else if(direction == GameCharacter.RIGHT)
+		{
+			if(difX <= ratio+range && difY <= ratio*2 && actor2.getxPosition()>=actor1.getxPosition())
+				return true;		
+		}	
+		return false;
+	}
+	
 	//시야내에 케릭터 잇는지 확인
 	public boolean canWatch(GameCharacter monster, GameCharacter player)
 	{
@@ -252,21 +329,92 @@ public class AI {
 		if(alliances == null || player.getActorState() == GameCharacter.EVENTSTATE
 				|| GameCharacter.STATUSCALLED == player.getActorState())
 			return;
-		
-		/*************************************************************************/
-		/*****************플레이어가 액션 버튼을 누르면 이벤트를 실행한다.***********************/
-		
-		
-		
-		
-		
-		/*************************************************************************/
 
 		//npc를 움직임
 		//저장된 모든 npc에 대해서
 		for(int i = 0 ; i < alliances.size(); i++)
 		{
 			GameCharacter alliance = alliances.elementAt(i);
+			if(alliance.getCharacter() == null)
+				continue;
+			//이벤트 실행루틴
+			EventTile charEvents = alliances.elementAt(i).getTotalEvent();
+			//현재 실행중인 이벤트가 없을 경우에
+			if(gameData.getNowEventList() == null)
+			{
+				//액션이 가능하고 액션눌렀을때
+				if(canAction(player, alliance) && 
+						(gameData.getKeyFlag().isAction()||gameData.getKeyFlag().isEnter()))
+				{
+					//키보드 입력인 경우
+					List<Event> eventNodes = charEvents.getEventList();
+					for(int node = 0 ; node < eventNodes.size(); node++)
+					{
+						Event eventList = eventNodes.get(node);
+						//실행조건 받아옴
+						int [] condition = eventList.getPreconditionFlagArray();
+						boolean[]flags = gameData.getConditionFlag();
+						if(flags[condition[0]+1] == true &&
+								flags[condition[1]+1] == true &&
+								flags[condition[2]+1] == true && eventList.getStartType() == EventEditorSystem.PRESS_BUTTON)
+						{
+							gameData.setNowEventList(eventList);
+							if(player.getNowDirection() == GameCharacter.UP)
+								alliance.setNowDirection(GameCharacter.DOWN);
+							else if(player.getNowDirection() == GameCharacter.DOWN)
+								alliance.setNowDirection(GameCharacter.UP);
+							else if(player.getNowDirection() == GameCharacter.LEFT)
+								alliance.setNowDirection(GameCharacter.RIGHT);
+							else if(player.getNowDirection() == GameCharacter.RIGHT)
+								alliance.setNowDirection(GameCharacter.LEFT);
+							try {
+								Thread.sleep(GameData.FASTTIMER/2);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+						}
+					}
+				}
+			}
+			if(gameData.getNowEventList() == null)
+			{
+				//액션이 가능하고 액션눌렀을때
+				if(isAttached(player, alliance))
+				{
+					//키보드 입력인 경우
+					List<Event> eventNodes = charEvents.getEventList();
+					for(int node = 0 ; node < eventNodes.size(); node++)
+					{
+						Event eventList = eventNodes.get(node);
+						//실행조건 받아옴
+						int [] condition = eventList.getPreconditionFlagArray();
+						boolean[]flags = gameData.getConditionFlag();
+						if(flags[condition[0]+1] == true &&
+								flags[condition[1]+1] == true &&
+								flags[condition[2]+1] == true && eventList.getStartType() == EventEditorSystem.CONTACT_WITH_PLAYER)
+						{
+							gameData.setNowEventList(eventList);
+							if(player.getNowDirection() == GameCharacter.UP)
+								alliance.setNowDirection(GameCharacter.DOWN);
+							else if(player.getNowDirection() == GameCharacter.DOWN)
+								alliance.setNowDirection(GameCharacter.UP);
+							else if(player.getNowDirection() == GameCharacter.LEFT)
+								alliance.setNowDirection(GameCharacter.RIGHT);
+							else if(player.getNowDirection() == GameCharacter.RIGHT)
+								alliance.setNowDirection(GameCharacter.LEFT);
+							try {
+								Thread.sleep(GameData.FASTTIMER/2);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+						}
+					}
+				}
+			}
 			
 			//랜덤무브
 			if(alliance.getActionType() == GameCharacter.RANDOM)
@@ -382,6 +530,28 @@ public class AI {
 					player.attack(player, monster);
 					if(monster.getNowStatus().getHP() <= 0)
 					{
+						EventTile monsterTile = monster.getTotalEvent();
+						List<Event> eventNodes = monsterTile.getEventList();
+						for(int node = 0; node < eventNodes.size(); node++)
+						{
+							Event eventList = eventNodes.get(node);
+							//실행조건 받아옴
+							int [] condition = eventList.getPreconditionFlagArray();
+							boolean[]flags = gameData.getConditionFlag();
+							if(flags[condition[0]+1] == true &&
+									flags[condition[1]+1] == true &&
+									flags[condition[2]+1] == true )
+							{
+								flags[eventList.getDieChangeConditionIndex()+1] = eventList.getDieChangeComditionState();
+								try {
+									Thread.sleep(GameData.FASTTIMER);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
 						player.setActorState(GameCharacter.MOVESTATE);
 						monsters.remove(i);
 						i = now;

@@ -70,8 +70,8 @@ public class GameData implements Runnable{
 	/**************************************************/
 	//이 쓰레드의 클럭 타이머
 	public static int TIMER = 100;
-	private static int FASTTIMER = 60;
-	private static int SLOWTIMER = 100;
+	public static int FASTTIMER = 60;
+	public static int SLOWTIMER = 100;
 	
 	/***유틸인포/ 로드화면, 타이틀화면/로고화면***********************/
 	private GameUtilityInformation titleScreen;
@@ -83,10 +83,7 @@ public class GameData implements Runnable{
 	private GameUtilityInformation statusScreen;
 	private GameUtilityInformation levelUpImage;
 	private GameUtilityInformation switchDialog;
-	
-	/*********************************************************/
-	/****게임 액터들, 몬스터들, 플레이어******************************/
-	/****맵이 바뀔때마다 새로 세팅한다*********************************/
+
 	//이 클래으에서 배열은 항상 타일 위치로만 한다. 실제 픽셀값이 아님
 	//각 애니메이션의 타이머
 	
@@ -412,9 +409,11 @@ public class GameData implements Runnable{
 			actionPlayer(player.getActorState());
 			//npc들의 움직임
 			gameRobot.NPCAction(alliances, player, gameMap, gameTile);
+
 			//몬스터 움직임
 			gameRobot.monsterAction(monsters, player, gameMap, gameTile);
 			
+			//System.out.println("호출중");
 			//한꺼번에 배열에 움직임 작성
 			this.computeGameTile();
 
@@ -451,6 +450,7 @@ public class GameData implements Runnable{
 			if(eventStart == false)
 			{
 				computeNowEvent();
+				return;
 			}
 			runEvent();
 		}
@@ -491,10 +491,10 @@ public class GameData implements Runnable{
 			if(eventStart == false)
 			{
 				computeNowEvent();
+				return;
 			}
 			runEvent();
 		}
-		
 		//캐릭터 체력 채워줌
 		if(player.getNowStatus().getHP() < player.getMaxStatus().getHP() && player.getNowStatus().getHP() > 0 )
 			player.getNowStatus().setHP(player.getNowStatus().getHP() + player.level);
@@ -547,11 +547,6 @@ public class GameData implements Runnable{
 	{
 		int charX = player.getxPosition()/mapCharArrayRatio;
 		int charY = player.getyPosition()/mapCharArrayRatio;
-		
-//		System.out.println("charXY is : "+charX + " : " + charY);
-//		System.out.println("주인공위치" + player.getxPosition()+" : " + player.getyPosition());
-//		System.out.println(eventDispatcher.hasMapEvent(charX, charY));
-
 		
 		//맵 이벤트가 있는 경우에만 이벤트 타일 받아옴
 		if(eventDispatcher.hasMapEvent(charX, charY))
@@ -621,7 +616,7 @@ public class GameData implements Runnable{
 			autoMonsterEventCalled = false;
 			//charActionMap = false;
 			//charEnterMap = false;
-			//player.setActorState(GameCharacter.MOVESTATE);
+			player.setActorState(GameCharacter.MOVESTATE);
 		}
 		else
 		{
@@ -637,6 +632,7 @@ public class GameData implements Runnable{
 	{
 		if(nowEvent == null)
 		{
+			eventContentListIndex++;
 			//player.setActorState(GameCharacter.MOVESTATE);
 			return;
 		}
@@ -673,6 +669,11 @@ public class GameData implements Runnable{
 		{
 			//스위치 다이얼로그
 			startSwitchDialog();
+		}
+		else
+		{
+			nowEventList = null;
+			eventContentListIndex++;
 		}
 	}
 	
@@ -727,6 +728,8 @@ public class GameData implements Runnable{
 						conditionFlag[switchDlgEv.getSwitch(i).getFlagIndex()+1] = false;
 					}
 					try {
+						deployNPC();
+						deployMonsters();
 						Thread.sleep(FASTTIMER);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -758,6 +761,14 @@ public class GameData implements Runnable{
 					
 		eventContentListIndex++;
 		this.eventStart = false;
+		deployNPC();
+		deployMonsters();
+		try {
+			Thread.sleep(FASTTIMER);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	//음악 이벤트
@@ -800,6 +811,12 @@ public class GameData implements Runnable{
 		DialogEvent dialog = (DialogEvent)nowEvent;
 //		System.out.println("다이얼1");
 		dialogScreen.setText(dialog.getText());
+		try {
+			Thread.sleep(FASTTIMER*2);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 //		System.out.println("다이얼2");
 		//엔터키나 액션 키가 눌리면
 		if(keyFlag.isAction() || keyFlag.isEnter())
@@ -807,11 +824,11 @@ public class GameData implements Runnable{
 			//System.out.println("다이얼3");
 			
 			try {
+				eventContentListIndex++;
+				Thread.sleep(FASTTIMER);
 				dialogScreen.setText(null);
 				this.eventStart = false;
 				player.setActorState(GameCharacter.MOVESTATE);
-				eventContentListIndex++;
-				Thread.sleep(FASTTIMER);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -911,6 +928,8 @@ public class GameData implements Runnable{
 			for(int indexOfAlliances = 0 ; indexOfAlliances < alliances.size(); indexOfAlliances++)
 			{
 				GameCharacter alliance = alliances.elementAt(indexOfAlliances);
+				if(alliance.getCharacter() == null)
+					continue;
 				//중간에 삽입
 				for(int sortedIndex = 0 ; sortedIndex < sortedCharacters.size(); sortedIndex++)
 				{
@@ -922,17 +941,20 @@ public class GameData implements Runnable{
 					}
 				}
 				//만약 제일 큰거였다면
-				if(alliance != null)
+				if(alliance != null )//&& chk == true)
 				{
 					sortedCharacters.add(alliance);
 				}
 			}
+//			chk = false;
 		}
 		if(monsters!=null)
 		{
 			for(int indexOfMonsters = 0 ; indexOfMonsters < monsters.size(); indexOfMonsters++)
 			{
 				GameCharacter monster = monsters.elementAt(indexOfMonsters);
+				if(monster.getCharacter() == null)
+					continue;
 				//중간에 삽입
 				for(int sortedIndex = 0 ; sortedIndex < sortedCharacters.size(); sortedIndex++)
 				{
@@ -944,13 +966,12 @@ public class GameData implements Runnable{
 					}
 				}
 				//만약 제일 큰거였다면
-				if(monster != null)
+				if(monster != null)//&& chk == true)
 				{
 					sortedCharacters.add(monster);
 				}
 			}
 		}
-		
 	}
 
 	//타일 계산, 캐릭터를 자동정렬한다.
@@ -967,6 +988,10 @@ public class GameData implements Runnable{
 		for(int k = 0 ; k < sortedCharacters.size(); k++)
 		{
 			GameCharacter actor = (GameCharacter)sortedCharacters.elementAt(k);
+			
+			if(actor.getCharacter() == null)
+				continue;
+			
 			for(int i = 0 ; i < ratio; i++)
 			{
 				for(int j = 0 ; j < ratio; j++)
@@ -1046,7 +1071,7 @@ public class GameData implements Runnable{
 				player.setyPosition(nextY);
 			}
 		}
-		else if(keyFlag.isAction() && this.actionAnimFlag == false && player.getActorState() == GameCharacter.BATTLESTATE)
+		else if(keyFlag.isAction() && this.actionAnimFlag == false )//&& player.getActorState() == GameCharacter.BATTLESTATE)
 		{
 			player.setAnimActionClock(0);
 			if(this.actionAnimFlag == false)
@@ -1081,22 +1106,183 @@ public class GameData implements Runnable{
 		}	
 	}
 
-	//npc들 중에 자동이벤트 생성
-	private void computeAutoAlliances() {
-		// TODO Auto-generated method stub
+	//맵에 npc들 생성
+	private void createMapNPC()
+	{
+		if(alliances == null)
+			alliances = new Vector<GameCharacter>();
+		int count = 0;
 		try{
 			//현재 맵에 정의된 npc들 출력
 			if(actorEventTiles == null)
 			{
 				return;
 			}
-			//nowEventList = null;
-			eventContentListIndex = 0;
 			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
 			for(int i = 0 ; i < actorEventTiles.size(); i++)
 			{
 				//타일 하나를 가져옴
 				EventTile actorEventTile = actorEventTiles.get(i);
+				//몬스터이면 리턴
+				if(actorEventTile.getObjectType() != EventEditorSystem.NPC_EVENT)
+					continue;
+				
+				alliances.add(new Alliance(gamePath));
+				alliances.elementAt(count).setTotalEvent(actorEventTile);
+				alliances.elementAt(count).setActionType(GameCharacter.STOP);
+				count++;
+			}
+			
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
+			e.printStackTrace();
+//			System.exit(0);
+			alliances = null;
+		}
+	}
+	private void createMapMonsters()
+	{
+		if(monsters == null)
+			monsters = new Vector<GameCharacter>();
+		int count = 0;
+		try{
+			//현재 맵에 정의된 npc들 출력
+			if(actorEventTiles == null)
+			{
+				return;
+			}
+			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
+			for(int i = 0 ; i < actorEventTiles.size(); i++)
+			{
+				//타일 하나를 가져옴
+				EventTile actorEventTile = actorEventTiles.get(i);
+				//몬스터이면 리턴
+				if(actorEventTile.getObjectType() != EventEditorSystem.MONSTER_EVENT)
+					continue;
+				
+				monsters.add(new Monster(gamePath));
+				monsters.elementAt(count).setTotalEvent(actorEventTile);
+				monsters.elementAt(count).setActionType(GameCharacter.TOPLAYER);
+				count++;
+			}
+			
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
+			e.printStackTrace();
+//			System.exit(0);
+			alliances = null;
+		}
+	}
+	
+	//배치
+	private void deployNPC()
+	{
+		if(alliances == null)
+			return;
+		try{
+			//npc들중에서 자동이벤트를 제외한 조건에 맞는 애들 배치
+			for(int i = 0 ; i < alliances.size(); i++)
+			{
+				//타일 하나를 가져옴
+				EventTile actorEventTile = alliances.elementAt(i).getTotalEvent();
+				//타일에 있는 여러 이벤트 리스트 중에서
+				List<Event> actorEventList = actorEventTile.getEventList();
+				for(int j = 0 ; j < actorEventList.size(); j++)
+				{
+					Event eventList = actorEventList.get(j);
+					int[] cond = eventList.getPreconditionFlagArray();
+
+					if(conditionFlag[cond[0]+1]==true &&
+					conditionFlag[cond[1]+1]==true &&
+					conditionFlag[cond[2]+1]==true && eventList.getStartType() != EventEditorSystem.AUTO_START)
+					{
+						alliances.elementAt(i).changeActor(eventList.getActorIndex(),
+								alliances.elementAt(i).getxPosition(), alliances.elementAt(i).getyPosition());
+
+						//캐릭터 배치
+						if(eventList.getActionType() == EventEditorSystem.RANDOM_MOTION)
+						{
+							alliances.elementAt(i).setActionType(GameCharacter.RANDOM);
+						}
+						else if(eventList.getActionType() == EventEditorSystem.COME_CLOSER_TO_PLAYER)
+						{
+							alliances.elementAt(i).setActionType(GameCharacter.TOPLAYER);
+						}
+						else if(eventList.getActionType() == EventEditorSystem.NOT_MOTION)
+						{
+							alliances.elementAt(i).setActionType(GameCharacter.STOP);
+						}
+						else
+							alliances.elementAt(i).setActionType(GameCharacter.TOPLAYER);
+						break;
+					}
+				}
+			}
+			
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
+			e.printStackTrace();
+//			System.exit(0);
+		//	alliances = null;
+		}
+	}
+	
+	private void deployMonsters()
+	{
+		if(monsters == null)
+			return;
+		try{
+			//npc들중에서 자동이벤트를 제외한 조건에 맞는 애들 배치
+			for(int i = 0 ; i < monsters.size(); i++)
+			{
+				//타일 하나를 가져옴
+				EventTile actorEventTile = monsters.elementAt(i).getTotalEvent();
+				//타일에 있는 여러 이벤트 리스트 중에서
+				List<Event> actorEventList = actorEventTile.getEventList();
+				for(int j = 0 ; j < actorEventList.size(); j++)
+				{
+					Event eventList = actorEventList.get(j);
+					int[] cond = eventList.getPreconditionFlagArray();
+
+					if(conditionFlag[cond[0]+1]==true &&
+					conditionFlag[cond[1]+1]==true &&
+					conditionFlag[cond[2]+1]==true && eventList.getStartType() != EventEditorSystem.AUTO_START)
+					{
+						monsters.elementAt(i).changeActor(eventList.getActorIndex(),
+								monsters.elementAt(i).getxPosition(), monsters.elementAt(i).getyPosition());
+						break;
+					}
+				}
+			}
+			
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
+			e.printStackTrace();
+//			System.exit(0);
+		//	monsters = null;
+		}
+	}
+	
+	//npc들 중에 자동이벤트 생성
+	private void computeAutoAlliances() {
+		// TODO Auto-generated method stub
+		try{
+			//현재 맵에 정의된 npc들 출력
+			//nowEventList = null;
+			eventContentListIndex = 0;
+			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
+			for(int i = 0 ; i < alliances.size(); i++)
+			{
+				//타일 하나를 가져옴
+				EventTile actorEventTile = alliances.elementAt(i).getTotalEvent();
 				//몬스터이면 리턴
 				if(actorEventTile.getObjectType() != EventEditorSystem.NPC_EVENT)
 					continue;
@@ -1113,12 +1299,9 @@ public class GameData implements Runnable{
 					conditionFlag[cond[1]+1]==true &&
 					conditionFlag[cond[2]+1]==true && eventList.getStartType() == EventEditorSystem.AUTO_START)
 					{
-						int now = j;
-						alliances.add(new Alliance(gamePath));
-						alliances.elementAt(j).deployActor(eventList.getActorIndex(),
-								actorEventTile.getInitColLocation(),
-								actorEventTile.getInitRowLocation(),
-								eventList);
+						//System.out.println("여기 불림");
+						alliances.elementAt(i).changeActor(eventList.getActorIndex(),
+								alliances.elementAt(i).getxPosition(), alliances.elementAt(i).getyPosition());
 						//선택한 이벤트 지움
 						nowEventList = eventList;
 						actorEventList.remove(j);
@@ -1126,19 +1309,19 @@ public class GameData implements Runnable{
 						//캐릭터 배치
 						if(eventList.getActionType() == EventEditorSystem.RANDOM_MOTION)
 						{
-							alliances.elementAt(j).setActionType(GameCharacter.RANDOM);
+							alliances.elementAt(i).setActionType(GameCharacter.RANDOM);
 						}
 						else if(eventList.getActionType() == EventEditorSystem.COME_CLOSER_TO_PLAYER)
 						{
-							alliances.elementAt(j).setActionType(GameCharacter.TOPLAYER);
+							alliances.elementAt(i).setActionType(GameCharacter.TOPLAYER);
 						}
 						else if(eventList.getActionType() == EventEditorSystem.NOT_MOTION)
 						{
-							alliances.elementAt(j).setActionType(GameCharacter.STOP);
+							alliances.elementAt(i).setActionType(GameCharacter.STOP);
 						}
 						else
-							alliances.elementAt(j).setActionType(GameCharacter.TOPLAYER);
-						j=now;
+							alliances.elementAt(i).setActionType(GameCharacter.TOPLAYER);
+
 						return;
 					}
 				}
@@ -1156,22 +1339,15 @@ public class GameData implements Runnable{
 	
 	//몬스터 중에 자동이벤트 생성
 	private void computeAutoMonsters() {
-		// TODO Auto-generated method stub
 		try{
 			//현재 맵에 정의된 npc들 출력
-			//actorEventTiles= eventDispatcher.getActors();
-			if(actorEventTiles == null)
-			{
-				return;
-			}
-			nowEventList = null;
+			//nowEventList = null;
 			eventContentListIndex = 0;
-			//autoAllianceEventCalled = true;
 			//자동이벤트가 플레그에 맞게 존재하면 배치하고 자동이벤트 쪽에 집어 넣는다.
-			for(int i = 0 ; i < actorEventTiles.size(); i++)
+			for(int i = 0 ; i < monsters.size(); i++)
 			{
 				//타일 하나를 가져옴
-				EventTile actorEventTile = actorEventTiles.get(i);
+				EventTile actorEventTile = monsters.elementAt(i).getTotalEvent();
 				//몬스터이면 리턴
 				if(actorEventTile.getObjectType() != EventEditorSystem.MONSTER_EVENT)
 					continue;
@@ -1188,40 +1364,14 @@ public class GameData implements Runnable{
 					conditionFlag[cond[1]+1]==true &&
 					conditionFlag[cond[2]+1]==true && eventList.getStartType() == EventEditorSystem.AUTO_START)
 					{
-						int now = j;
-						monsters.add(new Monster(gamePath));
-						monsters.elementAt(j).deployActor(eventList.getActorIndex(),
-								actorEventTile.getInitColLocation(),
-								actorEventTile.getInitRowLocation(),
-								eventList);
+						//System.out.println("여기 불림");
+						monsters.elementAt(i).changeActor(eventList.getActorIndex(),
+								monsters.elementAt(i).getxPosition(), alliances.elementAt(i).getyPosition());
 						//선택한 이벤트 지움
 						nowEventList = eventList;
 						actorEventList.remove(j);
 						autoMonsterEventCalled = true;
-						//캐릭터 배치
-//						if(eventList.getActionType() == EventEditorSystem.RANDOM_MOTION)
-//						{
-//							monsters.elementAt(j).setActionType(GameCharacter.RANDOM);
-//						}
-//						else if(eventList.getActionType() == EventEditorSystem.COME_CLOSER_TO_PLAYER)
-//						{
-//							monsters.elementAt(j).setActionType(GameCharacter.TOPLAYER);
-//						}
-//						else if(eventList.getActionType() == EventEditorSystem.NOT_MOTION)
-//						{
-//							monsters.elementAt(j).setActionType(GameCharacter.STOP);
-//						}
-//						else
-//							monsters.elementAt(j).setActionType(GameCharacter.TOPLAYER);
-						//monsters.elementAt(j).setActionType(GameCharacter.RANDOM);
-						j=now;
 						return;
-					}
-					else
-					{
-						eventList = null;
-						nowEventList = null;
-						
 					}
 				}
 			}
@@ -1232,7 +1382,7 @@ public class GameData implements Runnable{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
-			alliances = null;
+			monsters = null;
 		}
 	}
 	
@@ -1262,7 +1412,7 @@ public class GameData implements Runnable{
 		{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMap()\nCan't allocate gameTile");
 			e.printStackTrace();
-			System.exit(0);
+		//	System.exit(0);
 		}
 		//맵 이미지 설정
 		//백그라운드 설정
@@ -1301,6 +1451,11 @@ public class GameData implements Runnable{
 			monsters = null;
 		monsters = new Vector<GameCharacter>();
 		actorEventTiles= eventDispatcher.getActors();
+		createMapNPC();
+		createMapMonsters();
+		deployNPC();
+		deployMonsters();
+		sortCharacters();
 	}
 
 	//플레이어로드
@@ -1320,7 +1475,7 @@ public class GameData implements Runnable{
 		{
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadPlayer()");
 			e.printStackTrace();
-			System.exit(0);
+			//System.exit(0);
 		}
 	}
 	
@@ -1373,6 +1528,7 @@ public class GameData implements Runnable{
 			//만약에 타이틀을 불러오는데 실패해도 진행
 			JOptionPane.showMessageDialog
 			(gameWindow, "Error!! Can't find TITLE.png or LOGO.png or CURSOR.png or SomthingElse");
+			e.printStackTrace();
 			System.exit(0);
 		}
 
@@ -1643,12 +1799,12 @@ public class GameData implements Runnable{
 	}
 
 
-	public void setNowEventLost(Event nowEventLost) {
+	public void setNowEventList(Event nowEventLost) {
 		this.nowEventList = nowEventLost;
 	}
 
 
-	public Event getNowEventLost() {
+	public Event getNowEventList() {
 		return nowEventList;
 	}
 
@@ -1706,6 +1862,16 @@ public class GameData implements Runnable{
 
 	public boolean isCharEnterMap() {
 		return charEnterMap;
+	}
+
+
+	public KeyFlags getKeyFlag() {
+		return keyFlag;
+	}
+
+
+	public boolean[] getConditionFlag() {
+		return conditionFlag;
 	}
 
 	
