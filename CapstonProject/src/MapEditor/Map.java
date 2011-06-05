@@ -13,9 +13,7 @@ import eventEditor.EventEditorSystem;
 
 
 public class Map implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3882767401258211262L;
 	private String m_MapName;
 	private int m_Height;
@@ -220,5 +218,18 @@ public class Map implements Serializable {
 	public EventEditorSystem getEventEditSys() {
 		return eventEditSys;
 	}
+  
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+		
+	}
 
+	public void setM_BackgroundTile(Tile[][] mBackgroundTile) {
+		m_BackgroundTile = mBackgroundTile;
+	}
+
+	public void setM_ForegroundTile(Tile[][] mForegroundTile) {
+		m_ForegroundTile = mForegroundTile;
+	}
 }

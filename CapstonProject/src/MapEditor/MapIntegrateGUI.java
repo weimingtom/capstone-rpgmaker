@@ -46,6 +46,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	// 맵에디터 데이터 모델
 	private MapEditorSystem mapSys;
 	// 이미지 출력을 위해
+	int undoSize;
 	private BufferedImage background;
 	private BufferedImage foreground;
 	// 선택된 팔레트 정보를 위해
@@ -65,6 +66,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 	public static boolean GRIDMODE_FLAG = false;
 	public static boolean EVENTMODE_FLAG = false;
+	public static boolean undoFlag = false;
+	public static boolean redoFlag = false;
 
 	// 처음에 시작 마우스 위치
 	public static final int STARTING_POINT = 4;
@@ -87,6 +90,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	// 패널에 그림을 출력할 위치
 	private int xAxis = 0;
 	private int yAxis = 0;
+
+	// 언두 리두를 위해
+	private DoingList doingList;
 
 	// // 이벤트 시스템
 	// private EventEditorSystem eventEditorSystem;
@@ -240,9 +246,9 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		}
 		background = mapSys.drawBackground(0, 0);
 		foreground = mapSys.drawForeground(0, 0);
-		setPreferredSize(new Dimension(background.getWidth(),
-				background.getHeight()));
-
+		setPreferredSize(new Dimension(background.getWidth(), background
+				.getHeight()));
+		doingList = new DoingList(mapSys.getMapInfo());
 		repaint();
 	}
 
@@ -328,6 +334,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		}
 		background = mapSys.drawBackground(0, 0);
 		foreground = mapSys.drawForeground(0, 0);
+		doingList = new DoingList(mapSys.getMapInfo());
 		repaint();
 	}
 
@@ -437,6 +444,87 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 
+		if (undoFlag) {
+			Map m = doingList.undo();
+
+			Tile[][] tb = m.getM_BackgroundTile();
+			Tile[][] tf = m.getM_ForegroundTile();
+
+			background = null;
+			background = new BufferedImage(m.getM_Width()
+					* DrawingTemplate.pixel, m.getM_Height()
+					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
+
+			Graphics2D g2 = background.createGraphics();
+			// 타일셋으로 부터 백 그라운드 생성
+			for (int i = 0; i < m.getM_Height(); i++) {
+				for (int j = 0; j < m.getM_Width(); j++) {
+					g2.drawImage(tb[i][j].getM_TileIcon(), j
+							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
+							null);
+				}
+			}
+
+			m.setM_Background(background);
+
+			foreground = null;
+			foreground = new BufferedImage(m.getM_Width()
+					* DrawingTemplate.pixel, m.getM_Height()
+					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
+			g2 = foreground.createGraphics();
+			// 타일셋으로 부터 포어 그라운드 생성
+			for (int i = 0; i < m.getM_Height(); i++) {
+				for (int j = 0; j < m.getM_Width(); j++) {
+					g2.drawImage(tf[i][j].getM_TileIcon(), j
+							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
+							null);
+				}
+			}
+
+			m.setM_Foreground(foreground);
+
+			undoFlag = false;
+
+		} else if (redoFlag) {
+			Map m = doingList.redo();
+			Tile[][] tb = m.getM_BackgroundTile();
+			Tile[][] tf = m.getM_ForegroundTile();
+
+			background = null;
+			background = new BufferedImage(m.getM_Width()
+					* DrawingTemplate.pixel, m.getM_Height()
+					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
+
+			Graphics2D g2 = background.createGraphics();
+			// 타일셋으로 부터 백 그라운드 생성
+			for (int i = 0; i < m.getM_Height(); i++) {
+				for (int j = 0; j < m.getM_Width(); j++) {
+					g2.drawImage(tb[i][j].getM_TileIcon(), j
+							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
+							null);
+				}
+			}
+
+			m.setM_Background(background);
+
+			foreground = null;
+			foreground = new BufferedImage(m.getM_Width()
+					* DrawingTemplate.pixel, m.getM_Height()
+					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
+			g2 = foreground.createGraphics();
+			// 타일셋으로 부터 포어 그라운드 생성
+			for (int i = 0; i < m.getM_Height(); i++) {
+				for (int j = 0; j < m.getM_Width(); j++) {
+					g2.drawImage(tf[i][j].getM_TileIcon(), j
+							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
+							null);
+				}
+			}
+
+			m.setM_Foreground(foreground);
+			redoFlag = false;
+		}
+
 		Color tmp = g2d.getColor();
 		g.setColor(Color.white);
 		g.fillRect(0, 0, background.getWidth(), background.getHeight());
@@ -475,8 +563,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			// 그리드 모드 삽입
 			g2d.setColor(new Color(255, 255, 255, 100));
 			for (int i = 0; i < background.getHeight() / DrawingTemplate.pixel; i++) {
-				g2d.drawLine(0, i * DrawingTemplate.pixel,
-						background.getWidth(), i * DrawingTemplate.pixel);
+				g2d.drawLine(0, i * DrawingTemplate.pixel, background
+						.getWidth(), i * DrawingTemplate.pixel);
 			}
 			for (int j = 0; j < background.getWidth() / DrawingTemplate.pixel; j++) {
 				g2d.drawLine(j * DrawingTemplate.pixel, 0, j
@@ -669,9 +757,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 				int col = startEventPoint.y / DrawingTemplate.pixel;
 				int row = startEventPoint.x / DrawingTemplate.pixel;
-				String filePath = MainFrame.OWNER.ProjectFullPath
-						+ File.separator + "Event" + File.separator
-						+ mapSys.getMapInfo().getM_MapName() + ".event";
 				new EventDlg(MainFrame.OWNER, new Point(row, col), new Point(
 						row, col), mapSys.getEventEditSys());
 
@@ -736,8 +821,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				if (!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 					return;
 				if (e.isPopupTrigger()) {
-					popupmenuEvent.show(e.getComponent(), e.getX() + 10,
-							e.getY() + 10);
+					popupmenuEvent.show(e.getComponent(), e.getX() + 10, e
+							.getY() + 10);
 				}
 			}
 		} else { // 캔버스 모드
@@ -793,12 +878,13 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 							}
 					}
 				}
+				doingList.addMapToDoingList(mapSys.getMapInfo());
 			} else {
 				if (!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 					return;
 				if (e.isPopupTrigger()) {
-					popupmenuCanvas.show(e.getComponent(), e.getX() + 10,
-							e.getY() + 10);
+					popupmenuCanvas.show(e.getComponent(), e.getX() + 10, e
+							.getY() + 10);
 				}
 			}
 		}
@@ -955,4 +1041,13 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		dragPoint.y = STARTING_POINT;
 	}
 
+	public void undo() {
+		undoFlag = true;
+		repaint();
+	}
+
+	public void redo() {
+		redoFlag = true;
+		repaint();
+	}
 }

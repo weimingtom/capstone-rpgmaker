@@ -469,6 +469,7 @@ public class GameData implements Runnable{
 			}
 			runEvent();
 		}
+//		else if(player.getActorState() == GameCharacter.EVENTSTATE)
 		else if(player.getActorState() == GameCharacter.EVENTSTATE)
 		{
 			this.animTimer++;
@@ -684,10 +685,17 @@ public class GameData implements Runnable{
 			//스위치 다이얼로그
 			startSwitchDialog();
 		}
+<<<<<<< .mine
+		else if(type == EventContent.MOTION_EVNET)
+		{
+			
+		}
+=======
 		else if(type == EventContent.MOTION_EVNET)
 		{
 			startMoveEvent();
 		}
+>>>>>>> .r131
 		else
 		{
 			nowEventList = null;
