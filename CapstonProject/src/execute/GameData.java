@@ -896,7 +896,7 @@ public class GameData implements Runnable{
 		//gameMusic.startMusic(null);
 		gameMusic = new GameMusic(this);
 		gameMusic.setIsMusicStart(false);
-		gameMusic.startMusic(bgm.getSrcFileName());
+		gameMusic.startMusic(gamePath + "/"+bgm.getFileName());
 		musicThread = new Thread(gameMusic);
 		try {
 			Thread.sleep(SLOWTIMER*2);
@@ -1639,9 +1639,8 @@ public class GameData implements Runnable{
 	{
 		this.gamePath = gamePath;
 		//프로젝트 패스 설정시 로고 이미지등 설정
-		//여기가 이거저거 유틸이미지 경로인데 동규꺼에서는 저렇게 하니까 안되더라고..
-		//혹시나 안되면 여기 절대경로로 잡아줘..ㅇㅇㅇㅋㅇㅋ실행해본다.
-		utilPath = gamePath+"\\.DefaultData\\UtillImages";
+
+		utilPath = gamePath+"\\.UtilImages";
 		try 
 		{
 			titleScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\TITLE.png")));
@@ -1778,7 +1777,7 @@ public class GameData implements Runnable{
 		//4번당 한번씩
 		if(timer < 0)
 			timer = 0;
-		numb*=10;
+		numb*=5;
 		if(timer%(animDelay/numb) == 0)
 			return true;
 		else
