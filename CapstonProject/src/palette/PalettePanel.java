@@ -329,7 +329,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 						drawX(g2d, row * DrawingTemplate.pixel, col
 								* DrawingTemplate.pixel);
 				} catch (IllegalTileIndex e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -369,7 +368,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 						drawDown(g2d, row * DrawingTemplate.pixel, col
 								* DrawingTemplate.pixel);
 				} catch (IllegalTileIndex e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -567,7 +565,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 				return;
 			this.isDrag = false;
 			this.click = true;
-			// TODO Auto-generated method stub
 			if (mousePoint.x >= 0 && mousePoint.x <= imageGround.getWidth()
 					&& mousePoint.y >= 0
 					&& mousePoint.y <= imageGround.getHeight()) {
@@ -583,7 +580,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 						mapSys.setTiles(startCol, startRow, startCol, startRow,
 								paletteIndex, back);
 					} catch (IllegalTileIndex e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else if (this.moveMode == true) {
@@ -591,7 +587,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 						mapSys.getPalette(paletteIndex, back)
 								.getM_Tile(startCol, startRow).setIsMove();
 					} catch (IllegalTileIndex e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else if (this.upperMode == true) {
@@ -599,7 +594,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 						mapSys.getPalette(paletteIndex, back)
 								.getM_Tile(startCol, startRow).setIsUpper();
 					} catch (IllegalTileIndex e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -678,7 +672,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 							}
 						}
 					} catch (IllegalTileIndex e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -708,7 +701,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 							}
 						}
 					} catch (IllegalTileIndex e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -742,7 +734,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 							}
 						}
 					} catch (IllegalTileIndex e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -777,7 +768,6 @@ public class PalettePanel extends JPanel implements MouseListener,
 								}
 							}
 						} catch (IllegalTileIndex e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
