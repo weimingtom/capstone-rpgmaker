@@ -83,7 +83,7 @@ public class TileSetChooserDlg extends JDialog {
 					if (isFore.isSelected()) {
 						if (MainFrame.OWNER.alreadyIsForegroundFileExist(fileName)) {
 							MainFrame.OWNER
-									.setMainState("File is alread exist!");
+									.setMainStateCenter("File is alread exist!");
 							return;
 						}
 						outputPath = outputPath + "Foreground" + File.separator
@@ -91,7 +91,7 @@ public class TileSetChooserDlg extends JDialog {
 					} else {
 						if (MainFrame.OWNER.alreadyIsBackgroundFileExist(fileName)) {
 							MainFrame.OWNER
-									.setMainState("File is alread exist!");
+									.setMainStateCenter("File is alread exist!");
 							return;
 						}
 						outputPath = outputPath + "Background" + File.separator
@@ -196,7 +196,7 @@ public class TileSetChooserDlg extends JDialog {
 
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
-					MainFrame.OWNER.setMainState("You choose wrong file!");
+					MainFrame.OWNER.setMainStateCenter("You choose wrong file!");
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
