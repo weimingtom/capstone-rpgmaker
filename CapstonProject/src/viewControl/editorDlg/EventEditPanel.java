@@ -152,10 +152,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		// 액션 이벤트
 		btn_moveUpEventContent.addActionListener(this);
 		btn_moveDownEventContent.addActionListener(this);
-		ckb_condition1.addActionListener(this);
-		ckb_condition2.addActionListener(this);
-		ckb_condition3.addActionListener(this);
-		ckb_ifDie.addActionListener(this);
 		cb_actorIndex.addActionListener(this);
 		btn_insertEventContest.addActionListener(this);
 		btn_deleteEventContent.addActionListener(this);
@@ -166,7 +162,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		ckb_condition2.addMouseListener(this);
 		ckb_condition3.addMouseListener(this);
 		ckb_ifDie.addActionListener(this);
-		cb_actorIndex.addMouseListener(this);
 		
 		// JList의 마우스 이벤트 정의
 		MouseListener mouseListener = new MouseAdapter() {
@@ -539,18 +534,14 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	
 				p_actorImg.setEnabled(true);
 				cb_actorIndex.setEnabled(true);
-				cb_actorMotionType.setEnabled(true);
+				if(objectType != EventEditorSystem.MONSTER_EVENT)
+					cb_actorMotionType.setEnabled(true);
+				else
+					cb_actorMotionType.setEnabled(false);
 				ckb_ifDie.setEnabled(true);
 				cb_dieCondition.setEnabled(true);
 				cb_dieConditionState.setEnabled(true);
 			}
-			
-//			p_actorImg.revalidate();
-//			cb_actorIndex.revalidate();
-//			cb_actorMotionType.revalidate();
-//			ckb_ifDie.revalidate();
-//			cb_dieCondition.setEnabled(true);
-//			cb_dieConditionState.setEnabled(true);
 		}
 		
 		renewDieCondition();
@@ -732,6 +723,8 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	}
 	
 	public int getActionType() {
+		if(objectType == EventEditorSystem.MONSTER_EVENT)
+			return EventEditorSystem.ATTACK_PLAYER;
 		return cb_actorMotionType.getSelectedIndex();
 	}
 	
@@ -833,16 +826,11 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 				setSelectedIndexJList(index-1);
 			else
 				setSelectedIndexJList(index);
-		} else if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
-			// Combo박스의 활성화 여부를 체크하여 설정한다.
-			renewConditionComboBox();
 		} else if(e.getSource() == cb_actorIndex) {
 			if(cb_actorIndex.getSelectedIndex() != EventEditorSystem.MAP_EVENT) {
 				// 해당 actor를 불러와서 패널에 출력해준다.
 				setAniImgPanel();
 			}
-		} else if(e.getSource() == ckb_ifDie) {
-			renewDieCondition();
 		} else if(e.getSource() == cb_selectedEventContent) {
 			int index = cb_selectedEventContent.getSelectedIndex();
 			setSelectedIndexJList(index);
@@ -861,9 +849,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		if(e.getSource() == ckb_condition1 || e.getSource() == ckb_condition2 || e.getSource() == ckb_condition3) {
 			// Combo박스의 활성화 여부를 체크하여 설정한다.
 			renewConditionComboBox();
-		} else if(e.getSource() == cb_actorIndex) {
-			// 해당 actor를 불러와서 패널에 출력해준다.
-			setAniImgPanel();
 		} else if(e.getSource() == ckb_ifDie) {
 			renewDieCondition();
 		}
