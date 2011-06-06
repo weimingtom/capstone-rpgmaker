@@ -9,7 +9,6 @@ public class GameExecution {
 	//여기에 에디터 프로젝트 폴더 적어줘....ㅇㅋㅇ?ㅇㅋㅇㅋ
 	private String gamePath = "D:\\ca";
 	
-	//플레이어 초기위치 설정함?ㅇㅋㅇ그냥 플젝 다시
 	//게임 데이터, 디스플레이, 윈도우
 	private GameData gameData;
 	private GameDisplay gameDisplay;

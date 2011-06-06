@@ -69,6 +69,7 @@ public abstract class GameCharacter implements Serializable{
 	public final static int ATTACK = 6;
 	public final static int DAMAGED = 7;
 	
+	private int totalAnimCounter = 0;
 	
 	//애니메이션 클럭
 	private int animActionClock = 0;
@@ -263,6 +264,14 @@ public abstract class GameCharacter implements Serializable{
 
 	public void setTotalEvent(EventTile totalEvent) {
 		this.totalEvent = totalEvent;
+	}
+
+	public void setTotalAnimCounter(int totalAnimCounter) {
+		this.totalAnimCounter = totalAnimCounter;
+	}
+
+	public int getTotalAnimCounter() {
+		return totalAnimCounter;
 	}
 
 }

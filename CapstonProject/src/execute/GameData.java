@@ -253,7 +253,7 @@ public class GameData implements Runnable, Serializable{
 				charOnMapY = player.getyPosition()/mapCharArrayRatio;
 				playerMaxAbilities = new Abilities();
 				playerMaxAbilities.setAgility(player.getMaxStatus().getAgility());
-				playerMaxAbilities.setEXP(0);
+				playerMaxAbilities.setEXP(player.getMaxStatus().getEXP());
 				playerMaxAbilities.setHP(player.getMaxStatus().getHP());
 				playerMaxAbilities.setIntelligence(player.getMaxStatus().getIntelligence());
 				playerMaxAbilities.setKnowledge(player.getMaxStatus().getKnowledge());
@@ -302,6 +302,8 @@ public class GameData implements Runnable, Serializable{
 					this.conditionFlag = tmp.conditionFlag;
 					this.mapName = tmp.mapName;
 					this.player = tmp.player;
+//					System.out.println(tmp.player.getMaxStatus().getEXP());
+//					this.player.getMaxStatus().setEXP(tmp.player.getMaxStatus().getEXP());
 					this.playerMaxAbilities = tmp.playerMaxAbilities;
 					ois.close();
 					fis.close();
@@ -901,6 +903,12 @@ public class GameData implements Runnable, Serializable{
 	//스위치 다이얼로그
 	private void startSwitchDialog()
 	{
+		try {
+			Thread.sleep(GameData.FASTTIMER);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//캐릭터 상태 이벤트로 설정
 		player.setActorState(GameCharacter.EVENTSTATE);
 		//대화창 시작
@@ -1042,6 +1050,12 @@ public class GameData implements Runnable, Serializable{
 	//다이얼로그 이벤트
 	private void startDialogEvent()
 	{
+		try {
+			Thread.sleep(GameData.FASTTIMER);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//캐릭터 상태 이벤트로 설정
 		player.setActorState(GameCharacter.EVENTSTATE);
 		//대화창 시작
@@ -1049,7 +1063,7 @@ public class GameData implements Runnable, Serializable{
 //		System.out.println("다이얼1");
 		dialogScreen.setText(dialog.getText());
 		try {
-			Thread.sleep(FASTTIMER);
+			Thread.sleep(SLOWTIMER);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -1060,20 +1074,15 @@ public class GameData implements Runnable, Serializable{
 		{
 			//System.out.println("다이얼3");
 			
-			try {
-				eventContentListIndex++;
-				Thread.sleep(FASTTIMER);
-				dialogScreen.setText(null);
-				this.eventStart = false;
-				player.setActorState(GameCharacter.MOVESTATE);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			eventContentListIndex++;
+			// Thread.sleep(FASTTIMER);
+			dialogScreen.setText(null);
+			this.eventStart = false;
+			player.setActorState(GameCharacter.MOVESTATE);
 			return;
 		}
 		try {
-			Thread.sleep(FASTTIMER);
+			Thread.sleep(FASTTIMER/2);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

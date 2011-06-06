@@ -355,24 +355,30 @@ public class GameDisplay implements Runnable{
 		if(isStop == false)
 		{
 			BufferedImage actorImage = null;
-			try{
-				actorImage = actorAnim.getCurrentImage();
-			}catch(ArrayIndexOutOfBoundsException e)
+			if(actor.getTotalAnimCounter() > actorAnim.getCountImage()*3 / actorAnim.getCountImage())
 			{
-				try{
-					actorImage = actorAnim.getNextImage();
-				}
-				catch(ArithmeticException e1)
-				{
-					//e1.printStackTrace();
-					return;
+				actor.setTotalAnimCounter(0);
+				actorImage = actorAnim.getNextImage();
+			}
+			else
+			{
+			try{
+					actorImage = actorAnim.getCurrentImage();
+					actor.setTotalAnimCounter(actor.getTotalAnimCounter() + 1);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					try {
+						actorImage = actorAnim.getNextImage();
+					} catch (ArithmeticException e1) {
+						// e1.printStackTrace();
+						return;
+					}
 				}
 			}
 
-			if(gameData.isChangeCharacterAnim(playerTimer, actorAnim.getCountImg()))
-			{
-				actorImage = actorAnim.getNextImage();
-			}
+//			if(gameData.isChangeCharacterAnim(playerTimer, actorAnim.getCountImg()))
+//			{
+//				actorImage = actorAnim.getNextImage();
+//			}
 			
 			// 출력 기준점 확인
 			int charX = actorAnim.getPointX(actorAnim.getCallIndex());
@@ -415,28 +421,26 @@ public class GameDisplay implements Runnable{
 
 		BufferedImage actorImage = null;
 		
-		actionTimer++;
-		if(actionTimer < 0 ) actionTimer = 0;
 
-
-//		try{
-//			actorImage = actorAnim.getCurrentImage();
-//		}catch(ArrayIndexOutOfBoundsException e)
-//		{
-//			try{
-//				actorImage = actorAnim.getNextImage();
-//			}
-//			catch(ArithmeticException e1)
-//			{
-//				//e1.printStackTrace();
-//				return;
-//			}
-//		}
-//		if(actionTimer > 10)
-//		{
+		if(actor.getTotalAnimCounter() > actorAnim.getCountImage()*2 / actorAnim.getCountImage())
+		{
+			actor.setTotalAnimCounter(0);
 			actorImage = actorAnim.getNextImage();
-//			actionTimer++;
-//		}
+		}
+		else
+		{
+		try{
+				actorImage = actorAnim.getCurrentImage();
+				actor.setTotalAnimCounter(actor.getTotalAnimCounter() + 1);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				try {
+					actorImage = actorAnim.getNextImage();
+				} catch (ArithmeticException e1) {
+					// e1.printStackTrace();
+					return;
+				}
+			}
+		}
 
 		// 출력 기준점 확인
 		int charX = actorAnim.getPointX(actorAnim.getCallIndex());
