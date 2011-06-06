@@ -187,7 +187,16 @@ public class GameDisplay implements Runnable{
 				g.drawString("Exit", screenWidth/2 - rectSizeWidth/2 + rectSizeWidth*2/9, 
 						rectPositionY+titleScreen.getFontSize()*3 );
 			}
+			if(gameData.cannotReadSaveFile())
+			{
+				g.setColor(rectColor);
+				g.fill3DRect(rectPositionX , rectPositionY,
+						rectSizeWidth , rectSizeHeight, true);
+				g.drawString("저장 파일이 없습니다.", screenWidth/2 - rectSizeWidth/2 + rectSizeWidth*2/9, 
+						rectPositionY+titleScreen.getFontSize()*2 );
+			}
 		}
+		
 	}
 
 	//로딩 스크린 출력
@@ -273,6 +282,11 @@ public class GameDisplay implements Runnable{
 		else if(cursor.getPosition() == 1)
 		{
 			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null))- status.getFontSize()/2, status.getFontSize()*3+screenHeight/10 - status.getFontSize()/2, null);
+			if(gameData.isSaveState() == true)
+			{
+				g.drawString("저장 되었습니다.", 
+						(int)(screenWidth*(4.0/10.0))+status.getFontSize()- status.getFontSize()/2, status.getFontSize()*2+screenHeight/10);
+			}
 		}
 		else if(cursor.getPosition() == 2)
 		{
@@ -282,6 +296,11 @@ public class GameDisplay implements Runnable{
 		{
 			g.drawImage(cursorImage, screenWidth/10+(cursorImage.getWidth(null))- status.getFontSize()/2, status.getFontSize()*7+screenHeight/10 - status.getFontSize()/2, null);
 		}
+//		if(gameData.isSaveState() == true)
+//		{
+//			g.setColor(new Color(70,70,240,200));
+//			g.fill3DRect(screenWidth/2-screenWidth/4, screenHeight/2-screenHeight/4, screenWidth/3, screenHeight/3, true);
+//		}
 	}
 
 	//배경 출력
@@ -760,9 +779,9 @@ public class GameDisplay implements Runnable{
 	public void displayHealthBar(Graphics2D g, GameCharacter actor)
 	{
 		int startX = (int) ((actor.getxPosition()*GameData.mapCharArrayRatio)*ratioX)
-			+mapStartingPointX - DrawingTemplate.pixel;
+			+mapStartingPointX - screenWidth/100; //+ (int)(DrawingTemplate.pixel*ratioX);
 		int startY = (int) ((actor.getyPosition()*GameData.mapCharArrayRatio)*ratioY)
-			+mapStartingPointY + DrawingTemplate.pixel + DrawingTemplate.pixel/2;
+			+mapStartingPointY +(int)(( DrawingTemplate.pixel + DrawingTemplate.pixel/2)*ratioY);
 //		
 		
 		int fullHP = (int) (DrawingTemplate.pixel*ratioX);
@@ -973,7 +992,7 @@ public class GameDisplay implements Runnable{
 					TIMER = 100;
 					displayGameOver(gameGraphics);
 				}
-				else if(gameState == GameData.STATUSCALLED)
+				else if(gameState == GameData.STATUSCALLED || gameState == GameData.SAVE)
 				{
 					//스테이터스 창
 					displayStatusScreen(gameGraphics);

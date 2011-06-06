@@ -6,12 +6,20 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
+
+import characterEditor.Abilities;
 
 import eventEditor.Event;
 import eventEditor.EventEditorSystem;
@@ -32,9 +40,13 @@ import MapEditor.DrawingTemplate;
 import MapEditor.Map;
 import MapEditor.Tile;
 
-public class GameData implements Runnable{
+public class GameData implements Runnable, Serializable{
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -720498563671166298L;
 	public static final int mapCharArrayRatio = 4;
 	//이펙트 타이머
 	private int fadeTimer = 0;
@@ -51,10 +63,10 @@ public class GameData implements Runnable{
 	public static final int PAUSE = 7;
 	public static final int DIALOG = 8;
 	public static final int FADEPAUSE = 9;
-	public static final int ACTORLOAD = 11;
+//	public static final int ACTORLOAD = 11;
 //	public static final int MAPLOADENDED = 12;
-	public static final int ACTORLOADENDED = 13;
-	public static final int PLAYERDEATH = 14;
+//	public static final int ACTORLOADENDED = 13;
+//	public static final int PLAYERDEATH = 14;
 	public static final int LOADING = 15;
 	public static final int NEWSTART = 16;
 	public static final int GAMEOVER = 17;
@@ -66,94 +78,99 @@ public class GameData implements Runnable{
 	public static int SLOWTIMER = 100;
 	
 	/***유틸인포/ 로드화면, 타이틀화면/로고화면***********************/
-	private GameUtilityInformation titleScreen;
-	private GameUtilityInformation logoScreen;
-	private GameUtilityInformation loadScreen;
-	private GameUtilityInformation cursorImage;
-	private GameUtilityInformation dialogScreen;
-	private GameUtilityInformation gameOver;
-	private GameUtilityInformation statusScreen;
-	private GameUtilityInformation levelUpImage;
-	private GameUtilityInformation switchDialog;
+	private transient GameUtilityInformation titleScreen;
+	private transient GameUtilityInformation logoScreen;
+	private transient GameUtilityInformation loadScreen;
+	private transient GameUtilityInformation cursorImage;
+	private transient GameUtilityInformation dialogScreen;
+	private transient GameUtilityInformation gameOver;
+	private transient GameUtilityInformation statusScreen;
+	private transient GameUtilityInformation levelUpImage;
+	private transient GameUtilityInformation switchDialog;
 
 	//이 클래으에서 배열은 항상 타일 위치로만 한다. 실제 픽셀값이 아님
 	//각 애니메이션의 타이머
 	
 	private GameCharacter player = null;
-	private Vector<GameCharacter> monsters = null;
-	private Vector<GameCharacter> alliances = null;
-	private Vector<GameCharacter> sortedCharacters = null;
-	private Map gameMap;
+	private transient Vector<GameCharacter> monsters = null;
+	private transient Vector<GameCharacter> alliances = null;
+	private transient Vector<GameCharacter> sortedCharacters = null;
+	private transient Map gameMap;
 	
 	/****************************************************/
 	//게임의 타일
 
-	private int[][] gameTile;
-	private GameEventDispatcher eventDispatcher;
+	private transient int[][] gameTile;
+	private transient GameEventDispatcher eventDispatcher;
 	private static final int MAXFLAG = 1001;
 	private boolean [] conditionFlag;
 	//새로운 리스트를 받아와야하나?
-	private boolean eventStart = false;
+	private transient boolean eventStart = false;
 	//지금 이벤트가 수행중인가?
 	//private boolean eventStart = false;
-	private Event nowEventList = null;
-	private EventContent nowEvent = null;
-	private int eventContentListIndex = -1;
-	private boolean charEnterMap = false;
-	private boolean charActionMap = false;
+	private transient Event nowEventList = null;
+	private transient EventContent nowEvent = null;
+	private transient int eventContentListIndex = -1;
+	private transient boolean charEnterMap = false;
+	private transient boolean charActionMap = false;
 	/****************************************************/
 	
 	//게임 패스
 	private String gamePath;
 	
-	private int gameState = 0;
-	private int exGameState = 0;
-	private KeyFlags keyFlag;
+	private transient int gameState = 0;
+	private transient int exGameState = 0;
+	private transient KeyFlags keyFlag;
 	
 	
 	//종료 루틴및 기타 작업을 위해
-	private GameWindow gameWindow;
-	private GameDisplay gameDisplay;
+	private transient GameWindow gameWindow;
+	private transient GameDisplay gameDisplay;
 	
 	//게임 로봇 생성
-	private AI gameRobot;
+	private transient AI gameRobot;
 	
 	//실행할 음악파일 이름
-	private String musicFile = null;
+	private transient String musicFile = null;
 
 	//애니메이션 딜레이
-	private int animDelay = 100;
-	//액션 애니메이션의 부드러움을 위해. 클릭한번만..적용시킴
-	private boolean actionAnimFlag = false;
+	private transient int animDelay = 100;
+	//액션 애니transient 메이션의 부드러움을 위해. 클릭한번만..적용시킴
+	private transient boolean actionAnimFlag = false;
 
-	private int animTimer;
+	private transient int animTimer;
 	
 
 	//맵데이터
-	private BufferedImage background;
-	private BufferedImage foreBackImage;
-	private BufferedImage foreForeImage;
-	private GameMusic gameMusic;
+	private transient BufferedImage background;
+	private transient BufferedImage foreBackImage;
+	private transient BufferedImage foreForeImage;
+	private transient GameMusic gameMusic;
 
 
-	private boolean autoEventCalled = false;
-	private boolean autoAllianceEventCalled = false;
-	private boolean autoMonsterEventCalled = false;
-	private List<Event> autoEvents;
-	private List<EventTile> actorEventTiles;
+	private transient boolean autoEventCalled = false;
+	private transient boolean autoAllianceEventCalled = false;
+	private transient boolean autoMonsterEventCalled = false;
+	private transient List<Event> autoEvents;
+	private transient List<EventTile> actorEventTiles;
 	private int charOnMapX;
 	private int charOnMapY;
-	private boolean moveEventCalled;
-	private int moveEventSpeed;
-	private int moveEventDirection;
-	private int moveEventDestination;
+	private transient boolean moveEventCalled;
+	private transient int moveEventSpeed;
+	private transient int moveEventDirection;
+	private transient int moveEventDestination;
 
-	private int moveEventcounter;
-	private EventTile nowEventTile;
-	private GameCharacter moveEventActor;
-	private boolean playerAutoMove;
-	private boolean musicStartFlag;
-	private Thread musicThread;
+	private transient int moveEventcounter;
+	private transient EventTile nowEventTile;
+	private transient GameCharacter moveEventActor;
+	private transient boolean playerAutoMove;
+	private transient boolean musicStartFlag;
+	private transient Thread musicThread;
+	private transient boolean saveState;
+	private String mapName;
+	private Abilities playerMaxAbilities;
+	private boolean cannotReadSaveFile;
+	
 	
 	//생성자
 	public GameData()
@@ -196,10 +213,10 @@ public class GameData implements Runnable{
 	//게임 데이터 실행
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		
 		while(this.gameState != GameData.EXIT)
 		{
-			//TODO
+			
 			//프로그램 실행 초기
 			if(gameState == GameData.LOGOSCREEN)
 			{
@@ -229,19 +246,127 @@ public class GameData implements Runnable{
 			{
 				runAtNewStart();
 			}
+			else if(gameState == GameData.SAVE)
+			{
+				this.saveState = true;
+				charOnMapX = player.getxPosition()/mapCharArrayRatio;
+				charOnMapY = player.getyPosition()/mapCharArrayRatio;
+				playerMaxAbilities = new Abilities();
+				playerMaxAbilities.setAgility(player.getMaxStatus().getAgility());
+				playerMaxAbilities.setEXP(0);
+				playerMaxAbilities.setHP(player.getMaxStatus().getHP());
+				playerMaxAbilities.setIntelligence(player.getMaxStatus().getIntelligence());
+				playerMaxAbilities.setKnowledge(player.getMaxStatus().getKnowledge());
+				playerMaxAbilities.setMP(player.getMaxStatus().getMP());
+				playerMaxAbilities.setStrength(player.getMaxStatus().getStrength());
+				playerMaxAbilities.setVitality(player.getMaxStatus().getVitality());
+				try {
+					File file = new File("record.save");
+					file.createNewFile();
+					FileOutputStream fis = new FileOutputStream(file);
+					ObjectOutputStream ois = new ObjectOutputStream(fis);
+					ois.writeObject(this);
+					Thread.sleep(SLOWTIMER*5);
+					ois.close();
+					fis.close();
+					
+				} catch (FileNotFoundException e) {
+					
+					System.out.println("파일을 찾을 수 없습니다.");
+					e.printStackTrace();
+					System.exit(0);
+				} catch (IOException e) {
+					
+					System.out.println("파일을 찾을 수 없습니다.");
+					e.printStackTrace();
+					System.exit(0);
+				} catch (InterruptedException e) {
+					
+					e.printStackTrace();
+				}
+				saveState = false;
+				gameState = GameData.STATUSCALLED;
+			}
 			else if(gameState == GameData.LOAD)
 			{
-				gameState = GameData.EXIT;
-			}
-			else if(gameState == GameData.LOADING)
-			{
-				//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
+				File file = new File("record.save");
+				if(!file.canRead())
+				{
+					gameState = GameData.NEWSTART;
+				}
 				try {
-					Thread.sleep(SLOWTIMER);
-				} catch (InterruptedException e) {
+					FileInputStream fis = new FileInputStream(file);
+					ObjectInputStream ois = new ObjectInputStream(fis);
+					
+					GameData tmp = (GameData) ois.readObject();
+					this.conditionFlag = tmp.conditionFlag;
+					this.mapName = tmp.mapName;
+					this.player = tmp.player;
+					this.playerMaxAbilities = tmp.playerMaxAbilities;
+					ois.close();
+					fis.close();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					cannotReadSaveFile = true;
+					try {
+						Thread.sleep(SLOWTIMER*2);
+					} catch (InterruptedException e3) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					cannotReadSaveFile = false;
+					gameState = GameData.NEWSTART;
+					continue;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+//					gameState = GameData.NEWSTART;
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				gameState = GameData.LOADING;
+			}
+			else if(gameState == GameData.LOADING)
+			{
+				BootstrapInfo bs = null;
+				try
+				{
+					bs = Bootstrap.getBootstrap(gamePath);
+				}
+				catch(NullPointerException e)
+				{
+					JOptionPane.showMessageDialog(null, "플레이어 초기 위치 지정 오류");
+					e.printStackTrace();
+					System.exit(0);
+				}
+				
+				try {
+					//실제로는 이벤트 디스패처를 호출해서 현재 출력해야할 맵, 맵에 속한 npc등의 정보를 읽어서 로드한다.
+					player.deployActorAbliity(gamePath, bs.getCharIndex(), player.getxPosition(), 
+							player.getyPosition(), playerMaxAbilities);
+					player.setActorState(GameCharacter.MOVESTATE);
+					loadMap(this.mapName);
+//					System.out.println(bs.getCharIndex());
+					this.computeGameTile();
+					Thread.sleep(SLOWTIMER);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch(NullPointerException e1)
+				{
+					cannotReadSaveFile = true;
+					try {
+						Thread.sleep(SLOWTIMER*2);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					cannotReadSaveFile = false;
+					gameState = GameData.NEWSTART;
+					continue;
+				}
+				TIMER = FASTTIMER;
+				gameState = GameData.PLAY;
 			}
 			else if(gameState == GameData.PLAY)
 			{
@@ -406,8 +531,8 @@ public class GameData implements Runnable{
 			player.getNowStatus().setHP(player.getMaxStatus().getHP());
 		}
 		//플레이어의 액션상태확인, 무브거나 배틀이면
-		if (player.getActorState() == player.MOVESTATE
-				|| player.getActorState() == player.BATTLESTATE) 
+		if (player.getActorState() == GameCharacter.MOVESTATE
+				|| player.getActorState() == GameCharacter.BATTLESTATE) 
 		{
 			//애니메이션을 부드럽게
 			this.animTimer++;
@@ -461,7 +586,7 @@ public class GameData implements Runnable{
 			}
 			runEvent();
 		}
-		else if(player.getActorState() == GameCharacter.EVENTSTATE)
+		else if(player.getActorState() == GameCharacter.EVENTSTATE || player.getActorState() == GameCharacter.MOVEEVENTSTATE)
 		{
 			this.animTimer++;
 			
@@ -502,11 +627,6 @@ public class GameData implements Runnable{
 			}
 			runEvent();
 		}
-		//캐릭터 체력 채워줌
-		//player.getNowStatus().getHP() 
-//		System.out.println(player.getNowStatus().getHP());
-//		System.out.println(player.getMaxStatus().getHP());
-
 	}
 	
 	//타일 위에 있는 맵이벤트 실행
@@ -1010,6 +1130,12 @@ public class GameData implements Runnable{
 				player.setActorState(GameCharacter.MOVESTATE);
 				TIMER = FASTTIMER;
 			}
+			else if(cursorImage.getPosition() == 1)
+			{
+				//저장
+				gameState = GameData.SAVE;
+				saveState = true;
+			}
 			else if(cursorImage.getPosition() == 3)
 			{
 				gameState = GameData.EXIT;
@@ -1113,7 +1239,15 @@ public class GameData implements Runnable{
 			{
 				for(int j = 0 ; j < ratio; j++)
 				{
+					try{
 					gameTile[actor.getyPosition()-ratio/2+i][actor.getxPosition()-ratio/2+i] = count;
+					}
+					catch(ArrayIndexOutOfBoundsException e)
+					{
+						e.printStackTrace();
+						System.out.println("" + (actor.getyPosition()-ratio/2+i) +" : " + (actor.getxPosition()-ratio/2+i));
+						System.exit(0);
+					}
 				}
 			}
 			count++;
@@ -1253,6 +1387,7 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("loadCharNPC에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
@@ -1289,10 +1424,11 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("createMonsters 에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
-			alliances = null;
+			monsters = null;
 		}
 	}
 	
@@ -1344,6 +1480,7 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("deployNPC 에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
@@ -1383,6 +1520,7 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("deployMonsters 에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
@@ -1449,6 +1587,7 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("npc자동이벤트에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
@@ -1501,6 +1640,7 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("몬스터자동에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadCharacterNPC()");
 			e.printStackTrace();
 //			System.exit(0);
@@ -1511,7 +1651,7 @@ public class GameData implements Runnable{
 	//맵로드
 	public void loadMap(String mapName)
 	{
-
+		this.mapName = mapName;
 		GameMapLoader mapLoader = new GameMapLoader();
 		mapLoader.setMapFile(this.gamePath+"/Map/"+mapName);
 		this.setGameMap(mapLoader.getMap());
@@ -1526,6 +1666,7 @@ public class GameData implements Runnable{
 		}
 		catch (Exception e) 
 		{
+			System.out.println("맵로드에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadMap()\nCan't allocate gameTile");
 			e.printStackTrace();
 		//	System.exit(0);
@@ -1589,6 +1730,7 @@ public class GameData implements Runnable{
 		}
 		catch(Exception e)
 		{
+			System.out.println("플레이어로드 에러");
 			JOptionPane.showMessageDialog(gameWindow, "Error in GameData loadPlayer()");
 			e.printStackTrace();
 			//System.exit(0);
@@ -1643,6 +1785,7 @@ public class GameData implements Runnable{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//만약에 타이틀을 불러오는데 실패해도 진행
+			System.out.println("타이틀에러");
 			JOptionPane.showMessageDialog
 			(gameWindow, "Error!! Can't find TITLE.png or LOGO.png or CURSOR.png or SomthingElse");
 			e.printStackTrace();
@@ -1927,7 +2070,6 @@ public class GameData implements Runnable{
 
 
 	public void setGameMusic(GameMusic gameMusic) {
-		// TODO Auto-generated method stub
 		this.gameMusic = gameMusic;
 	}
 
@@ -1999,6 +2141,16 @@ public class GameData implements Runnable{
 	public boolean isMusicStart()
 	{
 		return this.musicStartFlag;
+	}
+
+
+	public boolean isSaveState() {
+		return saveState;
+	}
+
+
+	public boolean cannotReadSaveFile() {
+		return cannotReadSaveFile;
 	}
 	
 }

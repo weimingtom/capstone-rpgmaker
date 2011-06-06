@@ -1,14 +1,19 @@
 package execute;
 
-import java.util.List;
+import java.io.Serializable;
 
 import characterEditor.Abilities;
 import characterEditor.Actors;
 import eventEditor.Event;
 import eventEditor.EventTile;
 
-public abstract class GameCharacter {
+public abstract class GameCharacter implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5409919597858204696L;
+
 	protected String gamePath;
 	
 	//현재 액터의 상태가 어떤가? 정지, 이동중/데미지 입는중/스킬사용중/죽음..이 플래그에 따라 출력 애니메이션이 달라짐
@@ -124,7 +129,10 @@ public abstract class GameCharacter {
 	
 	public abstract void changeActor(int actorIndex, int xPosition, int yPosition );
 	
-	
+	public void deployActorAbliity(String gamePath, int actorIndex, int xPosition, int yPosition, Abilities max)
+	{
+		
+	}
 	
 	public int getxPosition() {
 		return xPosition;

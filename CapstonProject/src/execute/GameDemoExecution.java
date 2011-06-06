@@ -59,7 +59,7 @@ public class GameDemoExecution {
 		
 		//게임의 상태를 초기상태로 설정한다.
 		gameData.setGameState(GameData.LOGOSCREEN);
-		
+		gameMusic = new GameMusic(gameData);
 		//그리고 초기에 게임 데이터에서 이벤트 로드를 실행한다.
 	}
 	
