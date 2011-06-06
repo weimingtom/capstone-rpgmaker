@@ -17,7 +17,7 @@ class DoingList implements Serializable {
 	private int redoTop;
 
 	public DoingList(Map map) {
-		listSize = 10;
+		listSize = 1;
 		tileSetList = new RapperTileset[listSize];
 		currIndex = -1;
 		lastIndex = listSize - 1;
