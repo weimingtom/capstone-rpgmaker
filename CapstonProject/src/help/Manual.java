@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -33,7 +32,6 @@ public class Manual extends JPanel implements TreeSelectionListener,
 	private static boolean playWithLineStyle = false;
 	private static String lineStyle = "Horizontal";
 
-	private static boolean useSystemLookAndFeel = true;
 
 	public Manual() {
 		super(new GridLayout(1, 0));
