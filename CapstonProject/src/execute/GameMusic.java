@@ -37,6 +37,8 @@ public class GameMusic implements Runnable{
 //		{
 			while(isMusicPlay == true)
 			{
+				if(gameData.getGameState() == GameData.EXIT)
+					break;
 				try {
 					if(filePathAndName == null)
 					{

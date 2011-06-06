@@ -1811,8 +1811,17 @@ public class GameData implements Runnable, Serializable{
 	public void exitGame() {
 		// TODO Auto-generated method stub
 		gameDisplay.exitGame();
-		//gameWindow.exitGame();
-		System.exit(0);
+		gameWindow.dispose();
+		try
+		{
+			gameMusic.setIsMusicStart(false);
+			gameMusic.startMusic(null);
+		}
+		catch(NullPointerException e)
+		{
+			return;
+		}
+		//System.exit(0);
 	}
 
 	public void setGameDisplay(GameDisplay gameDisplay) {
