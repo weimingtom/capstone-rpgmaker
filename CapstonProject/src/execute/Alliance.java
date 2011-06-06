@@ -91,6 +91,8 @@ public class Alliance extends GameCharacter {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception ee){
+			
 		}
 	}
 	
