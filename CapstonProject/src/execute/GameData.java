@@ -969,7 +969,7 @@ public class GameData implements Runnable, Serializable{
 					this.eventStart = false;
 					switchDialog.setText(null);
 					switchDialog.setPosition(0);
-//					player.setActorState(GameCharacter.MOVESTATE);
+					player.setActorState(GameCharacter.MOVESTATE);
 					break;
 				}
 			}
