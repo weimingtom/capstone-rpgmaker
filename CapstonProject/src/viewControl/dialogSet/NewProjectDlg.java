@@ -550,6 +550,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		btn_ok.setEnabled(true);
 		btn_cancel.setEnabled(true);
 		setEnabled(true);
+		progress.setIndeterminate(false);
 	}
 
 	
