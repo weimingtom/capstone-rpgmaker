@@ -3,6 +3,8 @@ package viewControl.editorDlg;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +29,7 @@ import eventEditor.exceptions.NotExistType;
 // 3. 이벤트 목록 받아오기
 // 4. 패널 이미지 받아오기
 // 5. 탭 자동 생성
-public class EventDlg extends EditorDlg implements ActionListener {
+public class EventDlg extends EditorDlg implements ActionListener, MouseListener {
 
 	private static final long serialVersionUID = 6090426854673494361L;
 	
@@ -37,9 +39,6 @@ public class EventDlg extends EditorDlg implements ActionListener {
 	private String mapName;
 	private Point startPoint;
 	private Point endPoint;
-	
-	private int previousObjectType;
-	private int currentObjectType;
 	
 	// Variables declaration - do not modify
 	private JButton btn_OK;
@@ -97,6 +96,9 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		btn_clearEvent.addActionListener(this);
 		btn_editFlagList.addActionListener(this);
 		cb_objectType.addActionListener(this);
+		
+		// 마우스 이벤트 정의
+		cb_objectType.addMouseListener(this);
 		
 		// 이벤트 데이터 설정. 새로운 데이터면 새로 생성하고 아니면 기존의 데이터에서 불러온다.
 		if(isNew(eventEditsSys, startPoint, endPoint)) {
@@ -189,7 +191,7 @@ public class EventDlg extends EditorDlg implements ActionListener {
  	
 	private void initEventPanel(EventTile events) {
 		// 이벤트를 모두 삭제한다.
-		eventTabPanelList.remove(0);
+		
 		// EventEditPanel을 하나씩 생성하여 eventTabPanelList에 넣는다.
 		List<Event> tmpEvents = events.getEventList();
 		for (int i = 0; i < tmpEvents.size(); i++) {
@@ -265,20 +267,6 @@ public class EventDlg extends EditorDlg implements ActionListener {
 		}
 	}
 	
-	private void renewEventBtn() {
-		if(cb_objectType.getSelectedIndex() == EventEditorSystem.MONSTER_EVENT) {
-			if(previousObjectType != EventEditorSystem.MONSTER_EVENT && currentObjectType == EventEditorSystem.MONSTER_EVENT)
-				clearEvents();
-			renewTabPanels(0);
-			btn_addEvent.setEnabled(false);
-			btn_deleteEvent.setEnabled(false);
-		} else {
-			btn_addEvent.setEnabled(true);
-			btn_deleteEvent.setEnabled(true);
-		}
-			
-	}
-	
 	private Event getEventInTapPanel(int index) {
 		return eventTabPanelList.get(index).getEvent();
 	}
@@ -347,14 +335,27 @@ public class EventDlg extends EditorDlg implements ActionListener {
 			renewActorMenu();
 			
 		} else if(e.getSource() == cb_objectType) {
-			previousObjectType = currentObjectType;
-			currentObjectType = cb_objectType.getSelectedIndex();
 			renewActorMenu();
-			renewEventBtn();
+			
 		}
 	}
 	
 	private EventTile getFirstEventTile() {
 		return eventEditsSys.getEventTile(startPoint.y, startPoint.x);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	@Override
+	public void mousePressed(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if(e.getSource() == cb_objectType) {
+			renewActorMenu();
+		}
 	}
 }

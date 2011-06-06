@@ -217,8 +217,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		int tmpObjectType = objectType;
 		objectType = -1;
 		renewActorMenu(tmpObjectType);
-		if(event.getActionType() != -1)
-			cb_actorMotionType.setSelectedIndex(event.getActionType());
+//		setSelectedIndexActorMenu();
 		setEventStartType();
 		lst_eventList.setSelectedIndex(0);
 		
@@ -236,8 +235,6 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 		// Event Content의 JList 구성
 		setJListEventContents();
 		renewSelectedListComboBox();
-		
-		lst_eventList.setSelectedIndex(0);
 		
 		// 레이아웃 구성
 		javax.swing.GroupLayout p_activeConditionLayout = new javax.swing.GroupLayout(p_activeCondition);
@@ -542,18 +539,18 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	
 				p_actorImg.setEnabled(true);
 				cb_actorIndex.setEnabled(true);
-				
-				if(objectType == EventEditorSystem.NPC_EVENT) {
-					cb_actorMotionType.setEnabled(true);
-				} else {
-					cb_actorMotionType.setSelectedIndex(EventEditorSystem.ATTACK_PLAYER);
-					cb_actorMotionType.setEnabled(false);
-				}
-				
+				cb_actorMotionType.setEnabled(true);
 				ckb_ifDie.setEnabled(true);
 				cb_dieCondition.setEnabled(true);
 				cb_dieConditionState.setEnabled(true);
 			}
+			
+//			p_actorImg.revalidate();
+//			cb_actorIndex.revalidate();
+//			cb_actorMotionType.revalidate();
+//			ckb_ifDie.revalidate();
+//			cb_dieCondition.setEnabled(true);
+//			cb_dieConditionState.setEnabled(true);
 		}
 		
 		renewDieCondition();
@@ -735,10 +732,7 @@ public class EventEditPanel extends JPanel implements ActionListener, MouseListe
 	}
 	
 	public int getActionType() {
-		if(objectType != EventEditorSystem.MONSTER_EVENT)
-			return cb_actorMotionType.getSelectedIndex();
-		else
-			return EventEditorSystem.ATTACK_PLAYER;
+		return cb_actorMotionType.getSelectedIndex();
 	}
 	
 	public int getDieConditionIndex() {
