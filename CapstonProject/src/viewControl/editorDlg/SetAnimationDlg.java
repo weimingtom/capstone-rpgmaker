@@ -413,14 +413,14 @@ public class SetAnimationDlg extends EditorDlg implements ActionListener, MouseL
 			fileChooser.setMultiSelectionEnabled(false);
 
 			// Chooser의 필터 설정
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Image File", "png",
-																						   "PNG",
-																						   "Png",
-																						   "pNg",
-																						   "pnG",
-																						   "PNg",
-																						   "PnG",
-																						   "pNG");
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Image File", "png");
+//																						   "PNG",
+//																						   "Png",
+//																						   "pNg",
+//																						   "pnG",
+//																						   "PNg",
+//																						   "PnG",
+//																						   "pNG");
 			fileChooser.setFileFilter(filter);
 
 			// Chooser를 출력한다. 선택 여부가 returnName에 저장
@@ -448,14 +448,7 @@ public class SetAnimationDlg extends EditorDlg implements ActionListener, MouseL
 			fileChooser.setMultiSelectionEnabled(false);
 
 			// Chooser의 필터 설정
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Image File", "png",
-																						   "PNG",
-																						   "Png",
-																						   "pNg",
-																						   "pnG",
-																						   "PNg",
-																						   "PnG",
-																						   "pNG");
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Image File", "png");
 			fileChooser.setFileFilter(filter);
 
 			// Chooser를 출력한다. 선택 여부가 returnName에 저장

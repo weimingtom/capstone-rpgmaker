@@ -279,7 +279,7 @@ public abstract class Actors extends ObjectEditorSystem implements Serializable 
 			// DamageRight
 			index = 0;
 			File[] DamageRightAniFiles = (new File(animationFolderPath+"DamageRight")).listFiles();
-			for (int i = 0; i < DamageDownAniFiles.length; i++) {
+			for (int i = 0; i < DamageRightAniFiles.length; i++) {
 				if(DamageRightAniFiles[i].getName().charAt(0) == '.') continue;
 				else if(i!=DamageRightAniFiles.length-1)
 					damageRightAnimation.setAnimationImage(DamageRightAniFiles[i].getAbsolutePath(), index);
