@@ -10,8 +10,8 @@ package viewControl;
  * 
  */
 
-import help.Manual;
-import help.Tutorial;
+import help.ManualGuide;
+import help.TutorialGuide;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -104,7 +104,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		iconSize = 25;
 		// explorer 관련
 		explorerWidth = 250;
-		tileSetWidth = 600;
+		tileSetWidth = 400;
 
 		// NORTH
 		toolBar = new JToolBar();
@@ -325,7 +325,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		subSplit.setDividerLocation(iconSize + 5);
 		mainSplit.setVisible(false); // 시작시에는 안보이게
 		mainSplit.setDividerSize(2);
-		mainSplit.setDividerLocation(explorerWidth + tileSetWidth);
+		mainSplit.setDividerLocation(Toolkit.getDefaultToolkit().getScreenSize().width-tileSetWidth);
 		mainSplit.setRightComponent(tileSetTabPanel);
 		mainSplit.setLeftComponent(subSplit);
 
@@ -1011,10 +1011,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		
 		// help
 		else if(e.getSource()==helpItem_Manual){
-			Thread h = new Thread(new Manual());
+			Thread h = new Thread(new ManualGuide());
 			h.start();
 		}else if(e.getSource()==helpItem_Tutorial){
-			Thread h = new Thread(new Tutorial());
+			Thread h = new Thread(new TutorialGuide());
 			h.start();
 		}
 
@@ -1030,7 +1030,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == btnExeProj) {
 			GameDemoExecution.getInstanse(ProjectFullPath).execute();
 		} else if (e.getSource() == btnHelp) {
-			Thread h = new Thread(new Manual());
+			Thread h = new Thread(new ManualGuide());
 			h.start();
 		}
 
