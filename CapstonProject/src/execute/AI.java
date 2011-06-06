@@ -645,14 +645,14 @@ public class AI {
 			max.setVitality(max.getVitality() + curve.getVitality());
 			Abilities nowStatus = player.getNowStatus();
 			nowStatus.setAgility(max.getAgility());
-			nowStatus.setEXP(max.getEXP());
+			nowStatus.setEXP(nowStatus.getEXP());
 			nowStatus.setHP(max.getHP());
 			nowStatus.setIntelligence(max.getIntelligence());
 			nowStatus.setKnowledge(max.getKnowledge());
 			nowStatus.setMP(max.getMP());
 			nowStatus.setStrength(max.getStrength());
 			nowStatus.setVitality(max.getVitality());
-			max.setEXP(max.getEXP()*2);
+			max.setEXP(nowStatus.getEXP()*2);
 			player.setLevelUp(true);
 		}
 	}
