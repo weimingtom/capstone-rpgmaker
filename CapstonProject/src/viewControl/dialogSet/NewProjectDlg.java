@@ -341,9 +341,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		
 		
 		File defaultData = new File(fullPath + "\\.DefaultData");
-		File originalDefaultData = new File(this.getClass().getResource("")
-				.getPath()
-				+ "\\DefaultData");
+		File originalDefaultData = new File("src\\resouce\\DefaultData");
 		File srcData = new File("src\\resouce\\utilImg");
 		try {
 			directoryCopy(originalDefaultData, defaultData);
