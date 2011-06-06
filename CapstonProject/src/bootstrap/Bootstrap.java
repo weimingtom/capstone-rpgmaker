@@ -51,7 +51,7 @@ public class Bootstrap {
 					charIndex = new Integer(charFiles[1].getName().substring(0, 3));
 				else {
 					charIndex = 0;
-					JOptionPane.showMessageDialog(null, "You must create Character of Index 000!");
+//					JOptionPane.showMessageDialog(null, "You must create Character of Index 000!");
 //					new NewCharacterDlg(MainFrame.OWNER, true, null);
 				}
 				
