@@ -3,8 +3,6 @@ package viewControl.editorDlg;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +27,7 @@ import eventEditor.exceptions.NotExistType;
 // 3. 이벤트 목록 받아오기
 // 4. 패널 이미지 받아오기
 // 5. 탭 자동 생성
-public class EventDlg extends EditorDlg implements ActionListener, MouseListener {
+public class EventDlg extends EditorDlg implements ActionListener {
 
 	private static final long serialVersionUID = 6090426854673494361L;
 	
@@ -96,9 +94,6 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		btn_clearEvent.addActionListener(this);
 		btn_editFlagList.addActionListener(this);
 		cb_objectType.addActionListener(this);
-		
-		// 마우스 이벤트 정의
-		cb_objectType.addMouseListener(this);
 		
 		// 이벤트 데이터 설정. 새로운 데이터면 새로 생성하고 아니면 기존의 데이터에서 불러온다.
 		if(isNew(eventEditsSys, startPoint, endPoint)) {
@@ -267,6 +262,16 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 		}
 	}
 	
+	private void renewEventBtns() {
+		if(cb_objectType.getSelectedIndex() != EventEditorSystem.MONSTER_EVENT) {
+			btn_addEvent.setEnabled(true);
+			btn_deleteEvent.setEnabled(true);
+		} else {
+			btn_addEvent.setEnabled(false);
+			btn_deleteEvent.setEnabled(false);
+		}
+	}
+	
 	private Event getEventInTapPanel(int index) {
 		return eventTabPanelList.get(index).getEvent();
 	}
@@ -336,26 +341,11 @@ public class EventDlg extends EditorDlg implements ActionListener, MouseListener
 			
 		} else if(e.getSource() == cb_objectType) {
 			renewActorMenu();
-			
+			renewEventBtns();
 		}
 	}
 	
 	private EventTile getFirstEventTile() {
 		return eventEditsSys.getEventTile(startPoint.y, startPoint.x);
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-	@Override
-	public void mouseExited(MouseEvent e) {}
-	@Override
-	public void mousePressed(MouseEvent e) {}
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		if(e.getSource() == cb_objectType) {
-			renewActorMenu();
-		}
 	}
 }
