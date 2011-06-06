@@ -176,16 +176,28 @@ public abstract class ObjectEditorSystem implements Serializable {
 			oos.close();
 			fos.close();
 			
+			oos = null;
+			fos = null;
+			
 			MainFrame.OWNER.getProjTree().addObject(new File(resultStr));
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(oos != null)
+					oos.close();
+				if(fos != null)
+					fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return resultStr;
 	}
 
-	public String getProjectFullPath()					{	return projectFullPath;						}
-	public void setProjectFullPath(String projectPath)	{	this.projectFullPath = projectPath;			}
+	public String getProjectFullPath()					{	return projectFullPath;				}
+	public void setProjectFullPath(String projectPath)	{	this.projectFullPath = projectPath;	}
 	public int getIndex()							{	return index;							}
 	public void setIndex(int index)					{	this.index = index;						}
 	public String getName()							{	return name;							}
