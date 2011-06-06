@@ -446,7 +446,8 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 
 		if (undoFlag) {
 			Map m = doingList.undo();
-
+			undoFlag = false;
+	
 			Tile[][] tb = m.getM_BackgroundTile();
 			Tile[][] tf = m.getM_ForegroundTile();
 
@@ -482,11 +483,11 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			}
 
 			m.setM_Foreground(foreground);
-
-			undoFlag = false;
 
 		} else if (redoFlag) {
 			Map m = doingList.redo();
+			redoFlag = false;
+			
 			Tile[][] tb = m.getM_BackgroundTile();
 			Tile[][] tf = m.getM_ForegroundTile();
 
@@ -522,7 +523,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			}
 
 			m.setM_Foreground(foreground);
-			redoFlag = false;
+			
 		}
 
 		Color tmp = g2d.getColor();
@@ -1047,7 +1048,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	}
 
 	public void redo() {
-		redoFlag = true;
-		repaint();
+		//redoFlag = true;
+		//repaint();
 	}
 }
