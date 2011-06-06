@@ -1,17 +1,18 @@
 package execute;
 
 import java.io.FileNotFoundException;
-import java.util.List;
 
-import characterEditor.Abilities;
 import characterEditor.Actors;
-import characterEditor.CharacterEditorSystem;
 import characterEditor.NPCEditorSystem;
 import eventEditor.Event;
 import eventEditor.EventTile;
 
 public class Alliance extends GameCharacter {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1490745845501703926L;
 	private NPCEditorSystem actor;
 	
 	//»ý¼ºÀÚ
