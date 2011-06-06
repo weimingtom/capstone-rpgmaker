@@ -400,6 +400,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 			Point endPoint) {
 		int temp;
 		Color tmp = g.getColor();
+		g.setColor(Color.RED);
 		int sx = (startPoint.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
 		int sy = (startPoint.y / DrawingTemplate.pixel) * DrawingTemplate.pixel;
 		int ex = (endPoint.x / DrawingTemplate.pixel) * DrawingTemplate.pixel;
@@ -589,6 +590,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 				}
 			}
 			
+
 			BootstrapInfo bi = Bootstrap.getBootstrap(MainFrame.OWNER.ProjectFullPath);
 			if((mapSys.getMapInfo().getM_MapName()+".map").equals(bi.getMapName()))
 				g2d.drawString("S",
