@@ -9,25 +9,57 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import viewControl.MainFrame;
+import viewControl.editorDlg.NewCharacterDlg;
+import characterEditor.CharacterEditorSystem;
 
 public class Bootstrap {
 
 	public static BootstrapInfo getBootstrap(String projectFullPath) {
 		String FILE_FULL_PATH = projectFullPath + File.separator + "Map" + File.separator + ".map";
+		String DELIMITER = "@";
 		
 		File file = new File(FILE_FULL_PATH);
 		String line = null;
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
+			boolean findBootStrapInfo = false;
 			while((line=br.readLine()) != null) {
 				// bootstrap이 기록된 라인이면 루프를 종료한다.
 				if(isBootstrapLine(line)) {
+					findBootStrapInfo = true;
 					break;
 				}
 			}
 			br.close();
+
+			// Bootstrap 정보를 찾지 못했다면 직접 디폴트로 결정한다.
+			if(!findBootStrapInfo) {
+				// 맵 정보 설정
+				File[] mapFiles = (new File(projectFullPath + File.separator + "Map")).listFiles();
+				String defaultMapName = "null";
+				if(mapFiles.length >= 2)
+					defaultMapName = mapFiles[1].getName();
+				
+				// 캐릭터 인덱스 정보 설정
+				File[] charFiles = (new File(projectFullPath + File.separator + "Character")).listFiles();
+				int charIndex = 0;
+				if(charFiles.length >= 2)
+					charIndex = new Integer(charFiles[1].getName().substring(0, 3));
+				else {
+					charIndex = 0;
+					JOptionPane.showMessageDialog(null, "You must create Character of Index 000!");
+//					new NewCharacterDlg(MainFrame.OWNER, true, null);
+				}
+				
+				// 디폴트를 작성한다.
+				Bootstrap.writeBootstrapInfo(defaultMapName, new Point(0,0), charIndex);
+				
+				line = defaultMapName+DELIMITER+"0"+DELIMITER+"0"+DELIMITER+charIndex;
+			}
 			
 			String[] strBootstrap = parseString(line);
 			int x = (new Integer(strBootstrap[1])).intValue();
@@ -119,7 +151,7 @@ public class Bootstrap {
 		String DELIMITER = "@";
 		
 		// ':'까지의 문자열은 제거한다. 
-		if(line.lastIndexOf(START_MARKER) != -1)
+		if(line != null && line.lastIndexOf(START_MARKER) != -1)
 			line = line.substring(line.lastIndexOf(START_MARKER)+1, line.length());
 		
 		return line.split(DELIMITER);
