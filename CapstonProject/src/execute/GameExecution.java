@@ -7,7 +7,7 @@ public class GameExecution {
 	public static int DOUBLEBUFFERMODE = 2;
 	
 	//여기에 에디터 프로젝트 폴더 적어줘....ㅇㅋㅇ?ㅇㅋㅇㅋ
-	private String gamePath = "D:\\ca";
+	private String gamePath = "D:\\warcry";
 	
 	//게임 데이터, 디스플레이, 윈도우
 	private GameData gameData;
