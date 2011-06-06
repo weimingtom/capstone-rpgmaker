@@ -114,7 +114,7 @@ public class TutorialGuide extends JPanel implements TreeSelectionListener,
 	}
 
 	private void initHelp() {
-		String s = "tutorialhtml//helloTutorial.html";
+		String s = "Tutorial//helloTutorial.html";
 		helpURL = getClass().getResource(s);
 		if (helpURL == null) {
 			System.err.println("Couldn't open help file: " + s);
