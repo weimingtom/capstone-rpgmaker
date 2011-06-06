@@ -355,7 +355,7 @@ public class GameDisplay implements Runnable{
 		if(isStop == false)
 		{
 			BufferedImage actorImage = null;
-			if(actor.getTotalAnimCounter() > actorAnim.getCountImage()*3 / actorAnim.getCountImage())
+			if(actor.getTotalAnimCounter() > actorAnim.getCountImage()/ actorAnim.getCountImage())
 			{
 				actor.setTotalAnimCounter(0);
 				actorImage = actorAnim.getNextImage();
@@ -422,7 +422,7 @@ public class GameDisplay implements Runnable{
 		BufferedImage actorImage = null;
 		
 
-		if(actor.getTotalAnimCounter() > actorAnim.getCountImage()*2 / actorAnim.getCountImage())
+		if(actor.getTotalAnimCounter() > actorAnim.getCountImage() / actorAnim.getCountImage())
 		{
 			actor.setTotalAnimCounter(0);
 			actorImage = actorAnim.getNextImage();

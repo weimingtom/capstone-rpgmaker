@@ -813,6 +813,7 @@ public class GameData implements Runnable, Serializable{
 	private void startMoveEvent()
 	{
 		player.setActorState(GameCharacter.MOVEEVENTSTATE);
+//		System.out.println(player.getActorState());
 		MotionEvent moveEvent = (MotionEvent)nowEvent;
 		//처음 불렷나?
 		if(moveEventCalled == false)
@@ -896,8 +897,8 @@ public class GameData implements Runnable, Serializable{
 			}
 		}
 		
-		
-		player.setActorState(GameCharacter.MOVESTATE);
+		if(player.getActorState() != GameCharacter.MOVEEVENTSTATE)
+			player.setActorState(GameCharacter.MOVESTATE);
 	}
 	
 	//스위치 다이얼로그
@@ -1266,6 +1267,13 @@ public class GameData implements Runnable, Serializable{
 	//플레이어의 키입력에 따른 움직임 설정
 	public void actionPlayer(int playerState)
 	{	
+//		System.out.println(player.getActorState());
+		if(player.getActorState() == GameCharacter.MOVEEVENTSTATE)
+		{
+//			System.out.println("여기 불림");
+			return;
+		}
+		
 		if (keyFlag.isLeft()) 
 		{
 			player.setNowDirection(GameCharacter.LEFT);
@@ -1790,7 +1798,7 @@ public class GameData implements Runnable, Serializable{
 			cursorImage.setUtilImage(ImageIO.read(new File(utilPath+"\\CURSOR.png")));
 			loadScreen.setUtilImage(ImageIO.read(new File(utilPath+"\\LOADING.png")));
 			gameOver.setUtilImage(ImageIO.read(new File(utilPath+"\\GAMEOVER.png")));
-			levelUpImage.setUtilImage(ImageIO.read(new File(utilPath+"\\LEVELUP.png")));
+			levelUpImage.setUtilImage(ImageIO.read(new File(utilPath+"\\levelUp.Png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//만약에 타이틀을 불러오는데 실패해도 진행
