@@ -341,12 +341,10 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 		
 		
 		File defaultData = new File(fullPath + "\\.DefaultData");
-		File originalDefaultData = new File(System.getProperty("user.dir")+"\\resource\\DefaultData");
-		File srcData = new File(System.getProperty("user.dir")+"\\resouce\\utilImg");
+		File originalDefaultData = new File("src\\resouce\\DefaultData");
+		File srcData = new File("src\\resouce\\utilImg");
 		try {
 			directoryCopy(originalDefaultData, defaultData);
-			
-			
 			directoryCopy(srcData, utilImg);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -403,7 +401,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 			attributeUtilImg.createNewFile();
 
 			
-			File originalResouce = new File(System.getProperty("user.dir")+"\\resouce\\tileSet\\background");
+			File originalResouce = new File("src\\resouce\\tileSet\\background");
 			for (int i = 0; i < originalResouce.list().length - 1; i++) {
 				fileCopy(originalResouce.getPath().concat("\\TileBack").concat(
 						i + "").concat(".png"), fullPath.concat(
@@ -411,7 +409,7 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 						.concat(".png"));
 				
 			}
-			originalResouce = new File(System.getProperty("user.dir")+"\\resouce\\tileSet\\foreground");
+			originalResouce = new File("src\\resouce\\tileSet\\foreground");
 			for (int i = 0; i < originalResouce.list().length - 1; i++) {
 				fileCopy(originalResouce.getPath().concat("\\TileFore").concat(
 						i + "").concat(".png"), fullPath.concat(
@@ -419,16 +417,6 @@ public class NewProjectDlg extends JDialog implements ActionListener, Runnable {
 						.concat(".png"));
 				
 			}
-			
-			
-
-//			File excutionJARFile = new File(fullPath + "\\execution.jar");
-//			File originalExcutionJARFile = new File(System.getProperty("user.dir")+"\\resource\\execution.jar");
-//			File executionFile = new File(fullPath + "\\Game.exe");
-//			File originalExecutionFile = new File(System.getProperty("user.dir")+"\\resource\\Game.exe");
-			fileCopy(System.getProperty("user.dir")+"\\resource\\execution.jar", fullPath + "\\execution.jar");
-			fileCopy(System.getProperty("user.dir")+"\\resource\\Game.exe", fullPath + "\\Game.exe");
-			
 		} catch (IOException e3) {
 			e3.printStackTrace();
 		}
