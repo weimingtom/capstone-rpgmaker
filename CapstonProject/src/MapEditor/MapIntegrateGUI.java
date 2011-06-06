@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.ButtonGroup;
@@ -31,6 +30,8 @@ import viewControl.editorDlg.EventDlg;
 import viewControl.editorDlg.SetCharStartPointDlg;
 import viewControl.esComponent.EstyleCheckBoxItem;
 import viewControl.esComponent.EstyleCheckBoxItemGroup;
+import bootstrap.Bootstrap;
+import bootstrap.BootstrapInfo;
 
 public class MapIntegrateGUI extends JPanel implements MouseListener,
 		MouseMotionListener, ActionListener {
@@ -587,6 +588,13 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 					}
 				}
 			}
+			
+			BootstrapInfo bi = Bootstrap.getBootstrap(MainFrame.OWNER.ProjectFullPath);
+			if((mapSys.getMapInfo().getM_MapName()+".map").equals(bi.getMapName()))
+				g2d.drawString("S",
+						bi.getStartPoint().x * DrawingTemplate.pixel + reRatio, bi.getStartPoint().y
+								* DrawingTemplate.pixel
+								+ DrawingTemplate.pixel - reRatio);
 
 			g2d.setColor(tmp);
 		}
