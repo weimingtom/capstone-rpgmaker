@@ -167,7 +167,7 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		popupPasteEvent = new JMenuItem("Paste event");
 		popupDeleteEvent = new JMenuItem("Delete event");
 		popupSetStartingPointEvent = new JMenuItem(
-				"Set user charactor starting point");
+				"Set user character starting point");
 		popupCanvasMode = new JMenuItem("Set canvas mode");
 
 		poppuCanvasBtnGroup = new EstyleCheckBoxItemGroup();
