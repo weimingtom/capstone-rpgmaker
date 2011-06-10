@@ -28,6 +28,7 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import userData.DeepCopier;
 import viewControl.MainFrame;
 import animationEditor.Animations;
 import animationEditor.eceptions.IllegalImageIndex;
@@ -66,7 +67,7 @@ public class SetAnimationDlg extends EditorDlg implements ActionListener, MouseL
 	// End of variables declaration
 
 	
-	private Animations animation; 			// 전달받은 Animations 변수를 저장하기 위해 필요
+	private Animations animation;	 			// 전달받은 Animations 변수를 저장하기 위해 필요
 	private List<AniImgPanel> imgPanelList; // 삽입한 이미지들을 임시로 저장하는 리스트
 	private String str_fileName; 			// 추가하고자 하는 이미지의 절대 경로를 임시 저장
 	private int indexSelectedPanel;
@@ -80,7 +81,9 @@ public class SetAnimationDlg extends EditorDlg implements ActionListener, MouseL
  	public SetAnimationDlg(MainFrame parent, Animations data) {
 		super(parent, "Set Animation");
 		projectPath = MainFrame.OWNER.ProjectFullPath;
+		
 		animation = data;
+		
 		str_fileName = null;
 		indexSelectedPanel = 0;
 		animationIndex = -1;
