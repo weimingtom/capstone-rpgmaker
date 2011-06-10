@@ -48,7 +48,7 @@ public class Animations extends ObjectEditorSystem implements Serializable {
 		super(projectPath, "Animation");
 		
 		this.name = name;
-		extension = "armor";
+		extension = "ani";
 
 		bufImgList = new ArrayList<BufferedImage>();
 		pointBaseImg = new Point(0,0);
@@ -118,7 +118,7 @@ public class Animations extends ObjectEditorSystem implements Serializable {
 			bufImgList.add(i, toBufferedImage(imgIconList.get(i)));
 		baseImg = toBufferedImage(baseImgIcon);
 		
-		imgIconList.clear();
+//		imgIconList.clear();
 	}
 	
 	// 다음 이미지를 반환한다. 0번 이미지는 베이스이미지이므로 반환하지 않는다.
