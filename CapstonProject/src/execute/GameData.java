@@ -835,12 +835,16 @@ public class GameData implements Runnable, Serializable{
 			player.setNowDirection(moveEventDirection);
 			//player.setSpeed(moveEventSpeed);
 			if(player.getNowDirection() == GameCharacter.UP)
+				if(player.getyPosition() - moveEventSpeed >= mapCharArrayRatio)
 				player.setyPosition(player.getyPosition()-moveEventSpeed);
 			else if(player.getNowDirection() == GameCharacter.DOWN)
+				if(player.getyPosition() + moveEventSpeed <= gameMap.getM_Height()*mapCharArrayRatio - mapCharArrayRatio)
 				player.setyPosition(player.getyPosition()+moveEventSpeed);
 			else if(player.getNowDirection() == GameCharacter.LEFT)
+				if(player.getxPosition() - moveEventSpeed >= mapCharArrayRatio)
 				player.setxPosition(player.getxPosition()-moveEventSpeed);
 			else if(player.getNowDirection() == GameCharacter.RIGHT)
+				if(player.getxPosition() + moveEventSpeed <= gameMap.getM_Width()*mapCharArrayRatio - mapCharArrayRatio)
 				player.setxPosition(player.getxPosition()+moveEventSpeed);
 			moveEventcounter++;
 			if(moveEventcounter >= moveEventDestination)
@@ -874,12 +878,16 @@ public class GameData implements Runnable, Serializable{
 			}
 			moveEventActor.setNowDirection(moveEventDirection);
 			if(moveEventActor.getNowDirection() == GameCharacter.UP)
+				if(moveEventActor.getyPosition() - moveEventSpeed >= mapCharArrayRatio)
 				moveEventActor.setyPosition(moveEventActor.getyPosition()-moveEventSpeed);
 			else if(moveEventActor.getNowDirection() == GameCharacter.DOWN)
+				if(moveEventActor.getyPosition() + moveEventSpeed <= gameMap.getM_Height()*mapCharArrayRatio - mapCharArrayRatio)
 				moveEventActor.setyPosition(moveEventActor.getyPosition()+moveEventSpeed);
 			else if(moveEventActor.getNowDirection() == GameCharacter.LEFT)
+				if(moveEventActor.getxPosition() - moveEventSpeed >= mapCharArrayRatio)
 				moveEventActor.setxPosition(moveEventActor.getxPosition()-moveEventSpeed);
 			else if(moveEventActor.getNowDirection() == GameCharacter.RIGHT)
+				if(moveEventActor.getxPosition() + moveEventSpeed <= gameMap.getM_Width()*mapCharArrayRatio - mapCharArrayRatio)
 				moveEventActor.setxPosition(moveEventActor.getxPosition()+moveEventSpeed);
 			moveEventcounter++;
 			
