@@ -1254,9 +1254,10 @@ public class GameData implements Runnable, Serializable{
 					}
 					catch(ArrayIndexOutOfBoundsException e)
 					{
-						e.printStackTrace();
-						System.out.println("" + (actor.getyPosition()-ratio/2+i) +" : " + (actor.getxPosition()-ratio/2+i));
-						System.exit(0);
+//						e.printStackTrace();
+//						System.out.println("" + (actor.getyPosition()-ratio/2+i) +" : " + (actor.getxPosition()-ratio/2+i));
+//						System.exit(0);1
+						continue;
 					}
 				}
 			}
