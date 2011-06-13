@@ -97,8 +97,6 @@ public class ProjectTree extends JTree implements TreeWillExpandListener,
 		addKeyListener(new KeyEventHandler());
 		addMouseListener(new MouseEventHandler());
 		expand(root);
-		removeObject(new File(MainFrame.OWNER.ProjectFullPath+File.separator+"Game.exe"));
-		removeObject(new File(MainFrame.OWNER.ProjectFullPath+File.separator+"execution.jar"));
 		setSelectionRow(0);
 		initMenu();
 	}
