@@ -50,6 +50,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import palette.PalettePanel;
+import viewControl.dialogSet.AboutDlg;
 import viewControl.dialogSet.NewMapDlg;
 import viewControl.dialogSet.NewMapNameDlg;
 import viewControl.dialogSet.NewProjectDlg;
@@ -260,7 +261,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				"Upper tiles then characters setting", palleteModeGroup);
 
 		executionItem_execute = new JMenuItem("Execute game");
-		executionItem_makeRelease = new JMenuItem("Make release files");
 
 		helpItem_Manual = new JMenuItem("Manual");
 		helpItem_Tutorial = new JMenuItem("Tutorial");
@@ -708,14 +708,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		// execution
 		menuExecution.add(executionItem_execute);
-		menuExecution.add(executionItem_makeRelease);
 
 		executionItem_execute.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_ENTER, Event.CTRL_MASK));
 
 		executionItem_execute.addActionListener(this);
-		executionItem_makeRelease.addActionListener(this);
-
+	
 		// help
 		menuHelp.add(helpItem_Manual);
 		menuHelp.add(helpItem_Tutorial);
@@ -729,6 +727,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
 		// about
 		menuAbout.add(aboutItem_aboutBaeSsaGong);
+		
+		aboutItem_aboutBaeSsaGong.addActionListener(this);
 
 		pack();
 		setTitle("Nice to meet you!");
@@ -860,7 +860,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private EstyleCheckBoxItem palleteItem_upper;
 
 	private JMenuItem executionItem_execute;
-	private JMenuItem executionItem_makeRelease;
 
 	private JMenuItem helpItem_Manual;
 	private JMenuItem helpItem_Tutorial;
@@ -1014,10 +1013,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		// execution
 		else if (e.getSource() == executionItem_execute) {
 			GameDemoExecution.getInstanse(ProjectFullPath).execute();
-		} else if (e.getSource() == executionItem_makeRelease) {
-
-		}
+		} 
 		
+		// about
+		else if (e.getSource() == aboutItem_aboutBaeSsaGong) {
+			new  AboutDlg(this, true);
+		}
 		
 		// help
 		else if(e.getSource()==helpItem_Manual){
