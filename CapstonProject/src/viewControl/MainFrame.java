@@ -61,6 +61,7 @@ import viewControl.editorDlg.ItemDlg;
 import viewControl.editorDlg.JobDlg;
 import viewControl.editorDlg.NewCharacterDlg;
 import viewControl.editorDlg.NewMonsterDlg;
+import viewControl.editorDlg.NewNPCDlg;
 import viewControl.editorDlg.SkillDlg;
 import viewControl.editorDlg.WeaponDlg;
 import viewControl.esComponent.EstyleButton;
@@ -208,6 +209,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_newProject = new JMenuItem("Project");
 		fileItem_newMap = new JMenuItem("Map");
 		fileItem_newTileSet = new JMenuItem("Tile Set");
+		fileItem_newNpc= new JMenuItem("NPC");
 		fileItem_newCharacter = new JMenuItem("Character");
 		fileItem_newMonster = new JMenuItem("Monster");
 		fileItem_newJob = new JMenuItem("Job");
@@ -511,6 +513,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileMenu_new.add(fileItem_newTileSet);
 		fileMenu_new.add(fileItem_newCharacter);
 		fileMenu_new.add(fileItem_newMonster);
+		fileMenu_new.add(fileItem_newNpc);
 		fileMenu_new.add(fileItem_newJob);
 		fileMenu_new.add(fileItem_newSkill);
 		fileMenu_new.add(fileItem_newWeapon);
@@ -522,6 +525,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_saveAsMap.setEnabled(false);
 		fileItem_newMap.setEnabled(false);
 		fileItem_newTileSet.setEnabled(false);
+		fileItem_newNpc.setEnabled(false);
 		fileItem_newCharacter.setEnabled(false);
 		fileItem_newMonster.setEnabled(false);
 		fileItem_newJob.setEnabled(false);
@@ -534,6 +538,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_newProject.addActionListener(this);
 		fileItem_newMap.addActionListener(this);
 		fileItem_newTileSet.addActionListener(this);
+		fileItem_newNpc.addActionListener(this);
 		fileItem_newCharacter.addActionListener(this);
 		fileItem_newMonster.addActionListener(this);
 		fileItem_newJob.addActionListener(this);
@@ -561,6 +566,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				KeyEvent.VK_P, Event.CTRL_MASK));
 		fileItem_newMap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
 				Event.CTRL_MASK));
+		fileItem_newNpc.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_N, Event.ALT_MASK));
 		fileItem_newTileSet.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_T, Event.CTRL_MASK));
 		fileItem_newCharacter.setAccelerator(KeyStroke.getKeyStroke(
@@ -810,6 +817,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	private JMenuItem fileItem_newProject;
 	private JMenuItem fileItem_newMap;
 	private JMenuItem fileItem_newTileSet;
+	private JMenuItem fileItem_newNpc;
 	private JMenuItem fileItem_newCharacter;
 	private JMenuItem fileItem_newMonster;
 	private JMenuItem fileItem_newJob;
@@ -903,6 +911,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 			closeProject();
 		} else if (e.getSource() == fileItem_newTileSet) {
 			new TileSetChooserDlg(this);
+		} else if (e.getSource() == fileItem_newNpc) {
+			new NewNPCDlg(this, true, null);
 		} else if (e.getSource() == fileItem_newCharacter) {
 			new NewCharacterDlg(this, true, null);
 		} else if (e.getSource() == fileItem_newMonster) {
@@ -1187,6 +1197,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		fileItem_saveProj.setEnabled(true);
 		fileItem_projectClose.setEnabled(true);
 		fileItem_newTileSet.setEnabled(true);
+		fileItem_newNpc.setEnabled(true);
 
 		if (canvasTabCounter > 0) {
 			enableMapRelatedBtn(true);
