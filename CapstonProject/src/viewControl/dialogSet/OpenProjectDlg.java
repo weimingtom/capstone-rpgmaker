@@ -286,6 +286,7 @@ public class OpenProjectDlg extends JDialog implements ActionListener {
 		} else if (e.getSource() == btn_cancel) {
 			dispose();
 		}
+		btn_ok.setEnabled(true);
 	}
 
 	public void setWorkspace(String string) {
