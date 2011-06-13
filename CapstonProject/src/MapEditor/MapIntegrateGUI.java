@@ -92,9 +92,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	private int xAxis = 0;
 	private int yAxis = 0;
 
-	// 언두 리두를 위해
-	private DoingList doingList;
-
 	// // 이벤트 시스템
 	// private EventEditorSystem eventEditorSystem;
 
@@ -249,7 +246,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		foreground = mapSys.drawForeground(0, 0);
 		setPreferredSize(new Dimension(background.getWidth(), background
 				.getHeight()));
-		doingList = new DoingList(mapSys.getMapInfo());
 		repaint();
 	}
 
@@ -335,7 +331,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 		}
 		background = mapSys.drawBackground(0, 0);
 		foreground = mapSys.drawForeground(0, 0);
-		doingList = new DoingList(mapSys.getMapInfo());
 		repaint();
 	}
 
@@ -445,88 +440,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
-
-		if (undoFlag) {
-			Map m = doingList.undo();
-			undoFlag = false;
-	
-			Tile[][] tb = m.getM_BackgroundTile();
-			Tile[][] tf = m.getM_ForegroundTile();
-
-			background = null;
-			background = new BufferedImage(m.getM_Width()
-					* DrawingTemplate.pixel, m.getM_Height()
-					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
-
-			Graphics2D g2 = background.createGraphics();
-			// 타일셋으로 부터 백 그라운드 생성
-			for (int i = 0; i < m.getM_Height(); i++) {
-				for (int j = 0; j < m.getM_Width(); j++) {
-					g2.drawImage(tb[i][j].getM_TileIcon(), j
-							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
-							null);
-				}
-			}
-
-			m.setM_Background(background);
-
-			foreground = null;
-			foreground = new BufferedImage(m.getM_Width()
-					* DrawingTemplate.pixel, m.getM_Height()
-					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
-			g2 = foreground.createGraphics();
-			// 타일셋으로 부터 포어 그라운드 생성
-			for (int i = 0; i < m.getM_Height(); i++) {
-				for (int j = 0; j < m.getM_Width(); j++) {
-					g2.drawImage(tf[i][j].getM_TileIcon(), j
-							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
-							null);
-				}
-			}
-
-			m.setM_Foreground(foreground);
-
-		} else if (redoFlag) {
-			Map m = doingList.redo();
-			redoFlag = false;
-			
-			Tile[][] tb = m.getM_BackgroundTile();
-			Tile[][] tf = m.getM_ForegroundTile();
-
-			background = null;
-			background = new BufferedImage(m.getM_Width()
-					* DrawingTemplate.pixel, m.getM_Height()
-					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
-
-			Graphics2D g2 = background.createGraphics();
-			// 타일셋으로 부터 백 그라운드 생성
-			for (int i = 0; i < m.getM_Height(); i++) {
-				for (int j = 0; j < m.getM_Width(); j++) {
-					g2.drawImage(tb[i][j].getM_TileIcon(), j
-							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
-							null);
-				}
-			}
-
-			m.setM_Background(background);
-
-			foreground = null;
-			foreground = new BufferedImage(m.getM_Width()
-					* DrawingTemplate.pixel, m.getM_Height()
-					* DrawingTemplate.pixel, BufferedImage.TYPE_4BYTE_ABGR);
-			g2 = foreground.createGraphics();
-			// 타일셋으로 부터 포어 그라운드 생성
-			for (int i = 0; i < m.getM_Height(); i++) {
-				for (int j = 0; j < m.getM_Width(); j++) {
-					g2.drawImage(tf[i][j].getM_TileIcon(), j
-							* DrawingTemplate.pixel, i * DrawingTemplate.pixel,
-							null);
-				}
-			}
-
-			m.setM_Foreground(foreground);
-			
-		}
 
 		Color tmp = g2d.getColor();
 		g.setColor(Color.white);
@@ -889,7 +802,6 @@ public class MapIntegrateGUI extends JPanel implements MouseListener,
 							}
 					}
 				}
-				doingList.addMapToDoingList(mapSys.getMapInfo());
 			} else {
 				if (!MouseDrawUtility.checkMouseBoundery(e.getPoint(), mapSys))
 					return;
