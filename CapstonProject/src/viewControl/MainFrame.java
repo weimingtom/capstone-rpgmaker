@@ -1205,6 +1205,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		}
 
 		btnSaveProj.setEnabled(true);
+		getProjTree().removeObject(new File(MainFrame.OWNER.ProjectFullPath+File.separator+"Game.exe"));
+		getProjTree().removeObject(new File(MainFrame.OWNER.ProjectFullPath+File.separator+"execution.jar"));
 	}
 
 	public void enableNewMapMenu(boolean b) {
